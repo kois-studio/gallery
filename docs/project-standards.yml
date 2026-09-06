@@ -1,0 +1,68 @@
+contract_version: 0.2.0
+standards_version: 0.4.0
+
+standards_source:
+  repository: https://github.com/kois-studio/engineering-standards
+  revision: 3e3d423
+
+project:
+  name: kois-gallery
+  lifecycle: greenfield
+  maturity: project-design
+
+standards:
+  - documentation
+  - testing
+  - typescript
+  - security
+  - dependencies
+  - ci-cd
+  - operations
+  - api
+  - data
+  - web
+
+profiles: []
+
+compliance:
+  rules:
+    - id: DOC-001
+      status: partial
+      evidence: docs/AGENTS.md exists, but the project has no implementation commands yet.
+      priority: high
+      next_action: Update the project instructions when the runtime and implementation toolchain are selected.
+    - id: DOC-002
+      status: compliant
+      evidence: docs/README.md indexes the maintained project documentation.
+      priority: medium
+      next_action: Keep the index current as design documents are added.
+    - id: DOC-011
+      status: compliant
+      evidence: docs/work/TODO.md is the tracked unfinished-work queue.
+      priority: medium
+      next_action: Keep design and implementation-preparation work itemized.
+    - id: SEC-001
+      status: partial
+      evidence: docs/architecture/boundaries.md records initial trust-boundary direction; detailed threat analysis remains open.
+      priority: high
+      next_action: Complete the threat and responsibility review before implementation.
+    - id: DATA-001
+      status: partial
+      evidence: docs/architecture/data-and-storage.md identifies proposed data owners and storage boundaries; schema is not implemented.
+      priority: high
+      next_action: Finalize the first persisted model and lifecycle before coding.
+    - id: OPS-009
+      status: partial
+      evidence: docs/operations/backup-recovery.md defines proposed operator responsibilities; restore procedures are not implemented or tested.
+      priority: high
+      next_action: Define and test the first backup and restore path during the private beta.
+
+exceptions: []
+
+deferred_work:
+  - id: DESIGN-001
+    reason: Framework and runtime are intentionally open during project design.
+    next_action: Compare a small number of viable stacks against the first vertical slice.
+  - id: DESIGN-002
+    reason: License selection requires an explicit OSS adoption decision and dependency review.
+    next_action: Decide before the first meaningful public release.
