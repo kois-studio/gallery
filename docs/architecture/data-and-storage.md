@@ -2,7 +2,7 @@
 
 ## Design status
 
-This is proposed design. No schema, migration, database, or storage provider has been implemented.
+The first-beta SQLite schema, migration runner, local storage provider, upload records, processing jobs, and cancellation markers are implemented. This document records the current boundary and the remaining recovery work; future providers and selection-related entities remain proposed.
 
 ## Proposed source of truth
 
@@ -17,31 +17,21 @@ The first installation has two durable stores with different consistency propert
 
 An upload is not complete until the original is durably stored and its metadata is committed. A photo is `ready` only when the required derivatives exist and are readable. Database rows and object files can therefore be temporarily inconsistent after a crash; startup reconciliation and an operator repair path must make that state visible and recoverable.
 
-## Likely entities
+## Implemented and deferred entities
 
-These are design candidates, not a finalized schema:
+The first-beta schema currently contains:
 
-- administrator or user;
-- gallery;
-- photo;
-- processing state or job;
-- selection or favorite;
-- access/session record where required by the selected authentication model.
+- local administrator and server-side sessions;
+- gallery with draft/published state and revocable share-token hash;
+- photo with immutable original key, derivative keys, dimensions, ordering, processing status, and cancellation timestamp;
+- processing job with attempts, timestamps, errors, retry state, and cancellation timestamp;
+- visitor session records scoped to a published gallery.
 
-Likely gallery fields include an id, slug, title, description, event date, visibility, cover photo, created time, updated time, and optional expiration. Likely photo fields include gallery id, storage keys, dimensions, capture time, position, and processing status.
-
-For the first delivery slice, the smallest likely persisted model is:
-
-- one local administrator record and server-side sessions;
-- gallery with draft/published state and a revocable share token or token reference;
-- photo with immutable original key, derivative keys, dimensions, ordering, and processing state;
-- processing job with attempts, timestamps, error class, and retry state.
-
-Selections, expiration, visitor identities, and multi-user ownership are not first-slice schema requirements. They must not be implied by placeholder columns.
+Selections, expiration, visitor identities, multi-user ownership, and PostgreSQL-specific entities are not first-slice schema requirements. They must not be implied by placeholder columns.
 
 ## Storage providers
 
-The first provider should be local filesystem storage. Later providers may use one generic S3-compatible adapter for Amazon S3, Cloudflare R2, Backblaze B2, MinIO, or another compatible service.
+The implemented first provider is local filesystem storage. Later providers may use one generic S3-compatible adapter for Amazon S3, Cloudflare R2, Backblaze B2, MinIO, or another compatible service.
 
 The storage boundary needs operations for:
 
@@ -67,7 +57,7 @@ Local storage requirements:
 
 ## Data lifecycle
 
-For each persisted entity, the design must document creation, update, publication, expiration, deletion, backup, restore, and migration behavior. Database migrations and photo-object cleanup must not silently diverge.
+For each persisted entity, the design must document creation, update, publication, expiration, deletion, backup, restore, and migration behavior. Database migrations and photo-object cleanup must not silently diverge. Cancellation is implemented for pending/processing photos; gallery deletion and full reconciliation remain release work.
 
 Important invariants include:
 

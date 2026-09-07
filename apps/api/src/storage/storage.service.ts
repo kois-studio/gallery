@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { randomUUID } from 'node:crypto'
-import { lstat, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
+import type { Dirent } from 'node:fs'
+import { lstat, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { ConfigService } from '@nestjs/config'
 import type { GalleryConfiguration } from '../configuration.js'
@@ -34,6 +35,35 @@ export class LocalStorageService {
 
     async remove(key: string): Promise<void> {
         await rm(this.pathForKey(key), { force: true })
+    }
+
+    async cleanupTemporaryUploads(maxAgeMs = 24 * 60 * 60 * 1000): Promise<number> {
+        const temporaryDirectory = join(this.root, '.tmp', 'uploads')
+        let entries: Dirent[]
+        try {
+            entries = await readdir(temporaryDirectory, { withFileTypes: true })
+        } catch (error) {
+            if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+                return 0
+            }
+            throw error
+        }
+
+        const cutoff = Date.now() - maxAgeMs
+        let removed = 0
+        for (const entry of entries) {
+            if (!entry.isFile() && !entry.isSymbolicLink()) {
+                continue
+            }
+            const path = join(temporaryDirectory, entry.name)
+            const metadata = await lstat(path)
+            if (metadata.mtimeMs >= cutoff) {
+                continue
+            }
+            await rm(path, { force: true })
+            removed += 1
+        }
+        return removed
     }
 
     async moveAtomically(sourcePath: string, key: string): Promise<void> {

@@ -22,6 +22,12 @@ export class UploadController {
         return { files: await this.uploads.upload(galleryId, files ?? []) }
     }
 
+    @Post(':photoId/cancel')
+    @UseGuards(CsrfGuard)
+    async cancel(@Param('galleryId') galleryId: string, @Param('photoId') photoId: string) {
+        return this.uploads.cancel(galleryId, photoId)
+    }
+
     @Get()
     list(@Param('galleryId') galleryId: string) {
         return {

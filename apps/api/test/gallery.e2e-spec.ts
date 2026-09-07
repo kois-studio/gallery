@@ -1,10 +1,12 @@
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
+import { randomUUID } from 'node:crypto'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import request from 'supertest'
 import { App } from 'supertest/types'
+import { DatabaseService } from '../src/database/database.service.js'
 
 describe('draft galleries (e2e)', () => {
     let app: INestApplication<App>
@@ -171,6 +173,46 @@ describe('draft galleries (e2e)', () => {
 
         await agent.post(`/api/admin/galleries/${gallery.body.id}/unpublish`).set('X-CSRF-Token', csrfToken).expect(201)
         await rotatedVisitor.get(`/api/shared/galleries/${rotatedSlug}`).expect(401)
+    })
+
+    it('cancels pending processing and keeps the cancelled state visible to the administrator', async () => {
+        const agent = request.agent(app.getHttpServer())
+        const signIn = await agent.post('/api/auth/sign-in').send({ password: 'correct horse battery staple' }).expect(200)
+        csrfToken = signIn.body.csrfToken
+        const gallery = await agent
+            .post('/api/admin/galleries')
+            .set('X-CSRF-Token', csrfToken)
+            .send({ title: 'Cancellation test' })
+            .expect(201)
+        const photoId = randomUUID()
+        const now = new Date().toISOString()
+        const database = app.get(DatabaseService).connection
+        database
+            .prepare(
+                `INSERT INTO photos
+          (id, gallery_id, original_name, original_key, mime_type, original_bytes,
+           processing_status, created_at, updated_at)
+         VALUES (?, ?, 'pending.jpg', ?, 'image/jpeg', 1, 'pending', ?, ?)`,
+            )
+            .run(photoId, gallery.body.id, `galleries/${gallery.body.id}/original/${photoId}.jpg`, now, now)
+        database
+            .prepare(
+                `INSERT INTO processing_jobs
+          (id, photo_id, status, attempts, available_at, created_at, updated_at)
+         VALUES (?, ?, 'queued', 0, ?, ?, ?)`,
+            )
+            .run(photoId, photoId, now, now, now)
+
+        await agent
+            .post(`/api/admin/galleries/${gallery.body.id}/photos/${photoId}/cancel`)
+            .set('X-CSRF-Token', csrfToken)
+            .expect(201)
+            .expect(({ body }) => expect(body).toEqual({ photoId, status: 'cancelled' }))
+
+        await agent
+            .get(`/api/admin/galleries/${gallery.body.id}/photos`)
+            .expect(200)
+            .expect(({ body }) => expect(body.files).toEqual([expect.objectContaining({ photoId, status: 'cancelled' })]))
     })
 
     afterAll(async () => {

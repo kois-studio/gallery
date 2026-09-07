@@ -11,6 +11,7 @@ The first design should model media as a stateful process rather than treating u
 ```text
 selected → uploading → stored-original → processing → ready
                                       ↘ failed / retryable
+                                      ↘ cancelled
 ```
 
 The first implementation uses a server-mediated multipart upload and an in-process worker backed by durable SQLite job rows:
@@ -25,7 +26,7 @@ browser → bounded upload endpoint → temporary file
 
 The request may acknowledge each file once the original and metadata are durable; derivative generation must not make a batch request hold open for the whole workload. A two-job concurrency limit protects modest hardware. A separate worker process, queue, direct-to-storage upload, and resumable protocol are deferred until measurements demonstrate that the single-process model is inadequate.
 
-Deletion, cancellation, and publication while processing still need explicit transitions.
+Cancellation now has an explicit administrator transition. Deletion and publication while processing still need separate lifecycle decisions.
 
 ## Required behaviors
 
@@ -54,7 +55,7 @@ The first slice supports individual original downloads through an authorization-
 - Required variants are thumbnail and display size. The first implementation uses 480px/2400px WebP variants; representative camera-file measurements may revise these limits through a later decision.
 - A failed derivative leaves the original available for an explicit retry or operator repair. It does not make the photo publishable when a required variant is missing.
 - Gallery publication must reject or clearly quarantine photos that are not ready; the beta recommendation is to block publication until every uploaded photo is ready, with a later choice for partial galleries.
-- Cancellation and deletion must distinguish an upload that has not become an owned photo from a stored original that needs cleanup. Abandoned temporary files have a bounded cleanup policy.
+- Cancellation marks pending or processing work as cancelled, prevents later worker claims/completion, removes the original and known derivatives, and keeps the cancelled state visible to the administrator. Abandoned multipart temporary files older than 24 hours are removed during startup.
 - Shutdown stops new processing claims and gives active work a bounded drain period. Work that does not finish is retried after restart.
 
 ## Performance questions

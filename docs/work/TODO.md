@@ -64,7 +64,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** Synthetic workload, malformed/oversized files, duplicate retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers.
 - **Dependencies:** GAL-011 and ADR 0011.
 - **Blocker or question:** None; measurements may produce a later limits decision.
-- **Next action:** Add explicit cancellation semantics and workload verification; the upload, durable queue, retry, and restart-reconciliation foundation is implemented.
+- **Next action:** Run representative workload, storage-failure, and architecture/restore verification; cancellation and abandoned-upload cleanup are now implemented.
 
 ### [GAL-013] [P0] [media] Generate derivatives and select a cover
 

@@ -42,4 +42,50 @@ describe('ProcessingRepository', () => {
         })
         database.close()
     })
+
+    it('cancels queued work durably and prevents a later claim or completion', () => {
+        const database = new Database(':memory:')
+        database.pragma('foreign_keys = ON')
+        runMigrations(database)
+        database
+            .prepare(
+                `INSERT INTO galleries (id, slug, title, created_at, updated_at)
+         VALUES ('gallery', 'gallery', 'Gallery', 'now', 'now')`,
+            )
+            .run()
+        database
+            .prepare(
+                `INSERT INTO photos
+          (id, gallery_id, original_name, original_key, mime_type, original_bytes,
+           processing_status, created_at, updated_at)
+         VALUES ('photo', 'gallery', 'photo.jpg', 'original/photo.jpg', 'image/jpeg', 1,
+           'pending', 'now', 'now')`,
+            )
+            .run()
+        database
+            .prepare(
+                `INSERT INTO processing_jobs
+          (id, photo_id, status, attempts, available_at, created_at, updated_at)
+         VALUES ('job', 'photo', 'queued', 0, 'now', 'now', 'now')`,
+            )
+            .run()
+
+        const service = new ProcessingRepository({ connection: database } as never)
+        expect(service.cancel('photo', 'cancelled')).toBe(true)
+        expect(service.claimNext('later')).toBeUndefined()
+        expect(
+            service.markComplete({ photoId: 'photo', thumbnailKey: 'thumb', displayKey: 'display', width: 1, height: 1, now: 'later' }),
+        ).toBe(false)
+        expect(database.prepare('SELECT processing_status, processing_error, cancelled_at FROM photos').get()).toEqual({
+            processing_status: 'failed',
+            processing_error: 'Cancelled by administrator',
+            cancelled_at: 'cancelled',
+        })
+        expect(database.prepare('SELECT status, cancelled_at, last_error FROM processing_jobs').get()).toEqual({
+            status: 'queued',
+            cancelled_at: 'cancelled',
+            last_error: 'Cancelled by administrator',
+        })
+        database.close()
+    })
 })

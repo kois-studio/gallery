@@ -18,7 +18,11 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
         private readonly storage: LocalStorageService,
     ) {}
 
-    onModuleInit(): void {
+    async onModuleInit(): Promise<void> {
+        const cleaned = await this.storage.cleanupTemporaryUploads()
+        if (cleaned > 0) {
+            this.logger.log(`Removed ${cleaned} abandoned upload temporary file(s)`)
+        }
         const recovered = this.jobs.requeueInterrupted(new Date().toISOString())
         if (recovered > 0) {
             this.logger.log(`Requeued ${recovered} interrupted processing job(s)`)
@@ -54,7 +58,12 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
     }
 
     private async process(work: ProcessingWork): Promise<void> {
+        const displayKey = `galleries/${work.gallery_id}/display/${work.id}.webp`
+        const thumbnailKey = `galleries/${work.gallery_id}/thumbnail/${work.id}.webp`
         try {
+            if (this.jobs.isCancelled(work.id)) {
+                return
+            }
             const originalPath = await this.storage.pathForRead(work.original_key)
             const image = sharp(originalPath, { limitInputPixels: maximumDecodedPixels })
             const metadata = await image.metadata()
@@ -65,8 +74,6 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
                 throw new Error('Image exceeds the decoded-pixel limit')
             }
 
-            const displayKey = `galleries/${work.gallery_id}/display/${work.id}.webp`
-            const thumbnailKey = `galleries/${work.gallery_id}/thumbnail/${work.id}.webp`
             const display = await sharp(originalPath, { limitInputPixels: maximumDecodedPixels })
                 .rotate()
                 .resize({ width: 2400, height: 2400, fit: 'inside', withoutEnlargement: true })
@@ -78,9 +85,17 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
                 .webp({ quality: 78 })
                 .toBuffer()
 
+            if (this.jobs.isCancelled(work.id)) {
+                await this.removeVariants(displayKey, thumbnailKey)
+                return
+            }
             await this.storage.writeAtomically(displayKey, display)
+            if (this.jobs.isCancelled(work.id)) {
+                await this.removeVariants(displayKey, thumbnailKey)
+                return
+            }
             await this.storage.writeAtomically(thumbnailKey, thumbnail)
-            this.jobs.markComplete({
+            const completed = this.jobs.markComplete({
                 photoId: work.id,
                 thumbnailKey,
                 displayKey,
@@ -88,10 +103,21 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
                 height: metadata.height,
                 now: new Date().toISOString(),
             })
+            if (!completed) {
+                await this.removeVariants(displayKey, thumbnailKey)
+            }
         } catch (error) {
+            if (this.jobs.isCancelled(work.id)) {
+                await this.removeVariants(displayKey, thumbnailKey)
+                return
+            }
             const message = error instanceof Error ? error.message.slice(0, 240) : 'Processing failed'
             this.jobs.markFailed(work.id, work.attempts, message, new Date().toISOString())
             this.logger.warn(`Photo ${work.id} processing attempt ${work.attempts} failed: ${message}`)
         }
+    }
+
+    private async removeVariants(displayKey: string, thumbnailKey: string): Promise<void> {
+        await Promise.all([this.storage.remove(displayKey), this.storage.remove(thumbnailKey)])
     }
 }

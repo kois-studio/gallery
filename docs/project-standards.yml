@@ -93,7 +93,7 @@ compliance:
       next_action: Add an upgrade migration and failure-path coverage when the schema next changes.
     - id: DATA-004
       status: partial
-      evidence: The two-store database/filesystem boundary and local storage key/symlink protections are implemented; asynchronous processing consistency behavior does not exist yet.
+      evidence: The two-store database/filesystem boundary, local storage key/symlink protections, durable processing state, cancellation markers, and startup temporary-file cleanup are implemented; restore reconciliation remains incomplete.
       priority: high
       next_action: Implement and test durable processing state and restart reconciliation in GAL-012; exercise restore behavior in GAL-017.
     - id: DATA-007
@@ -120,7 +120,7 @@ compliance:
       next_action: Extend readiness checks for migrations and durable domain resources during GAL-015 and GAL-016.
     - id: OPS-006
       status: partial
-      evidence: The in-process worker has bounded concurrency and restart requeue behavior; bounded shutdown and cancellation are not complete.
+      evidence: The in-process worker has bounded concurrency, restart requeue behavior, cancellation-aware completion guards, and startup temporary-file cleanup; workload and bounded-shutdown evidence remain incomplete.
       rationale: The worker exists for the first beta, while lifecycle hardening remains implementation/release work.
       priority: high
       next_action: Implement and test bounded shutdown/retry behavior in GAL-012 and GAL-016.
@@ -298,12 +298,12 @@ compliance:
       next_action: Implement and test adapters during GAL-009, GAL-011, GAL-012, and GAL-013.
     - id: NEST-013
       status: partial
-      evidence: Gallery writes use database constraints, local atomic-write boundaries, and transactional photo/job creation; full cancellation and storage-failure recovery remain open.
+      evidence: Gallery writes use database constraints, local atomic-write boundaries, transactional photo/job creation, and durable cancellation markers; storage-failure recovery remains open.
       priority: high
       next_action: Implement and test transaction/partial-failure behavior during GAL-009, GAL-011, GAL-012, and GAL-017.
     - id: NEST-014
       status: deferred
-      evidence: The NestJS in-process worker claims durable jobs, limits concurrency, retries failures, and requeues interrupted claims; workload and cancellation evidence remain open.
+      evidence: The NestJS in-process worker claims durable jobs, limits concurrency, retries failures, requeues interrupted claims, honors cancellation, and cleans stale upload temporary files; workload and bounded-shutdown evidence remain open.
       rationale: The first worker implementation exists, while release-scale behavior is still unverified.
       priority: high
       next_action: Implement duplicate/retry/shutdown behavior in GAL-012 and verify it in GAL-016/GAL-017.

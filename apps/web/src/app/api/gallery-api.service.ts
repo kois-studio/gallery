@@ -24,7 +24,7 @@ export interface GalleryPhoto {
     photoId: string
     originalName: string
     bytes: number
-    status: 'pending' | 'processing' | 'ready' | 'failed'
+    status: 'pending' | 'processing' | 'ready' | 'failed' | 'cancelled'
     width?: number | null
     height?: number | null
     thumbnailUrl?: string
@@ -152,6 +152,17 @@ export class GalleryApiService {
                     return { progress: 0 }
                 }),
             )
+    }
+
+    cancelPhoto(galleryId: string, photoId: string): Observable<{ photoId: string; status: 'cancelled' }> {
+        return this.http.post<{ photoId: string; status: 'cancelled' }>(
+            `/api/admin/galleries/${galleryId}/photos/${photoId}/cancel`,
+            {},
+            {
+                headers: this.csrfHeaders(),
+                withCredentials: true,
+            },
+        )
     }
 
     setCover(galleryId: string, photoId: string): Observable<Gallery> {

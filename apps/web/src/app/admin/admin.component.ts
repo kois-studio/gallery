@@ -96,7 +96,7 @@ import { Gallery, GalleryApiService, GalleryPhoto } from '../api/gallery-api.ser
                     <article class="admin-photo-card" [class.cover]="gallery.coverPhotoId === photo.photoId">
                       @if (photo.status === 'ready' && photo.displayUrl) { <img [src]="photo.displayUrl" [alt]="photo.originalName" loading="lazy" /> }
                       @else { <div class="photo-placeholder"><span>{{ photo.status }}</span></div> }
-                      <div class="photo-card-footer"><span>{{ photo.originalName }}</span>@if (photo.status === 'ready' && gallery.status === 'draft') { <button class="text-button" type="button" (click)="setCover(photo.photoId)">{{ gallery.coverPhotoId === photo.photoId ? 'Cover' : 'Set cover' }}</button> }</div>
+                      <div class="photo-card-footer"><span>{{ photo.originalName }}</span>@if (photo.status === 'ready' && gallery.status === 'draft') { <button class="text-button" type="button" (click)="setCover(photo.photoId)">{{ gallery.coverPhotoId === photo.photoId ? 'Cover' : 'Set cover' }}</button> } @if (photo.status === 'pending' || photo.status === 'processing') { <button class="text-button" type="button" (click)="cancelPhoto(photo.photoId)">Cancel</button> }</div>
                     </article>
                   }
                 </div>
@@ -215,6 +215,15 @@ export class AdminComponent implements OnInit {
         this.api
             .setCover(gallery.id, photoId)
             .subscribe({ next: (updated) => this.selected.set(updated), error: () => this.error.set('The cover could not be selected.') })
+    }
+
+    cancelPhoto(photoId: string): void {
+        const gallery = this.selected()
+        if (!gallery) return
+        this.api.cancelPhoto(gallery.id, photoId).subscribe({
+            next: () => this.refreshSelected(gallery),
+            error: (error) => this.error.set(error.error?.message ?? 'The photograph could not be cancelled.'),
+        })
     }
 
     publish(): void {

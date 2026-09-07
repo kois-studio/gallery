@@ -13,8 +13,9 @@ export interface PhotoRecord {
     width: number | null
     height: number | null
     position: number
-    processing_status: 'pending' | 'processing' | 'ready' | 'failed'
+    processing_status: 'pending' | 'processing' | 'ready' | 'failed' | 'cancelled'
     processing_error: string | null
+    cancelled_at: string | null
     created_at: string
     updated_at: string
 }
@@ -68,16 +69,6 @@ export class PhotoRepository {
         return this.getById(input.id)!
     }
 
-    getById(id: string): PhotoRecord | undefined {
-        return this.database.connection.prepare('SELECT * FROM photos WHERE id = ?').get(id) as PhotoRecord | undefined
-    }
-
-    listByGallery(galleryId: string): PhotoRecord[] {
-        return this.database.connection
-            .prepare('SELECT * FROM photos WHERE gallery_id = ? ORDER BY position ASC, id ASC')
-            .all(galleryId) as PhotoRecord[]
-    }
-
     countNotReady(galleryId: string): number {
         const row = this.database.connection
             .prepare("SELECT COUNT(*) AS count FROM photos WHERE gallery_id = ? AND processing_status != 'ready'")
@@ -86,7 +77,38 @@ export class PhotoRepository {
     }
 
     getByGalleryAndId(galleryId: string, id: string): PhotoRecord | undefined {
-        return this.database.connection.prepare('SELECT * FROM photos WHERE gallery_id = ? AND id = ?').get(galleryId, id) as
-            PhotoRecord | undefined
+        const photo = this.database.connection.prepare('SELECT * FROM photos WHERE gallery_id = ? AND id = ?').get(galleryId, id) as
+            | (Omit<PhotoRecord, 'processing_status'> & { processing_status: Exclude<PhotoRecord['processing_status'], 'cancelled'> })
+            | undefined
+        return photo ? withCancellationStatus(photo) : undefined
+    }
+
+    getById(id: string): PhotoRecord | undefined {
+        const photo = this.database.connection.prepare('SELECT * FROM photos WHERE id = ?').get(id) as
+            | (Omit<PhotoRecord, 'processing_status'> & { processing_status: Exclude<PhotoRecord['processing_status'], 'cancelled'> })
+            | undefined
+        return photo ? withCancellationStatus(photo) : undefined
+    }
+
+    listByGallery(galleryId: string): PhotoRecord[] {
+        return this.database.connection
+            .prepare('SELECT * FROM photos WHERE gallery_id = ? ORDER BY position ASC, id ASC')
+            .all(galleryId)
+            .map(photo =>
+                withCancellationStatus(
+                    photo as Omit<PhotoRecord, 'processing_status'> & {
+                        processing_status: Exclude<PhotoRecord['processing_status'], 'cancelled'>
+                    },
+                ),
+            )
+    }
+}
+
+function withCancellationStatus(
+    photo: Omit<PhotoRecord, 'processing_status'> & { processing_status: Exclude<PhotoRecord['processing_status'], 'cancelled'> },
+): PhotoRecord {
+    return {
+        ...photo,
+        processing_status: photo.cancelled_at ? 'cancelled' : photo.processing_status,
     }
 }

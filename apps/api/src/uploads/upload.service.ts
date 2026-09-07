@@ -5,6 +5,7 @@ import { rm } from 'node:fs/promises'
 import { GalleryService } from '../galleries/gallery.service.js'
 import { LocalStorageService } from '../storage/storage.service.js'
 import { PhotoRepository, type PhotoRecord } from './photo.repository.js'
+import { ProcessingRepository } from './processing.repository.js'
 
 const maximumFileBytes = 100 * 1024 * 1024
 const maximumFiles = 500
@@ -30,6 +31,7 @@ export class UploadService {
         private readonly galleries: GalleryService,
         private readonly photos: PhotoRepository,
         private readonly storage: LocalStorageService,
+        private readonly jobs: ProcessingRepository,
     ) {}
 
     async upload(galleryId: string, files: UploadedFile[]): Promise<UploadResult[]> {
@@ -68,6 +70,23 @@ export class UploadService {
             throw new BadRequestException('Photo not found')
         }
         return photo
+    }
+
+    async cancel(galleryId: string, photoId: string): Promise<{ photoId: string; status: 'cancelled' }> {
+        const photo = this.get(galleryId, photoId)
+        if (!['pending', 'processing'].includes(photo.processing_status)) {
+            throw new ConflictException('Only pending or processing photos can be cancelled')
+        }
+        if (!this.jobs.cancel(photo.id, new Date().toISOString())) {
+            throw new ConflictException('The photo could not be cancelled')
+        }
+
+        await Promise.all([
+            this.storage.remove(photo.original_key),
+            photo.thumbnail_key ? this.storage.remove(photo.thumbnail_key) : Promise.resolve(),
+            photo.display_key ? this.storage.remove(photo.display_key) : Promise.resolve(),
+        ])
+        return { photoId: photo.id, status: 'cancelled' }
     }
 
     private async persistFile(galleryId: string, file: UploadedFile): Promise<UploadResult> {
