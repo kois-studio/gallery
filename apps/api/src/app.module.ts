@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { AppController } from './app.controller.js';
 import { validateConfiguration } from './configuration.js';
 import { DatabaseModule } from './database/database.module.js';
@@ -14,8 +15,8 @@ import { DatabaseModule } from './database/database.module.js';
     }),
     DatabaseModule,
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'public'),
-      exclude: ['/api/(.*)'],
+      rootPath: join(dirname(fileURLToPath(import.meta.url)), '..', 'public'),
+      exclude: ['/api/{*any}'],
     }),
   ],
   controllers: [AppController],

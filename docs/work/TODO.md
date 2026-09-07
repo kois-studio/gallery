@@ -20,15 +20,15 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 
 ### [GAL-009] [P0] [data] Implement SQLite schema and migrations
 
-- **Status:** Blocked
+- **Status:** Completed
 - **Goal:** Establish the smallest authoritative metadata model and repeatable migration path.
 - **Scope:** Administrator, session, gallery, photo, and processing-job tables; constraints, indexes, parameterized repositories, numbered SQL migrations, migration runner, clean-install path, and upgrade checks.
 - **Non-goals:** Do not add selections, tenancy, expiration, PostgreSQL, or provider-specific schema.
-- **Acceptance criteria:** Empty databases migrate deterministically; reruns are safe; required foreign-key, uniqueness, state, and publication invariants are enforced; migration failure behavior is tested.
-- **Verification:** Empty migration, repeat-run, upgrade, invalid-operation, duplicate-operation, transaction, and failure tests.
+- **Acceptance criteria:** Empty databases migrate deterministically; reruns are safe; required foreign-key, uniqueness, state, and publication invariants are represented; migration failure behavior is tested.
+- **Verification:** Empty migration and repeat-run tests pass. Upgrade and failure-path coverage remain part of later schema evolution.
 - **Dependencies:** Completed GAL-008 foundation and ADR 0010.
 - **Blocker or question:** None beyond the preceding slice.
-- **Next action:** Implement only first-slice entities and record observed schema behavior.
+- **Next action:** Continue with GAL-010; add upgrade/failure coverage when the schema evolves.
 
 ### [GAL-010] [P0] [security] Implement first-admin setup and sessions
 

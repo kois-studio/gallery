@@ -4,6 +4,7 @@ import Database from 'better-sqlite3';
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import type { GalleryConfiguration } from '../configuration.js';
+import { runMigrations } from './migration-runner.js';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
@@ -26,6 +27,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     this.database.pragma('journal_mode = WAL');
     this.database.pragma('busy_timeout = 5000');
     this.database.prepare('SELECT 1').get();
+    const migrationsApplied = runMigrations(this.database);
+    if (migrationsApplied > 0) {
+      this.logger.log(`Applied ${migrationsApplied} SQLite migration(s)`);
+    }
     this.logger.log('SQLite connection initialized');
   }
 
@@ -36,6 +41,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
   ping(): void {
     this.requireDatabase().prepare('SELECT 1').get();
+  }
+
+  get connection(): Database.Database {
+    return this.requireDatabase();
   }
 
   private requireDatabase(): Database.Database {

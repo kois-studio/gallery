@@ -82,15 +82,15 @@ compliance:
       next_action: Add authentication, authorization, upload-validation, and private-media tests to GAL-010, GAL-012, GAL-014, and GAL-016.
     - id: DATA-001
       status: partial
-      evidence: docs/architecture/data-and-storage.md identifies proposed data owners, source-of-truth stores, likely first-slice entities, and lifecycle boundaries; schema is not implemented.
+      evidence: The first-beta tables and lifecycle boundaries now exist in the initial SQLite migration; repositories and domain services are not implemented.
       priority: high
-      next_action: Finalize the first persisted model and lifecycle before coding.
+      next_action: Implement the persisted gallery lifecycle and repositories in GAL-011 through GAL-014.
     - id: DATA-002
-      status: deferred
-      evidence: SQLite migrations are required by the accepted architecture, but no schema or migration runner exists.
-      rationale: The query layer and migration approach are accepted, but the schema and migration runner do not exist yet.
+      status: partial
+      evidence: The numbered SQL migration runner and clean-install/idempotent-run tests exist; upgrade and migration-failure coverage remain incomplete.
+      rationale: The accepted query layer and migration approach are now implemented for the initial schema.
       priority: high
-      next_action: Implement ordered migrations and a clean-install/upgrade check in GAL-009.
+      next_action: Add an upgrade migration and failure-path coverage when the schema next changes.
     - id: DATA-004
       status: partial
       evidence: The two-store database/filesystem boundary and asynchronous processing consistency behavior are documented; failure tests and reconciliation code do not exist.
