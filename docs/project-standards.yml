@@ -76,7 +76,7 @@ compliance:
       next_action: Define safe log fields and external error behavior during implementation.
     - id: SEC-008
       status: partial
-      evidence: Authentication rejection, session, CSRF, setup re-entry, upload authorization, private-media, token rotation, unpublish, and cross-gallery rejection tests exist; release-proxy and brute-force evidence remain pending.
+      evidence: Authentication rejection, session expiry, CSRF, setup re-entry, failed-login throttling, upload authorization, private-media, token rotation, unpublish, and cross-gallery rejection tests exist; production-proxy behavior remains pending.
       rationale: The access model is accepted and implemented for the first product boundary; release verification remains.
       priority: high
       next_action: Complete release security verification in GAL-016/GAL-017.

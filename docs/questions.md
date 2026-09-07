@@ -7,7 +7,7 @@ The implementation gates are resolved in ADRs 0005–0012. This document now con
 - Observe Lino’s real event workflow and record whether server-backed visitor selections are required to complete the beta job.
 - Run the synthetic workload described in [GAL-012](work/TODO.md) against the accepted JPEG/PNG/WebP contract and initial limits.
 - Verify the accepted Node 24, Sharp, `better-sqlite3`, Docker, x64, and arm64 combination with clean installs and production builds.
-- Exercise the authorization negative-test matrix, including setup re-entry, session expiry, CSRF, share-token rotation, cross-gallery access, direct media paths, path traversal, malformed files, and brute-force behavior.
+- Exercise the remaining authorization/deployment matrix, including production cookie behavior, reverse-proxy headers, direct media paths, path traversal, malformed files, and approved storage-failure scenarios. Setup re-entry, session expiry, CSRF, share-token rotation, cross-gallery access, and failed-login throttling are covered locally.
 - Execute the two-store restore drill before calling the product beta-ready.
 
 ## Product decisions deferred after the first slice

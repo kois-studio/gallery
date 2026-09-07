@@ -32,3 +32,7 @@
 ## Next safe action
 
 Implement GAL-011: authenticated draft gallery creation and the local filesystem storage boundary.
+
+## Follow-up release evidence
+
+The later security verification pass added local e2e coverage for session expiry and the five-failure login throttle. Recovery-command execution and production deployment-security checks remain release work.

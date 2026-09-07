@@ -51,10 +51,10 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Scope:** Armed one-time setup, Node built-in scrypt password hashing, server-side opaque sessions, expiry/revocation, sign-in/out, CSRF protection, safe errors, rate limiting appropriate to one installation, and local operator password recovery.
 - **Non-goals:** Do not add external identity, visitor accounts, organizations, MFA, or email recovery.
 - **Acceptance criteria:** Setup cannot be reopened after use; valid sessions authorize administration; malformed, expired, revoked, and unauthenticated sessions fail; recovery requires local operator access, invalidates sessions, and is not an HTTP endpoint.
-- **Verification:** Setup re-entry, password hashing, session authorization, CSRF, logout revocation, invalid credentials, and recovery command implementation are covered; expiry and full brute-force behavior remain release verification work.
+- **Verification:** Setup re-entry, password hashing, session authorization, CSRF, logout revocation, invalid credentials, expired sessions, throttled failed sign-ins, and recovery command implementation are covered; production deployment-security checks remain open.
 - **Dependencies:** GAL-009 and ADR 0006.
 - **Blocker or question:** None beyond the preceding slice.
-- **Next action:** Continue with GAL-011; retain expiry, recovery-exercise, and deployment checks for GAL-016/GAL-017.
+- **Next action:** Continue with GAL-011; retain recovery-exercise and deployment checks for GAL-016/GAL-017.
 
 ### [GAL-011] [P0] [gallery] Implement gallery creation and local storage
 

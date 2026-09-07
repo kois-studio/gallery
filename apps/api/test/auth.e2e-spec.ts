@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import request from 'supertest'
 import { App } from 'supertest/types'
+import { DatabaseService } from '../src/database/database.service.js'
 
 describe('local administrator authentication (e2e)', () => {
     let app: INestApplication<App>
@@ -65,6 +66,19 @@ describe('local administrator authentication (e2e)', () => {
         await agent.post('/api/auth/sign-out').expect(403)
         await agent.post('/api/auth/sign-out').set('X-CSRF-Token', signInResponse.body.csrfToken).expect(204)
         await agent.get('/api/auth/me').expect(401)
+    })
+
+    it('expires sessions and throttles repeated failed sign-ins', async () => {
+        const agent = request.agent(app.getHttpServer())
+        await agent.post('/api/auth/sign-in').send({ password: 'correct horse battery staple' }).expect(200)
+
+        app.get(DatabaseService).connection.prepare("UPDATE sessions SET expires_at = '2000-01-01T00:00:00.000Z'").run()
+        await agent.get('/api/auth/me').expect(401)
+
+        for (let attempt = 0; attempt < 5; attempt += 1) {
+            await request(app.getHttpServer()).post('/api/auth/sign-in').send({ password: 'wrong password' }).expect(401)
+        }
+        await request(app.getHttpServer()).post('/api/auth/sign-in').send({ password: 'wrong password' }).expect(429)
     })
 
     afterAll(async () => {
