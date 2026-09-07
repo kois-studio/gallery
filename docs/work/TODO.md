@@ -112,7 +112,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** CI inspection, clean-container checks, tests, documentation/link validation, and readiness review for GAL-017.
 - **Dependencies:** GAL-008 through GAL-015.
 - **Blocker or question:** Release evidence remains incomplete until the restore gate passes.
-- **Next action:** Assemble the verification matrix and prepare the restore exercise.
+- **Next action:** Add CI quality gates and assemble the verification matrix; prepare the restore exercise separately.
 
 ### [GAL-017] [P0] [release] Execute beta verification and restore gate
 

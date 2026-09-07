@@ -1,0 +1,56 @@
+name: Gallery CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    quality:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+                  cache-dependency-path: |
+                      apps/web/package-lock.json
+                      apps/api/package-lock.json
+
+            - name: Install Angular dependencies
+              run: npm ci --prefix apps/web
+
+            - name: Install NestJS dependencies
+              run: npm ci --prefix apps/api
+
+            - name: Install Chromium
+              run: npm exec --prefix apps/web -- playwright install --with-deps chromium
+
+            - name: Build applications
+              run: npm run build
+
+            - name: Run unit tests
+              run: npm run test
+
+            - name: Run API end-to-end tests
+              run: npm run test:api:e2e
+
+            - name: Run browser end-to-end tests
+              run: npm run e2e --prefix apps/web
+
+            - name: Run lint checks
+              run: npm run lint
+
+            - name: Check formatting
+              run: npm run format:check
+
+            - name: Check diff whitespace
+              run: git diff --check
