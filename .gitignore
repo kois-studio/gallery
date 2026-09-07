@@ -7,3 +7,4 @@ deploy/data/
 deploy/photos/
 coverage/
 *.log
+*.tsbuildinfo
