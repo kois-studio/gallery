@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { lstat, mkdir, rename, rm, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { ConfigService } from '@nestjs/config';
 import type { GalleryConfiguration } from '../configuration.js';
@@ -34,6 +34,27 @@ export class LocalStorageService {
 
   async remove(key: string): Promise<void> {
     await rm(this.pathForKey(key), { force: true });
+  }
+
+  async moveAtomically(sourcePath: string, key: string): Promise<void> {
+    const destination = this.pathForKey(key);
+    await mkdir(dirname(destination), { recursive: true });
+    await this.assertNoSymlinkInPath(dirname(destination));
+    await rename(sourcePath, destination);
+  }
+
+  async pathForRead(key: string): Promise<string> {
+    const path = this.pathForKey(key);
+    await this.assertNoSymlinkInPath(dirname(path));
+    const metadata = await lstat(path);
+    if (metadata.isSymbolicLink()) {
+      throw new BadRequestException('Storage object cannot be a symbolic link');
+    }
+    return path;
+  }
+
+  async read(key: string): Promise<Buffer> {
+    return readFile(await this.pathForRead(key));
   }
 
   pathForKey(key: string): string {

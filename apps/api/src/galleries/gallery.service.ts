@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { GalleryRepository, type GalleryRecord } from './gallery.repository.js';
+import { PhotoRepository } from '../uploads/photo.repository.js';
 
 export interface GalleryInput {
   title: string;
@@ -14,7 +15,10 @@ export interface GalleryInput {
 
 @Injectable()
 export class GalleryService {
-  constructor(private readonly galleries: GalleryRepository) {}
+  constructor(
+    private readonly galleries: GalleryRepository,
+    private readonly photos: PhotoRepository,
+  ) {}
 
   create(input: GalleryInput): GalleryRecord {
     const now = new Date().toISOString();
@@ -68,6 +72,23 @@ export class GalleryService {
     if (this.galleries.deleteDraft(id) === 0) {
       throw new NotFoundException('Gallery not found');
     }
+  }
+
+  setCover(id: string, photoId: string): GalleryRecord {
+    const gallery = this.get(id);
+    if (gallery.status !== 'draft') {
+      throw new ConflictException('Published galleries cannot be changed in this slice');
+    }
+    const photo = this.photos.getById(photoId);
+    if (!photo || photo.gallery_id !== id) {
+      throw new NotFoundException('Photo not found in gallery');
+    }
+    if (photo.processing_status !== 'ready') {
+      throw new ConflictException('Only processed photos can be selected as the cover');
+    }
+
+    this.galleries.setCover(id, photoId, new Date().toISOString());
+    return this.get(id);
   }
 
   private uniqueSlug(title: string): string {

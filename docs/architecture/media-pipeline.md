@@ -2,9 +2,9 @@
 
 ## Design status
 
-This is proposed design. Workload measurements and implementation tests do not exist yet.
+The first implementation is in progress. The server-mediated upload, local original storage, durable job rows, in-process worker, Sharp derivatives, and ready-only cover selection now exist; workload measurements and full release exercises remain outstanding.
 
-## Proposed lifecycle
+## Implemented lifecycle
 
 The first design should model media as a stateful process rather than treating upload as one synchronous request:
 
@@ -13,7 +13,7 @@ selected → uploading → stored-original → processing → ready
                                       ↘ failed / retryable
 ```
 
-The proposed first implementation uses a server-mediated multipart upload and an in-process worker backed by durable SQLite job rows:
+The first implementation uses a server-mediated multipart upload and an in-process worker backed by durable SQLite job rows:
 
 ```text
 browser → bounded upload endpoint → temporary file
@@ -23,9 +23,9 @@ browser → bounded upload endpoint → temporary file
                                   → ready or retryable failure
 ```
 
-The request may acknowledge each file once the original and metadata are durable; derivative generation must not make a batch request hold open for the whole workload. A small configurable concurrency limit protects modest hardware. A separate worker process, queue, direct-to-storage upload, and resumable protocol are deferred until measurements demonstrate that the single-process model is inadequate.
+The request may acknowledge each file once the original and metadata are durable; derivative generation must not make a batch request hold open for the whole workload. A two-job concurrency limit protects modest hardware. A separate worker process, queue, direct-to-storage upload, and resumable protocol are deferred until measurements demonstrate that the single-process model is inadequate.
 
-Deletion, cancellation, retry, and publication while processing need explicit transitions.
+Deletion, cancellation, and publication while processing still need explicit transitions.
 
 ## Required behaviors
 
@@ -33,7 +33,7 @@ Deletion, cancellation, retry, and publication while processing need explicit tr
 - report failures instead of silently dropping files;
 - validate size, declared type, detected content, and filename/path behavior;
 - store originals separately from derivatives;
-- generate at least thumbnail and display-size variants;
+- generate a WebP thumbnail and display-size variant with Sharp, applying EXIF orientation and stripping derivative metadata;
 - make processing retryable and observable;
 - prevent a failed derivative from being treated as a successful complete upload;
 - define what happens when the operator restarts during processing;
@@ -50,8 +50,8 @@ The first slice supports individual original downloads through an authorization-
 - A photo row is created with a server-generated ID and an idempotency key for the upload attempt. Repeated client retries must not create duplicate logical photos when the same attempt is retried.
 - Original bytes are written to a temporary location, validated, and atomically moved into their final key before the photo is considered stored.
 - A processing job claims work with an attempt and timestamp. On restart, stale claims become retryable; queued jobs are picked up by the in-process worker.
-- Variant keys are deterministic from the photo ID and variant name. A retry may replace an incomplete temporary output but must not expose it as ready.
-- Required variants are thumbnail and display size. Exact dimensions, formats, quality, metadata stripping, and orientation behavior require representative camera-file measurements before implementation.
+- Variant keys are deterministic from the photo ID and variant name. A retry may replace an incomplete output but must not mark the photo ready until both required variants are finalized.
+- Required variants are thumbnail and display size. The first implementation uses 480px/2400px WebP variants; representative camera-file measurements may revise these limits through a later decision.
 - A failed derivative leaves the original available for an explicit retry or operator repair. It does not make the photo publishable when a required variant is missing.
 - Gallery publication must reject or clearly quarantine photos that are not ready; the beta recommendation is to block publication until every uploaded photo is ready, with a later choice for partial galleries.
 - Cancellation and deletion must distinguish an upload that has not become an owned photo from a stored original that needs cleanup. Abandoned temporary files have a bounded cleanup policy.
@@ -70,4 +70,4 @@ Before selecting an image library or worker design, test:
 - derivative generation time;
 - behavior on modest self-hosted hardware.
 
-The first implementation may process in-process if the workload and failure behavior are acceptable. The required evidence is the synthetic workload plan in `docs/work/TODO.md`, including file counts, sizes, formats, memory ceiling, processing time, restart behavior, and storage growth. No image library or worker architecture should be treated as accepted until that evidence exists.
+The first implementation processes in-process with Sharp. The required evidence is the synthetic workload plan in `docs/work/TODO.md`, including file counts, sizes, formats, memory ceiling, processing time, restart behavior, and storage growth. The architecture remains subject to revision if that evidence shows the single-process model is inadequate.

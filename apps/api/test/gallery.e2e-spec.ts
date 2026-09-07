@@ -100,6 +100,68 @@ describe('draft galleries (e2e)', () => {
     await agent.get(`/api/admin/galleries/${second.body.id}`).expect(404);
   });
 
+  it('stages accepted image bytes and reports rejected files without silent loss', async () => {
+    const agent = request.agent(app.getHttpServer());
+    const signIn = await agent
+      .post('/api/auth/sign-in')
+      .send({ password: 'correct horse battery staple' })
+      .expect(200);
+    csrfToken = signIn.body.csrfToken;
+
+    const gallery = await agent
+      .post('/api/admin/galleries')
+      .set('X-CSRF-Token', csrfToken)
+      .send({ title: 'Upload test' })
+      .expect(201);
+
+    const image = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+      'base64',
+    );
+    const accepted = await agent
+      .post(`/api/admin/galleries/${gallery.body.id}/photos`)
+      .set('X-CSRF-Token', csrfToken)
+      .attach('files', image, 'IMG_001.PNG')
+      .expect(201);
+
+    expect(accepted.body.files).toEqual([
+      expect.objectContaining({
+        originalName: 'IMG_001.PNG',
+        bytes: image.length,
+        status: 'queued',
+      }),
+    ]);
+
+    const rejected = await agent
+      .post(`/api/admin/galleries/${gallery.body.id}/photos`)
+      .set('X-CSRF-Token', csrfToken)
+      .attach('files', Buffer.from('not an image'), 'notes.txt')
+      .expect(201);
+    expect(rejected.body.files).toEqual([
+      expect.objectContaining({ originalName: 'notes.txt', status: 'rejected' }),
+    ]);
+
+    let photoStatus: { photoId: string; status: string } | undefined;
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      const response = await agent.get(`/api/admin/galleries/${gallery.body.id}/photos`).expect(200);
+      photoStatus = response.body.files[0];
+      if (photoStatus.status === 'ready') {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    expect(photoStatus?.status).toBe('ready');
+
+    await agent
+      .patch(`/api/admin/galleries/${gallery.body.id}/cover`)
+      .set('X-CSRF-Token', csrfToken)
+      .send({ photoId: photoStatus?.photoId })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.coverPhotoId).toBe(photoStatus?.photoId);
+      });
+  });
+
   afterAll(async () => {
     await app.close();
     delete process.env.SETUP_TOKEN;

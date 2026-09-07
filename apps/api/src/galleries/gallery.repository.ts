@@ -92,4 +92,14 @@ export class GalleryRepository {
       this.database.connection.prepare('SELECT 1 FROM galleries WHERE slug = ?').get(slug),
     );
   }
+
+  setCover(id: string, photoId: string, now: string): number {
+    return this.database.connection
+      .prepare(
+        `UPDATE galleries
+         SET cover_photo_id = ?, updated_at = ?
+         WHERE id = ? AND status = 'draft'`,
+      )
+      .run(photoId, now, id).changes;
+  }
 }

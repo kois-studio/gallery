@@ -55,6 +55,16 @@ export class GalleryController {
   delete(@Param('id') id: string): void {
     this.galleries.delete(id);
   }
+
+  @Patch(':id/cover')
+  @UseGuards(CsrfGuard)
+  setCover(@Param('id') id: string, @Body() body: unknown) {
+    const result = z.object({ photoId: z.string().uuid() }).safeParse(body);
+    if (!result.success) {
+      throw new BadRequestException('A valid photoId is required');
+    }
+    return serializeGallery(this.galleries.setCover(id, result.data.photoId));
+  }
 }
 
 function parseGalleryInput(body: unknown): GalleryInput {

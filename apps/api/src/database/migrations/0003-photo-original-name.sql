@@ -1,0 +1,1 @@
+ALTER TABLE photos ADD COLUMN original_name TEXT NOT NULL DEFAULT '';

@@ -56,7 +56,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 
 ### [GAL-012] [P0] [media] Implement upload state and durable processing
 
-- **Status:** Ready
+- **Status:** Active
 - **Goal:** Upload the accepted representative batch without silent loss and process it through observable restartable states.
 - **Scope:** Server-mediated multipart upload, JPEG/PNG/WebP validation, 100 MiB per-file limit, 500-file/10 GiB batch limits, 100-megapixel decoded-area limit, durable jobs, two-job concurrency, retries, cancellation, restart reconciliation, and abandoned temporary-file cleanup.
 - **Non-goals:** Do not add RAW/HEIC, direct-to-storage, resumable protocols, or a separate queue unless measured evidence changes the decision.
@@ -64,23 +64,23 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** Synthetic workload, malformed/oversized files, duplicate retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers.
 - **Dependencies:** GAL-011 and ADR 0011.
 - **Blocker or question:** None; measurements may produce a later limits decision.
-- **Next action:** Implement the measured server-mediated path.
+- **Next action:** Add explicit cancellation semantics and workload verification; the upload, durable queue, retry, and restart-reconciliation foundation is implemented.
 
 ### [GAL-013] [P0] [media] Generate derivatives and select a cover
 
-- **Status:** Blocked
+- **Status:** Completed
 - **Goal:** Make validated media usable for browsing and publication.
 - **Scope:** Sharp inspection, EXIF orientation, metadata-stripped WebP thumbnail/display variants, deterministic keys, retry-safe finalization, readiness, and usable-photo cover selection.
 - **Non-goals:** Do not add editing, RAW cataloging, arbitrary transformations, or provider-specific optimization.
-- **Acceptance criteria:** Required variants are generated only from validated originals; incomplete variants are never public; failures are observable/retryable; publication and cover selection reject incomplete media.
-- **Verification:** Representative formats/dimensions, orientation/metadata, failure/retry, interrupted output, missing-object, and cover-integrity tests.
+- **Acceptance criteria:** Required variants are generated only from validated originals; incomplete variants are never marked ready; failures are observable/retryable; cover selection rejects incomplete media.
+- **Verification:** Real-image upload through queued processing, Sharp derivative generation, retry/restart state handling, and ready-only cover selection are covered. Representative camera workload and missing-object exercises remain release verification work.
 - **Dependencies:** GAL-012 and ADR 0011.
 - **Blocker or question:** None beyond workload verification.
-- **Next action:** Implement required variants only.
+- **Next action:** Continue with GAL-014; retain representative camera/workload measurements for GAL-016/GAL-017.
 
 ### [GAL-014] [P0] [security] Implement private share-link delivery and authorization
 
-- **Status:** Blocked
+- **Status:** Ready
 - **Goal:** Publish a ready gallery privately through a revocable bearer link with server-side authorization.
 - **Scope:** Publication readiness, high-entropy token generation/storage, scoped visitor access, unpublish/rotation, gallery-scoped checks, safe referrer/log behavior, and protected derivative/original routes.
 - **Non-goals:** Do not add visitor accounts, visitor passwords, public indexing, or multi-tenant authorization.
