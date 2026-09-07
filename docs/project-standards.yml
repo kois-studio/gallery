@@ -56,7 +56,7 @@ compliance:
       next_action: Complete the threat and responsibility review before implementation.
     - id: SEC-003
       status: partial
-      evidence: A proposed local administrator and visitor bearer-link model plus an authorization matrix are documented; no enforcement or denied-access tests exist yet.
+      evidence: The local administrator session boundary, CSRF checks, and denied-access tests are implemented; visitor bearer-link enforcement remains pending.
       priority: high
       next_action: Implement the negative-test matrix in GAL-010, GAL-014, and GAL-016.
     - id: SEC-004
@@ -76,10 +76,10 @@ compliance:
       next_action: Define safe log fields and external error behavior during implementation.
     - id: SEC-008
       status: deferred
-      evidence: Security-sensitive paths are not implemented, so repeatable rejection and isolation tests cannot yet run.
-      rationale: The access model is accepted, but security-sensitive paths and rejection tests do not exist yet.
+      evidence: Authentication rejection, session, CSRF, and setup re-entry tests exist; upload, private-media, and cross-gallery rejection tests remain pending.
+      rationale: The access model is accepted and its first administrator boundary is implemented; later product boundaries still need negative tests.
       priority: high
-      next_action: Add authentication, authorization, upload-validation, and private-media tests to GAL-010, GAL-012, GAL-014, and GAL-016.
+      next_action: Add upload-validation, private-media, and cross-gallery tests in GAL-012, GAL-014, and GAL-016.
     - id: DATA-001
       status: partial
       evidence: The first-beta tables and lifecycle boundaries now exist in the initial SQLite migration; repositories and domain services are not implemented.

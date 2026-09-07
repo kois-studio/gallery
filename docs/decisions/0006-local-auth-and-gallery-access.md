@@ -15,7 +15,7 @@ The authentication model must be small enough for a first beta while enforcing a
 
 The first-beta model is:
 
-- a locally managed administrator identity with a password stored as a slow password hash;
+- a locally managed administrator identity with a password stored using Node's built-in asynchronous scrypt password-hashing API, with a per-password random salt and versioned encoded parameters;
 - an operator-armed, one-time first-run setup flow that closes after the administrator is created;
 - server-side administrator sessions represented in the browser by secure, HttpOnly, SameSite cookies, with expiry and revocation;
 - server-side authorization checks for every administrator mutation and every protected media read;
@@ -26,6 +26,8 @@ The first-beta model is:
 Password recovery is intentionally local and operator-controlled. Gallery will not require email delivery or a Kois identity service for recovery. The supported recovery path is a documented maintenance command run by an operator with local access to the installation, with the application stopped or placed in an explicit maintenance state. It sets a new administrator password, invalidates all existing administrator sessions, and is never exposed as an HTTP endpoint. The command must require explicit confirmation and must not recreate or reopen first-run setup.
 
 The share token must not be used as a storage key, logged, or exposed through avoidable referrers. Unpublishing or rotating the token revokes access. Password-protected galleries, visitor identity, MFA, external OAuth, organizations, and multi-installation tenancy are deferred.
+
+The first implementation uses Node's built-in asynchronous `crypto.scrypt` with a 16-byte random salt, a 64-byte derived key, and versioned encoded parameters (`N=32768`, `r=8`, `p=3`). Verification accepts only the current parameter set so a future work-factor change can be introduced as an explicit versioned migration. The implementation uses constant-time comparison and never stores plaintext passwords.
 
 ## Consequences
 

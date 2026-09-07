@@ -6,7 +6,7 @@ describe('runMigrations', () => {
   it('applies the first-beta schema to a clean database and is idempotent', () => {
     const database = new Database(':memory:');
 
-    expect(runMigrations(database)).toBe(1);
+    expect(runMigrations(database)).toBe(2);
     expect(runMigrations(database)).toBe(0);
 
     const tables = database
@@ -29,7 +29,7 @@ describe('runMigrations', () => {
         .prepare('SELECT version FROM schema_migrations')
         .pluck()
         .all(),
-    ).toEqual(['0001']);
+    ).toEqual(['0001', '0002']);
 
     database.close();
   });

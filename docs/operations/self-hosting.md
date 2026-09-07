@@ -6,7 +6,7 @@ The first supported path should be reproducible from a clean checkout or release
 
 Vercel is relevant to the separate `landing/` marketing/documentation site, not to the persistent Gallery product installation. The first product deployment must retain durable access to SQLite and the configured photo-storage root, so serverless-only hosting is outside the first self-hosting contract.
 
-The proposed supported shape is one application container with two persistent mounts: one for SQLite/configuration state and one for the photo-storage root. A reverse proxy or equivalent TLS termination is expected for internet exposure. Multiple application instances, shared network filesystems, managed databases, and container-orchestrator deployment are outside the first support contract.
+The supported first shape is one application container with two persistent mounts: one for SQLite/configuration state and one for the photo-storage root. A reverse proxy or equivalent TLS termination is expected for internet exposure. Multiple application instances, shared network filesystems, managed databases, and container-orchestrator deployment are outside the first support contract.
 
 The minimal installation should define:
 
@@ -37,6 +37,8 @@ Configuration should distinguish:
 The setup secret and session configuration are operator secrets. Public URL and storage paths are configuration, not browser-exposed secrets. Defaults must fail closed when they would expose a private storage root or permit an unarmed first-admin flow.
 
 Secrets must be supplied through operator-controlled environment or secret configuration. They must not be committed, embedded in browser bundles, or written to logs.
+
+The first administrator setup is armed by supplying `SETUP_TOKEN` with at least 32 characters to the product container. The operator sends it in the `X-Setup-Token` header for the one-time setup request, then removes or rotates the deployment secret after setup. Setup is permanently closed once the first administrator exists.
 
 ## Operator responsibility
 

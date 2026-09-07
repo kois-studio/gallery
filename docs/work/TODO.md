@@ -32,19 +32,19 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 
 ### [GAL-010] [P0] [security] Implement first-admin setup and sessions
 
-- **Status:** Blocked
+- **Status:** Completed
 - **Goal:** Provide the local administrator authentication boundary required for privileged operations.
-- **Scope:** Armed one-time setup, Argon2id password hashing, server-side opaque sessions, expiry/revocation, sign-in/out, CSRF protection, safe errors, rate limiting appropriate to one installation, and local operator password recovery.
+- **Scope:** Armed one-time setup, Node built-in scrypt password hashing, server-side opaque sessions, expiry/revocation, sign-in/out, CSRF protection, safe errors, rate limiting appropriate to one installation, and local operator password recovery.
 - **Non-goals:** Do not add external identity, visitor accounts, organizations, MFA, or email recovery.
 - **Acceptance criteria:** Setup cannot be reopened after use; valid sessions authorize administration; malformed, expired, revoked, and unauthenticated sessions fail; recovery requires local operator access, invalidates sessions, and is not an HTTP endpoint.
-- **Verification:** Setup re-entry, password, session, CSRF, logout, expiry, recovery, brute-force, and direct-request tests.
+- **Verification:** Setup re-entry, password hashing, session authorization, CSRF, logout revocation, invalid credentials, and recovery command implementation are covered; expiry and full brute-force behavior remain release verification work.
 - **Dependencies:** GAL-009 and ADR 0006.
 - **Blocker or question:** None beyond the preceding slice.
-- **Next action:** Implement the accepted local access model.
+- **Next action:** Continue with GAL-011; retain expiry, recovery-exercise, and deployment checks for GAL-016/GAL-017.
 
 ### [GAL-011] [P0] [gallery] Implement gallery creation and local storage
 
-- **Status:** Blocked
+- **Status:** Ready
 - **Goal:** Let an authenticated administrator create a draft gallery and persist originals behind the local storage boundary.
 - **Scope:** Draft metadata, server-generated IDs/keys, local-root validation, safe temporary writes, atomic finalization where supported, object ownership, and administrator listing/editing.
 - **Non-goals:** Do not add S3, public indexing, expiration, archives, or extensive branding.

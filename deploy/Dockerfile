@@ -27,6 +27,7 @@ COPY apps/api/package.json apps/api/package-lock.json ./
 RUN npm ci --omit=dev && mkdir -p /data /photos && chown -R node:node /app /data /photos
 COPY --from=api-build --chown=node:node /workspace/apps/api/dist ./dist
 COPY --from=api-build --chown=node:node /workspace/apps/api/public ./public
+COPY --from=api-build --chown=node:node /workspace/apps/api/scripts ./scripts
 
 VOLUME ["/data", "/photos"]
 EXPOSE 3000

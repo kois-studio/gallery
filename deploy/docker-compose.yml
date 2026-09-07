@@ -11,6 +11,7 @@ services:
       DATABASE_PATH: /data/gallery.db
       STORAGE_PATH: /photos
       CORS_ORIGIN: http://localhost:3000
+      SETUP_TOKEN: ${SETUP_TOKEN-}
     volumes:
       - ./data:/data
       - ./photos:/photos

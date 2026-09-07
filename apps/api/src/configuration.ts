@@ -6,6 +6,10 @@ const configurationSchema = z.object({
   DATABASE_PATH: z.string().min(1).default('./.data/gallery.db'),
   STORAGE_PATH: z.string().min(1).default('./.data/photos'),
   CORS_ORIGIN: z.string().url().default('http://localhost:4200'),
+  SETUP_TOKEN: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.string().min(32).optional(),
+  ),
 });
 
 export type GalleryConfiguration = z.infer<typeof configurationSchema>;
