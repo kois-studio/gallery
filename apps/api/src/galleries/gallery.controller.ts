@@ -65,6 +65,26 @@ export class GalleryController {
     }
     return serializeGallery(this.galleries.setCover(id, result.data.photoId));
   }
+
+  @Post(':id/publish')
+  @UseGuards(CsrfGuard)
+  publish(@Param('id') id: string) {
+    const result = this.galleries.publish(id);
+    return { gallery: serializeGallery(result.gallery), sharePath: result.sharePath };
+  }
+
+  @Post(':id/rotate-link')
+  @UseGuards(CsrfGuard)
+  rotateLink(@Param('id') id: string) {
+    const result = this.galleries.rotateShareLink(id);
+    return { gallery: serializeGallery(result.gallery), sharePath: result.sharePath };
+  }
+
+  @Post(':id/unpublish')
+  @UseGuards(CsrfGuard)
+  unpublish(@Param('id') id: string) {
+    return serializeGallery(this.galleries.unpublish(id));
+  }
 }
 
 function parseGalleryInput(body: unknown): GalleryInput {

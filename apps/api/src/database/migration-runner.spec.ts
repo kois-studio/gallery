@@ -6,7 +6,7 @@ describe('runMigrations', () => {
   it('applies the first-beta schema to a clean database and is idempotent', () => {
     const database = new Database(':memory:');
 
-    expect(runMigrations(database)).toBe(3);
+    expect(runMigrations(database)).toBe(4);
     expect(runMigrations(database)).toBe(0);
 
     const tables = database
@@ -23,13 +23,14 @@ describe('runMigrations', () => {
       'processing_jobs',
       'schema_migrations',
       'sessions',
+      'visitor_sessions',
     ]);
     expect(
       database
         .prepare('SELECT version FROM schema_migrations')
         .pluck()
         .all(),
-    ).toEqual(['0001', '0002', '0003']);
+    ).toEqual(['0001', '0002', '0003', '0004']);
 
     database.close();
   });

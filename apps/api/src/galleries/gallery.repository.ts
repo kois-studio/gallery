@@ -102,4 +102,46 @@ export class GalleryRepository {
       )
       .run(photoId, now, id).changes;
   }
+
+  getPublishedBySlug(slug: string): GalleryRecord | undefined {
+    return this.database.connection
+      .prepare("SELECT * FROM galleries WHERE slug = ? AND status = 'published'")
+      .get(slug) as GalleryRecord | undefined;
+  }
+
+  publish(id: string, shareTokenHash: string, now: string): number {
+    return this.database.connection
+      .prepare(
+        `UPDATE galleries
+         SET status = 'published', share_token_hash = ?, published_at = ?, updated_at = ?
+         WHERE id = ? AND status = 'draft'`,
+      )
+      .run(shareTokenHash, now, now, id).changes;
+  }
+
+  rotateShareToken(id: string, shareTokenHash: string, now: string): number {
+    return this.database.connection
+      .prepare(
+        `UPDATE galleries
+         SET share_token_hash = ?, published_at = COALESCE(published_at, ?), updated_at = ?
+         WHERE id = ? AND status = 'published'`,
+      )
+      .run(shareTokenHash, now, now, id).changes;
+  }
+
+  unpublish(id: string, now: string): number {
+    return this.database.connection
+      .prepare(
+        `UPDATE galleries
+         SET status = 'draft', share_token_hash = NULL, published_at = NULL, updated_at = ?
+         WHERE id = ? AND status = 'published'`,
+      )
+      .run(now, id).changes;
+  }
+
+  revokeVisitorSessions(galleryId: string, now: string): void {
+    this.database.connection
+      .prepare('UPDATE visitor_sessions SET revoked_at = ? WHERE gallery_id = ? AND revoked_at IS NULL')
+      .run(now, galleryId);
+  }
 }

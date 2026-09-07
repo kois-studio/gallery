@@ -4,6 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
+import { hashToken } from '../auth/auth.service.js';
 import { GalleryRepository, type GalleryRecord } from './gallery.repository.js';
 import { PhotoRepository } from '../uploads/photo.repository.js';
 
@@ -88,6 +90,55 @@ export class GalleryService {
     }
 
     this.galleries.setCover(id, photoId, new Date().toISOString());
+    return this.get(id);
+  }
+
+  publish(id: string): { gallery: GalleryRecord; sharePath: string } {
+    const gallery = this.get(id);
+    if (gallery.status !== 'draft') {
+      throw new ConflictException('Gallery is already published');
+    }
+    const photos = this.photos.listByGallery(id);
+    if (photos.length === 0 || !gallery.cover_photo_id) {
+      throw new ConflictException('A gallery needs photos and a cover before publication');
+    }
+    if (this.photos.countNotReady(id) > 0) {
+      throw new ConflictException('All photos must finish processing before publication');
+    }
+    if (!this.photos.getByGalleryAndId(id, gallery.cover_photo_id)) {
+      throw new ConflictException('The selected cover does not belong to this gallery');
+    }
+
+    const token = randomBytes(32).toString('base64url');
+    const now = new Date().toISOString();
+    this.galleries.publish(id, hashToken(token), now);
+    this.galleries.revokeVisitorSessions(id, now);
+    const published = this.get(id);
+    return { gallery: published, sharePath: `/g/${published.slug}/${token}` };
+  }
+
+  rotateShareLink(id: string): { gallery: GalleryRecord; sharePath: string } {
+    const gallery = this.get(id);
+    if (gallery.status !== 'published') {
+      throw new ConflictException('Only published galleries have a share link');
+    }
+
+    const token = randomBytes(32).toString('base64url');
+    const now = new Date().toISOString();
+    this.galleries.rotateShareToken(id, hashToken(token), now);
+    this.galleries.revokeVisitorSessions(id, now);
+    const rotated = this.get(id);
+    return { gallery: rotated, sharePath: `/g/${rotated.slug}/${token}` };
+  }
+
+  unpublish(id: string): GalleryRecord {
+    const gallery = this.get(id);
+    if (gallery.status !== 'published') {
+      throw new ConflictException('Gallery is not published');
+    }
+    const now = new Date().toISOString();
+    this.galleries.unpublish(id, now);
+    this.galleries.revokeVisitorSessions(id, now);
     return this.get(id);
   }
 

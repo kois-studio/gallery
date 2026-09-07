@@ -7,6 +7,6 @@ import { PhotoRepository } from '../uploads/photo.repository.js';
 @Module({
   controllers: [GalleryController],
   providers: [GalleryRepository, GalleryService, PhotoRepository],
-  exports: [GalleryService, PhotoRepository],
+  exports: [GalleryService, PhotoRepository, GalleryRepository],
 })
 export class GalleryModule {}

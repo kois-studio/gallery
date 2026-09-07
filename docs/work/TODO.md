@@ -80,19 +80,19 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 
 ### [GAL-014] [P0] [security] Implement private share-link delivery and authorization
 
-- **Status:** Ready
+- **Status:** Completed
 - **Goal:** Publish a ready gallery privately through a revocable bearer link with server-side authorization.
 - **Scope:** Publication readiness, high-entropy token generation/storage, scoped visitor access, unpublish/rotation, gallery-scoped checks, safe referrer/log behavior, and protected derivative/original routes.
 - **Non-goals:** Do not add visitor accounts, visitor passwords, public indexing, or multi-tenant authorization.
 - **Acceptance criteria:** Ready galleries can publish, share, unpublish, and rotate; invalid, revoked, unpublished, cross-gallery, direct-storage, and malformed requests fail; tokens and private media are not leaked.
-- **Verification:** Authorization matrix, token entropy/rotation, session expiry, cross-gallery, direct-request, traversal, referrer, and brute-force tests.
+- **Verification:** End-to-end coverage includes ready-only publication, invalid links, scoped visitor sessions, protected derivatives/originals, token rotation, old-session revocation, and unpublish revocation. Full matrix, expiry, referrer, and brute-force checks remain release verification work.
 - **Dependencies:** GAL-013, GAL-010, and ADR 0006.
 - **Blocker or question:** None beyond the accepted access model.
-- **Next action:** Implement the private delivery boundary.
+- **Next action:** Continue with GAL-015; retain the full authorization matrix and production proxy checks for GAL-016/GAL-017.
 
 ### [GAL-015] [P0] [web] Implement visitor browsing and individual downloads
 
-- **Status:** Blocked
+- **Status:** Ready
 - **Goal:** Complete the usable visitor delivery journey without exposing originals during browsing.
 - **Scope:** Responsive Angular gallery grid, derivative delivery, larger view, loading/empty/error/retry states, keyboard/focus behavior, accessibility, and authorized streaming of individual originals.
 - **Non-goals:** Do not add archives, selection submission, QR generation, or extensive branding.

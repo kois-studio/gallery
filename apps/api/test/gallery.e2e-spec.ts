@@ -160,6 +160,53 @@ describe('draft galleries (e2e)', () => {
       .expect(({ body }) => {
         expect(body.coverPhotoId).toBe(photoStatus?.photoId);
       });
+
+    const published = await agent
+      .post(`/api/admin/galleries/${gallery.body.id}/publish`)
+      .set('X-CSRF-Token', csrfToken)
+      .expect(201);
+    const sharePath = published.body.sharePath as string;
+    const [, , slug, token] = sharePath.split('/');
+    expect(slug).toBe('upload-test');
+    expect(token).toEqual(expect.any(String));
+
+    await request(app.getHttpServer())
+      .post(`/api/share/${slug}/invalid-token/session`)
+      .expect(403);
+
+    const visitor = request.agent(app.getHttpServer());
+    await visitor.post(`/api/share/${slug}/${token}/session`).expect(200);
+    const metadata = await visitor.get(`/api/shared/galleries/${slug}`).expect(200);
+    expect(metadata.body.gallery).toMatchObject({ slug, title: 'Upload test' });
+    expect(metadata.body.photos).toHaveLength(1);
+
+    await visitor
+      .get(`/api/shared/galleries/${slug}/photos/${photoStatus?.photoId}/thumbnail`)
+      .expect(200)
+      .expect('Content-Type', /image\/webp/);
+    await visitor
+      .get(`/api/shared/galleries/${slug}/photos/${photoStatus?.photoId}/original`)
+      .expect(200)
+      .expect('Content-Disposition', /attachment/);
+
+    const rotated = await agent
+      .post(`/api/admin/galleries/${gallery.body.id}/rotate-link`)
+      .set('X-CSRF-Token', csrfToken)
+      .expect(201);
+    await visitor.get(`/api/shared/galleries/${slug}`).expect(401);
+
+    const [, , rotatedSlug, rotatedToken] = (rotated.body.sharePath as string).split('/');
+    const rotatedVisitor = request.agent(app.getHttpServer());
+    await rotatedVisitor
+      .post(`/api/share/${rotatedSlug}/${rotatedToken}/session`)
+      .expect(200);
+    await rotatedVisitor.get(`/api/shared/galleries/${rotatedSlug}`).expect(200);
+
+    await agent
+      .post(`/api/admin/galleries/${gallery.body.id}/unpublish`)
+      .set('X-CSRF-Token', csrfToken)
+      .expect(201);
+    await rotatedVisitor.get(`/api/shared/galleries/${rotatedSlug}`).expect(401);
   });
 
   afterAll(async () => {

@@ -1,5 +1,6 @@
 export const sessionCookieName = 'gallery_admin_session';
 export const csrfCookieName = 'gallery_admin_csrf';
+export const visitorCookieName = 'gallery_visitor_session';
 
 export function readCookies(header: string | undefined): Record<string, string> {
   if (!header) {

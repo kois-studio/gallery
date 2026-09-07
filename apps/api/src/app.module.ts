@@ -10,6 +10,7 @@ import { DatabaseModule } from './database/database.module.js';
 import { GalleryModule } from './galleries/gallery.module.js';
 import { StorageModule } from './storage/storage.module.js';
 import { UploadModule } from './uploads/upload.module.js';
+import { ShareModule } from './shares/share.module.js';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UploadModule } from './uploads/upload.module.js';
     GalleryModule,
     StorageModule,
     UploadModule,
+    ShareModule,
     ServeStaticModule.forRoot({
       rootPath: join(dirname(fileURLToPath(import.meta.url)), '..', 'public'),
       exclude: ['/api/{*any}'],

@@ -117,7 +117,7 @@ compliance:
       evidence: The foundation exposes health/readiness behavior and startup migrations; worker/storage/domain readiness still needs release verification.
       rationale: The runtime foundation exists; later slices must extend readiness as durable domain resources are added.
       priority: medium
-      next_action: Extend readiness checks for migrations and durable domain resources during GAL-009 through GAL-016.
+      next_action: Extend readiness checks for migrations and durable domain resources during GAL-015 and GAL-016.
     - id: OPS-006
       status: partial
       evidence: The in-process worker has bounded concurrency and restart requeue behavior; bounded shutdown and cancellation are not complete.

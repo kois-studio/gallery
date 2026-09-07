@@ -79,4 +79,17 @@ export class PhotoRepository {
       .prepare('SELECT * FROM photos WHERE gallery_id = ? ORDER BY position ASC, id ASC')
       .all(galleryId) as PhotoRecord[];
   }
+
+  countNotReady(galleryId: string): number {
+    const row = this.database.connection
+      .prepare("SELECT COUNT(*) AS count FROM photos WHERE gallery_id = ? AND processing_status != 'ready'")
+      .get(galleryId) as { count: number };
+    return row.count;
+  }
+
+  getByGalleryAndId(galleryId: string, id: string): PhotoRecord | undefined {
+    return this.database.connection
+      .prepare('SELECT * FROM photos WHERE gallery_id = ? AND id = ?')
+      .get(galleryId, id) as PhotoRecord | undefined;
+  }
 }
