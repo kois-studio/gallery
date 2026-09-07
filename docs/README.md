@@ -42,6 +42,7 @@ This directory is the public technical and product design source of truth for Ko
 
 - [`work/README.md`](work/README.md) — work-item states and queue conventions.
 - [`work/TODO.md`](work/TODO.md) — unfinished implementation, verification, and release work.
+- [`work/release-matrix.md`](work/release-matrix.md) — current beta evidence, open release gates, and verification commands.
 
 ## Context boundary
 

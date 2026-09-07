@@ -41,7 +41,7 @@ compliance:
       next_action: Keep the index current as design documents are added.
     - id: DOC-011
       status: compliant
-      evidence: docs/work/TODO.md is the tracked unfinished-work queue.
+      evidence: docs/work/TODO.md is the tracked unfinished-work queue and docs/work/release-matrix.md records current beta evidence and gaps.
       priority: medium
       next_action: Keep unfinished implementation, verification, landing, and release work itemized.
     - id: DOC-003
