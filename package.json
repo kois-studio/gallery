@@ -15,7 +15,7 @@
     "build:api": "npm run build --prefix apps/api",
     "build": "npm run build:web && npm run sync:web && npm run build:api",
     "start:api": "npm run start:dev --prefix apps/api",
-    "test:web": "npm test --prefix apps/web -- --no-watch",
+    "test:web": "npm test --prefix apps/web",
     "test:api": "npm test --prefix apps/api",
     "test:api:e2e": "npm run test:e2e --prefix apps/api",
     "test": "npm run test:web && npm run test:api",
