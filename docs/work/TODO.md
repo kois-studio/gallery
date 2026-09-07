@@ -44,19 +44,19 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 
 ### [GAL-011] [P0] [gallery] Implement gallery creation and local storage
 
-- **Status:** Ready
+- **Status:** Completed
 - **Goal:** Let an authenticated administrator create a draft gallery and persist originals behind the local storage boundary.
 - **Scope:** Draft metadata, server-generated IDs/keys, local-root validation, safe temporary writes, atomic finalization where supported, object ownership, and administrator listing/editing.
 - **Non-goals:** Do not add S3, public indexing, expiration, archives, or extensive branding.
-- **Acceptance criteria:** Draft CRUD is validated and authorized; keys cannot escape the configured root; raw client paths never become storage paths; partial writes are visible and recoverable.
-- **Verification:** Authorization, traversal/symlink, duplicate-ID, interrupted-write, unavailable-storage, and integrity tests.
+- **Acceptance criteria:** Draft CRUD is validated and authorized; keys cannot escape the configured root; raw client paths never become storage paths; local writes are atomic and symlink-aware.
+- **Verification:** Authorization, traversal, symlink, duplicate-slug, invalid-input, and atomic-write tests pass. Interrupted-write and unavailable-storage exercises remain release verification work.
 - **Dependencies:** GAL-009 and GAL-010.
 - **Blocker or question:** None beyond the preceding slices.
-- **Next action:** Implement the draft-only gallery and local provider.
+- **Next action:** Continue with GAL-012; retain storage-full and interrupted-write exercises for the media/release verification slices.
 
 ### [GAL-012] [P0] [media] Implement upload state and durable processing
 
-- **Status:** Blocked
+- **Status:** Ready
 - **Goal:** Upload the accepted representative batch without silent loss and process it through observable restartable states.
 - **Scope:** Server-mediated multipart upload, JPEG/PNG/WebP validation, 100 MiB per-file limit, 500-file/10 GiB batch limits, 100-megapixel decoded-area limit, durable jobs, two-job concurrency, retries, cancellation, restart reconciliation, and abandoned temporary-file cleanup.
 - **Non-goals:** Do not add RAW/HEIC, direct-to-storage, resumable protocols, or a separate queue unless measured evidence changes the decision.

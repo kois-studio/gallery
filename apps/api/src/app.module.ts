@@ -4,12 +4,11 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AppController } from './app.controller.js';
-import { AdminAuthGuard } from './auth/admin-auth.guard.js';
-import { AuthController } from './auth/auth.controller.js';
-import { AuthService } from './auth/auth.service.js';
-import { CsrfGuard } from './auth/csrf.guard.js';
+import { AuthModule } from './auth/auth.module.js';
 import { validateConfiguration } from './configuration.js';
 import { DatabaseModule } from './database/database.module.js';
+import { GalleryModule } from './galleries/gallery.module.js';
+import { StorageModule } from './storage/storage.module.js';
 
 @Module({
   imports: [
@@ -18,12 +17,14 @@ import { DatabaseModule } from './database/database.module.js';
       validate: validateConfiguration,
     }),
     DatabaseModule,
+    AuthModule,
+    GalleryModule,
+    StorageModule,
     ServeStaticModule.forRoot({
       rootPath: join(dirname(fileURLToPath(import.meta.url)), '..', 'public'),
       exclude: ['/api/{*any}'],
     }),
   ],
-  controllers: [AppController, AuthController],
-  providers: [AuthService, AdminAuthGuard, CsrfGuard],
+  controllers: [AppController],
 })
 export class AppModule {}

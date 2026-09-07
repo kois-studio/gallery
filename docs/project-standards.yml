@@ -93,7 +93,7 @@ compliance:
       next_action: Add an upgrade migration and failure-path coverage when the schema next changes.
     - id: DATA-004
       status: partial
-      evidence: The two-store database/filesystem boundary and asynchronous processing consistency behavior are documented; failure tests and reconciliation code do not exist.
+      evidence: The two-store database/filesystem boundary and local storage key/symlink protections are implemented; asynchronous processing consistency behavior does not exist yet.
       priority: high
       next_action: Implement and test durable processing state and restart reconciliation in GAL-012; exercise restore behavior in GAL-017.
     - id: DATA-007
@@ -298,7 +298,7 @@ compliance:
       next_action: Implement and test adapters during GAL-009, GAL-011, GAL-012, and GAL-013.
     - id: NEST-013
       status: partial
-      evidence: Database/filesystem consistency, durable jobs, and recovery behavior are documented, but no transaction or coordination code exists.
+      evidence: Gallery writes use database constraints and local storage atomic-write boundaries; durable upload-job coordination is not implemented yet.
       priority: high
       next_action: Implement and test transaction/partial-failure behavior during GAL-009, GAL-011, GAL-012, and GAL-017.
     - id: NEST-014
