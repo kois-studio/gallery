@@ -34,11 +34,20 @@ test('administrator can publish a gallery and a visitor can browse and download'
     const sharePath = await page.locator('.share-banner code').textContent()
     expect(sharePath).toMatch(/^\/g\/browser-journey\/.+/)
 
+    await page.setViewportSize({ width: 1280, height: 800 })
     await page.goto(sharePath ?? '')
     await expect(page.getByRole('heading', { name: 'Browser journey' })).toBeVisible()
     await expect(page.locator('.visitor-photo').first()).toBeVisible()
 
-    await page.locator('.visitor-photo').first().click()
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(sharePath ?? '')
+    await expect(page.locator('.visitor-grid')).toBeVisible()
+    await expect
+        .poll(() => page.locator('.visitor-grid').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length))
+        .toBe(2)
+
+    await page.locator('.visitor-photo').first().focus()
+    await page.keyboard.press('Enter')
     const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible()
     await expect(dialog.locator('img')).toBeVisible()

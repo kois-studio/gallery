@@ -10,7 +10,7 @@
 - Added Angular routes and typed HTTP client flows for setup, sign-in, administration, private-link exchange, and visitor delivery.
 - Added the first administrator workspace for draft creation, batch upload progress, processing status, cover selection, publication, link rotation, and unpublishing.
 - Added responsive visitor browsing with ready-photo filtering, keyboard-focusable photo cards, an accessible larger-view dialog, and individual original downloads.
-- Added a Playwright critical journey covering administrator sign-in, gallery creation, upload/processing, cover selection, publication, private-link exchange, visitor browsing, larger view, and original download.
+- Added a Playwright critical journey covering administrator sign-in, gallery creation, upload/processing, cover selection, publication, private-link exchange, desktop/mobile visitor browsing, keyboard activation, larger view, and original download.
 - Added repository quality commands: NestJS API Prettier with the Board Vault four-space profile, and Angular Biome formatting/linting without a frontend Prettier dependency.
 
 ## Verification
