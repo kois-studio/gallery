@@ -2,7 +2,7 @@
 
 ## Session mode
 
-This project is currently in `project-design` mode. Do not begin `project-implementation` sessions until the design package has been reviewed and the first implementation slice is explicitly approved.
+This project is now in `project-implementation` mode. Use focused sessions for explicit tickets and bounded advance sessions for autonomous progress. Do not touch `landing/` from product implementation sessions.
 
 ## Read first
 
@@ -29,6 +29,8 @@ This public repository MUST NOT copy private Kois strategy, private relationship
 - Label proposed architecture as proposed design, not implementation fact.
 - Record durable technical decisions as ADRs.
 - Keep unresolved questions visible; do not silently choose high-impact architecture, authentication, storage, deployment, or licensing decisions.
+- The Angular + NestJS framework direction and implementation gates are accepted in ADRs 0007–0012. Keep implementation aligned with those decisions; record any material change as a new ADR.
+- GAL-008 is the first ready implementation slice in [`docs/work/TODO.md`](work/TODO.md). Later slices remain blocked by their preceding acceptance criteria.
 - Treat Lino's workflow as a validation source, not as a reason to make Gallery Lino-specific.
 - Do not add SDK, MCP, framework adapters, PostgreSQL support, or hosted SaaS architecture before a real consumer or requirement justifies it.
 

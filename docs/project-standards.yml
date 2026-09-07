@@ -8,7 +8,7 @@ standards_source:
 project:
   name: kois-gallery
   lifecycle: greenfield
-  maturity: project-design
+  maturity: project-implementation
 
 standards:
   - documentation
@@ -21,8 +21,11 @@ standards:
   - api
   - data
   - web
+  - identity
 
-profiles: []
+profiles:
+  - angular-application
+  - nestjs-backend
 
 compliance:
   rules:
@@ -41,28 +44,297 @@ compliance:
       evidence: docs/work/TODO.md is the tracked unfinished-work queue.
       priority: medium
       next_action: Keep design and implementation-preparation work itemized.
+    - id: DOC-003
+      status: partial
+      evidence: Product, architecture, and operations sources are identified, but the previous scope/workflow documents duplicated unresolved beta promises; this design review narrows and cross-links them.
+      priority: high
+      next_action: Keep first-beta behavior in product scope/workflows and implementation facts separate once code exists.
     - id: SEC-001
       status: partial
-      evidence: docs/architecture/boundaries.md records initial trust-boundary direction; detailed threat analysis remains open.
+      evidence: docs/architecture/boundaries.md records administrator, visitor, media, storage, and operator trust boundaries; threat review and negative tests remain open.
       priority: high
       next_action: Complete the threat and responsibility review before implementation.
+    - id: SEC-003
+      status: partial
+      evidence: A proposed local administrator and visitor bearer-link model plus an authorization matrix are documented; no enforcement or denied-access tests exist yet.
+      priority: high
+      next_action: Implement the negative-test matrix in GAL-010, GAL-014, and GAL-016.
+    - id: SEC-004
+      status: partial
+      evidence: Proposed upload validation, token handling, storage-key, and media-delivery boundaries are documented; no implementation or input-fuzz tests exist.
+      priority: high
+      next_action: Define accepted formats/limits and test malformed files, paths, tokens, and direct-object requests.
+    - id: SEC-005
+      status: partial
+      evidence: Private media, database, storage, backups, and operator responsibilities are documented; retention, encryption, and deletion behavior remain incomplete.
+      priority: high
+      next_action: Resolve the beta privacy/retention policy and document operator controls before release.
+    - id: SEC-006
+      status: partial
+      evidence: Documentation prohibits secret and private-media leakage and requests safe structured diagnostics; no logger or error contract exists yet.
+      priority: medium
+      next_action: Define safe log fields and external error behavior during implementation.
+    - id: SEC-008
+      status: deferred
+      evidence: Security-sensitive paths are not implemented, so repeatable rejection and isolation tests cannot yet run.
+      rationale: The access model is accepted, but security-sensitive paths and rejection tests do not exist yet.
+      priority: high
+      next_action: Add authentication, authorization, upload-validation, and private-media tests to GAL-010, GAL-012, GAL-014, and GAL-016.
     - id: DATA-001
       status: partial
-      evidence: docs/architecture/data-and-storage.md identifies proposed data owners and storage boundaries; schema is not implemented.
+      evidence: docs/architecture/data-and-storage.md identifies proposed data owners, source-of-truth stores, likely first-slice entities, and lifecycle boundaries; schema is not implemented.
       priority: high
       next_action: Finalize the first persisted model and lifecycle before coding.
+    - id: DATA-002
+      status: deferred
+      evidence: SQLite migrations are required by the accepted architecture, but no schema or migration runner exists.
+      rationale: The query layer and migration approach are accepted, but the schema and migration runner do not exist yet.
+      priority: high
+      next_action: Implement ordered migrations and a clean-install/upgrade check in GAL-009.
+    - id: DATA-004
+      status: partial
+      evidence: The two-store database/filesystem boundary and asynchronous processing consistency behavior are documented; failure tests and reconciliation code do not exist.
+      priority: high
+      next_action: Implement and test durable processing state and restart reconciliation in GAL-012; exercise restore behavior in GAL-017.
+    - id: DATA-007
+      status: partial
+      evidence: docs/operations/backup-recovery.md defines a proposed two-store backup/restore contract; no restore exercise has been run.
+      priority: high
+      next_action: Execute GAL-017 using synthetic or approved assets before beta.
     - id: OPS-009
       status: partial
       evidence: docs/operations/backup-recovery.md defines proposed operator responsibilities; restore procedures are not implemented or tested.
       priority: high
-      next_action: Define and test the first backup and restore path during the private beta.
+      next_action: Keep the recovery contract documented and execute the restore gate in GAL-017.
+    - id: OPS-001
+      status: deferred
+      evidence: Configuration categories and fail-closed intent are documented, but startup validation does not exist.
+      rationale: Runtime and configuration schema were deferred during the design gate and are now implementation work.
+      priority: high
+      next_action: Extend the validated startup configuration and failure tests during GAL-009 through GAL-016.
+    - id: OPS-005
+      status: deferred
+      evidence: The foundation exposes health/readiness behavior, but migration and domain readiness evidence is incomplete.
+      rationale: The runtime foundation exists; later slices must extend readiness as durable domain resources are added.
+      priority: medium
+      next_action: Extend readiness checks for migrations and durable domain resources during GAL-009 through GAL-016.
+    - id: OPS-006
+      status: deferred
+      evidence: Bounded processing shutdown behavior is documented, but the long-running worker does not exist yet.
+      rationale: The in-process worker is accepted for the first beta and remains implementation work.
+      priority: high
+      next_action: Implement and test bounded shutdown/retry behavior in GAL-012 and GAL-016.
+    - id: API-001
+      status: deferred
+      evidence: Angular and NestJS are separate logical applications connected by an internal HTTP boundary, but no machine-readable contract exists yet.
+      rationale: There is no independently consumed public API, but the internal frontend/backend contract should be made explicit once the route surface is implemented.
+      priority: medium
+      next_action: Define and verify the internal HTTP contract during GAL-010 through GAL-015; reassess the required strength before accepting a headless consumer, SDK, MCP server, or public API.
+    - id: WEB-001
+      status: deferred
+      evidence: The first slice will expose public/private browser routes, but no frontend has been implemented or audited.
+      rationale: Rendered-page audits require the selected runtime and representative routes.
+      priority: medium
+      next_action: Add Lighthouse or equivalent audits for admin and visitor routes before beta.
+    - id: ANGULAR-001
+      status: deferred
+      evidence: The Angular shell exists, but feature-oriented product boundaries are not implemented yet.
+      rationale: Feature organization will be assessed as the product slices are added.
+      priority: medium
+      next_action: Organize Angular work by business capability and verify boundaries during GAL-015/GAL-016.
+    - id: ANGULAR-002
+      status: deferred
+      evidence: The architecture separates Angular presentation/client orchestration from NestJS application and domain logic, but no components exist.
+      rationale: Component responsibility cannot be verified before implementation.
+      priority: high
+      next_action: Review representative components for presentation/orchestration-only responsibility during GAL-015.
+    - id: ANGULAR-003
+      status: deferred
+      evidence: Strict typed Angular APIs are required by the selected profile; only the initial Angular shell exists.
+      rationale: Representative API boundaries are implementation work.
+      priority: high
+      next_action: Configure and verify typed Angular APIs during GAL-010, GAL-012, and GAL-015.
+    - id: ANGULAR-004
+      status: deferred
+      evidence: Upload, processing, and authenticated workflows are documented as explicit stateful journeys, but no Angular forms/state exist.
+      rationale: Workflow state must be verified against implemented UI behavior.
+      priority: high
+      next_action: Model loading, failure, retry, cancellation, and success states in GAL-012 and GAL-015.
+    - id: ANGULAR-005
+      status: deferred
+      evidence: Styling and icon choices remain open within the Angular application profile; no UI implementation exists.
+      rationale: Optional defaults should be selected only when the UI slice is implemented.
+      priority: low
+      next_action: Select one coherent styling/icon approach during GAL-015 and document any deviation.
+    - id: ANGULAR-006
+      status: deferred
+      evidence: Angular input and API-response validation is required by the selected profile, but no client boundary exists.
+      rationale: No implementation evidence is available.
+      priority: high
+      next_action: Add validation at Angular form and HTTP boundaries and test rejection paths during GAL-010, GAL-012, and GAL-015.
+    - id: ANGULAR-007
+      status: deferred
+      evidence: Client state ownership/lifecycle is a documented design requirement, but no shared Angular services or state exist.
+      rationale: State lifecycle cannot be verified before implementation.
+      priority: high
+      next_action: Document and test state scope/reset/synchronization during GAL-012 and GAL-015.
+    - id: ANGULAR-008
+      status: deferred
+      evidence: The architecture keeps domain/application rules outside Angular components, but no business-rule tests exist.
+      rationale: No components or tests have been implemented.
+      priority: medium
+      next_action: Keep non-trivial rules independently testable during GAL-009 through GAL-015.
+    - id: ANGULAR-009
+      status: deferred
+      evidence: Authorization and failure-test requirements are documented, but no Angular routes, guards, interceptors, or effects exist.
+      rationale: Implementation is intentionally deferred.
+      priority: high
+      next_action: Add focused client failure/auth tests where Angular owns interaction behavior; keep backend authorization authoritative.
+    - id: ANGULAR-010
+      status: deferred
+      evidence: No Angular observable/signal effects or subscriptions exist to inspect.
+      rationale: Lifecycle verification requires implementation.
+      priority: high
+      next_action: Verify teardown and repeated navigation/initialization behavior during GAL-015/GAL-016.
+    - id: ANGULAR-011
+      status: deferred
+      evidence: The critical browser journey is defined, but no Angular end-to-end tests exist.
+      rationale: The project has no implementation or browser test environment yet.
+      priority: high
+      next_action: Add critical journey coverage in GAL-015 and execute it in GAL-016.
+    - id: ANGULAR-012
+      status: deferred
+      evidence: The selected profile requires strict Angular template and dependency-injection checks, but no Angular compiler configuration exists.
+      rationale: Runtime and framework files are not created during design.
+      priority: high
+      next_action: Enable and verify strict Angular compiler settings during GAL-015.
+    - id: ANGULAR-013
+      status: partial
+      evidence: docs/architecture/overview.md and docs/architecture/boundaries.md explicitly make NestJS/backend authorization authoritative; no implementation or bypass tests exist.
+      priority: high
+      next_action: Verify direct-request and alternate-client denial in GAL-014 and GAL-016.
+    - id: ANGULAR-014
+      status: deferred
+      evidence: Loading, empty, success, failure, cancellation, and retry states are specified for upload and browsing, but no Angular views exist.
+      rationale: UI state behavior cannot be claimed before implementation.
+      priority: high
+      next_action: Implement and test applicable async states in GAL-012 and GAL-015.
+    - id: ANGULAR-015
+      status: deferred
+      evidence: The proposed application identifies client-state ownership as a boundary, but no Angular state persistence or cache exists.
+      rationale: No implementation evidence exists.
+      priority: medium
+      next_action: Document scope, persistence, reset, and synchronization for each shared client state during GAL-015.
+    - id: NEST-001
+      status: deferred
+      evidence: Proposed backend responsibilities are organized around access, gallery, media, delivery, and operations, but no NestJS modules exist.
+      rationale: Capability module boundaries require implementation review.
+      priority: medium
+      next_action: Organize NestJS modules by capability during GAL-009 through GAL-014.
+    - id: NEST-002
+      status: deferred
+      evidence: The proposed dependency direction keeps transport handlers thin, but no controllers or application services exist.
+      rationale: No implementation evidence is available.
+      priority: high
+      next_action: Review controller/service separation during GAL-010 through GAL-014.
+    - id: NEST-003
+      status: deferred
+      evidence: Domain/application rules are proposed as transport-independent, but no NestJS domain/application code exists.
+      rationale: Transport independence requires code and tests.
+      priority: high
+      next_action: Exercise domain rules without starting HTTP transport where practical during GAL-009 through GAL-014.
+    - id: NEST-004
+      status: deferred
+      evidence: DTO and runtime validation is required for NestJS boundaries, but no DTOs, pipes, schemas, or adapters exist.
+      rationale: Implementation has not started.
+      priority: high
+      next_action: Implement and test validated DTO/configuration/persistence boundaries in GAL-009 through GAL-014.
+    - id: NEST-005
+      status: deferred
+      evidence: Safe error mapping, structured logging, and correlation are required design concerns, but no NestJS service exists.
+      rationale: No runtime evidence exists.
+      priority: medium
+      next_action: Implement consistent safe errors/logging during GAL-009 through GAL-015 and verify them in GAL-016.
+    - id: NEST-006
+      status: deferred
+      evidence: Proposed application capabilities have named ownership boundaries, but no NestJS modules/public interfaces exist.
+      rationale: Module responsibility is not claimable before implementation.
+      priority: high
+      next_action: Define and review each NestJS module interface during GAL-009 through GAL-014.
+    - id: NEST-007
+      status: deferred
+      evidence: The architecture requires explicit cross-capability dependencies, but no NestJS dependency graph exists.
+      rationale: Implementation review is required.
+      priority: medium
+      next_action: Review module exports/provider boundaries during GAL-009 through GAL-014.
+    - id: NEST-008
+      status: partial
+      evidence: Architecture explicitly places authorization and domain invariants beyond Angular and NestJS controllers; no alternate-entry-point enforcement tests exist.
+      priority: high
+      next_action: Verify service/domain enforcement through direct and alternate requests in GAL-014 and GAL-016.
+    - id: NEST-009
+      status: deferred
+      evidence: External input validation is specified for uploads, configuration, tokens, and HTTP requests, but no NestJS boundary exists.
+      rationale: No implementation evidence exists.
+      priority: high
+      next_action: Add validation and negative tests across NestJS entry points during GAL-009 through GAL-014.
+    - id: NEST-010
+      status: deferred
+      evidence: Stable safe error contracts are required by the design, but no NestJS error DTOs/filters exist.
+      rationale: Error behavior cannot be verified before implementation.
+      priority: high
+      next_action: Define and test safe error contracts during GAL-009 through GAL-014.
+    - id: NEST-011
+      status: deferred
+      evidence: Startup validation and secret hygiene are documented, but no NestJS configuration exists.
+      rationale: Runtime implementation is intentionally deferred.
+      priority: high
+      next_action: Implement validated configuration and secret handling in GAL-009 through GAL-014.
+    - id: NEST-012
+      status: deferred
+      evidence: SQLite, local storage, and image-processing adapters are proposed as infrastructure boundaries, but no NestJS providers/adapters exist.
+      rationale: Persistence/infrastructure isolation requires implementation evidence.
+      priority: high
+      next_action: Implement and test adapters during GAL-009, GAL-011, GAL-012, and GAL-013.
+    - id: NEST-013
+      status: partial
+      evidence: Database/filesystem consistency, durable jobs, and recovery behavior are documented, but no transaction or coordination code exists.
+      priority: high
+      next_action: Implement and test transaction/partial-failure behavior during GAL-009, GAL-011, GAL-012, and GAL-017.
+    - id: NEST-014
+      status: deferred
+      evidence: Durable processing jobs require idempotency/retry behavior, but no NestJS job handler exists.
+      rationale: Asynchronous handler behavior is implementation work.
+      priority: high
+      next_action: Implement duplicate/retry/shutdown behavior in GAL-012 and verify it in GAL-016/GAL-017.
+    - id: NEST-015
+      status: deferred
+      evidence: Database, storage, and in-process worker lifecycle requirements are documented, but no NestJS service/resources exist.
+      rationale: Startup/readiness/shutdown checks require implementation.
+      priority: high
+      next_action: Extend lifecycle/readiness/shutdown behavior in GAL-009, GAL-012, and GAL-016.
+    - id: NEST-016
+      status: deferred
+      evidence: Angular will consume a NestJS HTTP interface across a logical frontend/backend boundary, but no published or machine-readable contract exists yet.
+      rationale: The first release has no independent public API consumer, but the internal contract and compatibility behavior still need implementation evidence.
+      priority: medium
+      next_action: Define the contract and compatibility behavior during GAL-010 and GAL-015; reassess if a headless frontend, SDK, MCP server, or other independent consumer is accepted.
 
 exceptions: []
 
 deferred_work:
   - id: DESIGN-001
-    reason: Framework and runtime are intentionally open during project design.
-    next_action: Compare a small number of viable stacks against the first vertical slice.
+    reason: Framework and lower-level implementation choices are accepted; implementation evidence is still absent.
+    next_action: Implement and verify the accepted domain slices in GAL-009 through GAL-016.
   - id: DESIGN-002
     reason: License selection requires an explicit OSS adoption decision and dependency review.
     next_action: Decide before the first meaningful public release.
+  - id: DESIGN-003
+    reason: Visitor selection semantics, password access, expiration, batch archives, branding, and supported source formats require Lino/workload evidence.
+    next_action: Resolve through Lino observation, workload evidence, and the deferred questions; do not add placeholder product or schema commitments.
+  - id: DESIGN-004
+    reason: The first-beta and local/bearer-link decisions are accepted; implementation and security evidence remain incomplete.
+    next_action: Implement and verify the access boundaries in GAL-010 and GAL-014.
+  - id: DESIGN-005
+    reason: Angular and NestJS profiles are selected for the accepted framework direction, but their implementation rules cannot be claimed compliant before code exists.
+    next_action: Keep the profile assessments current as GAL-009 through GAL-016 implement and verify the framework boundaries.

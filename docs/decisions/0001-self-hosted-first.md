@@ -6,11 +6,11 @@
 
 ## Context
 
-Gallery is intended to help photographers deliver galleries without requiring Kois to operate a recurring hosted service or store all photographer media. Kois is currently a portfolio-first practice with limited operational capacity.
+Gallery is intended to help photographers deliver galleries without requiring Kois to operate a recurring hosted service or store all photographer media. Kois is currently a portfolio-first practice with limited operational capacity, and Gallery’s open-source license is not yet selected.
 
 ## Decision
 
-Gallery will initially be distributed as self-hosted software. Photographers or their chosen infrastructure providers will operate deployments, accounts, storage, backups, domains, uptime, and updates. Kois will maintain the software, documentation, releases, and security fixes but will not initially provide managed hosted accounts or hosted image storage.
+Gallery will initially be distributed as self-hosted software. Photographers or their chosen infrastructure providers will operate deployments, accounts, storage, backups, domains, uptime, and updates. Kois will maintain the software intended for open-source distribution, documentation, releases, and security fixes but will not initially provide managed hosted accounts or hosted image storage.
 
 ## Consequences
 

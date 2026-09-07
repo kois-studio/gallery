@@ -5,7 +5,7 @@ This directory is the public technical and product design source of truth for Ko
 ## Start here
 
 - [`AGENTS.md`](AGENTS.md) — agent instructions and context boundaries.
-- [`project-standards.yml`](project-standards.yml) — pinned shared standards and project-design compliance state.
+- [`project-standards.yml`](project-standards.yml) — pinned shared standards and current compliance state.
 - [`product/definition.md`](product/definition.md) — purpose, users, value proposition, and boundaries.
 - [`product/workflows.md`](product/workflows.md) — photographer and visitor journeys.
 - [`architecture/overview.md`](architecture/overview.md) — proposed system shape and progression.
@@ -31,11 +31,17 @@ This directory is the public technical and product design source of truth for Ko
 
 - [`operations/self-hosting.md`](operations/self-hosting.md)
 - [`operations/backup-recovery.md`](operations/backup-recovery.md)
+- [`../deploy/README.md`](../deploy/README.md) — current first-beta container packaging.
 
 ### Decisions and questions
 
 - [`decisions/README.md`](decisions/README.md)
 - [`questions.md`](questions.md)
+
+### Work tracking
+
+- [`work/README.md`](work/README.md) — work-item states and queue conventions.
+- [`work/TODO.md`](work/TODO.md) — unfinished design and implementation-preparation work.
 
 ## Context boundary
 

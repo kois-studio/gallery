@@ -2,9 +2,9 @@
 
 ## Design status
 
-This document describes proposed design, not implemented architecture. The repository currently contains no application code, framework files, runtime configuration, or deployment configuration.
+This document records the accepted design and current implementation boundaries. The runtime foundation exists; domain features, production integration, and beta evidence remain unfinished.
 
-The proposed first system is one self-hostable application with two logical application layers and explicit internal boundaries. The monorepo and module structure must grow only when an independent consumer, deployment need, or measured workload justifies it. Angular and NestJS are accepted as the framework direction; the implementation does not begin until lower-level choices are settled.
+The first system is one self-hostable application with two logical application layers and explicit internal boundaries. The monorepo and module structure must grow only when an independent consumer, deployment need, or measured workload justifies it. Angular and NestJS plus the implementation choices in ADRs 0009–0012 are accepted for the first beta.
 
 ## Repository structure
 
@@ -22,6 +22,8 @@ gallery/
 ```
 
 `apps/web` and `apps/api` are two logical applications inside one product repository. A first self-hosted distribution may package them as one operator-facing installation with one documented deployment path, while keeping their transport and responsibility boundaries explicit. `landing/` is not part of the Gallery runtime: it is the public site that explains and markets the tool. Do not add a `product/` wrapper or empty `packages/` directory; the repository root already represents the product, and shared packages should appear only when real shared code justifies them.
+
+The project has two separate deployment concerns: `gallery.kois.app` is the independently deployed public marketing/documentation site, while `gallery.linofajardo.com` is the first real self-hosted Gallery installation. The landing site may use Astro and Vercel; that choice must not constrain the Angular/NestJS product runtime or the deployment model recommended to photographers.
 
 ## Recommended first shape
 
@@ -42,7 +44,7 @@ Access     Gallery/media  Delivery
          in-process durable job runner
 ```
 
-Angular and NestJS are two logical layers, not a commitment to microservices or two operational environments. The supported installation may package both applications in one Docker/self-hosted deployment with the database and storage volumes. Whether the Angular build is served by NestJS, a reverse proxy, or another documented static-serving boundary remains a packaging choice. Image processing is initially an in-process worker with durable job rows in SQLite; a separate worker or queue is not part of the first contract.
+Angular and NestJS are two logical layers, not a commitment to microservices or two operational environments. The supported installation packages both applications in one Docker/self-hosted deployment with the database and storage volumes; NestJS serves the built Angular assets. Image processing is an in-process worker with durable job rows in SQLite; a separate worker or queue is not part of the first contract.
 
 The first beta path is intentionally limited to:
 
@@ -55,7 +57,7 @@ The first beta path is intentionally limited to:
 7. responsive visitor browsing; and
 8. individual original-file downloads.
 
-Selections, password-protected galleries, public indexing, batch archives, expiration, QR generation, branding controls, S3, resumable uploads, and external APIs are separate increments unless Lino’s observed workflow makes one a beta gate. The proposed beta boundary is also recorded in [ADR 0005](../decisions/0005-proposed-first-beta-contract.md).
+Selections, password-protected galleries, public indexing, batch archives, expiration, QR generation, branding controls, S3, resumable uploads, and external APIs are separate increments unless Lino’s observed workflow makes one a beta gate. The beta boundary is also recorded in [ADR 0005](../decisions/0005-first-beta-contract.md).
 
 ## Internal dependency direction
 
@@ -105,4 +107,4 @@ The future diagram is a direction, not a commitment to an API, SDK, MCP server, 
 
 ## Technology status
 
-The Angular + NestJS framework direction is accepted for Gallery in [ADR 0007](../decisions/0007-angular-nestjs-framework-direction.md), based on Gallery’s application complexity and David’s existing expertise. The generic Angular and NestJS profiles are selected from Engineering Standards 0.4.0 for implementation review; they do not prescribe this project decision. This does not accept a Node major version, package manager, ORM/query layer, authentication implementation, image-processing library, or final Docker/reverse-proxy packaging. SvelteKit and Go remain documented alternatives if concrete implementation evidence invalidates the Gallery decision. The comparison and remaining approval gates live in [questions.md](../questions.md); the proposed access model remains in [ADR 0006](../decisions/0006-proposed-local-auth-and-gallery-access.md).
+The Angular + NestJS framework direction is accepted for Gallery in [ADR 0007](../decisions/0007-angular-nestjs-framework-direction.md), based on Gallery’s application complexity and David’s existing expertise. ADRs 0009–0012 accept Node/npm, plain SQL and SQLite access, Sharp processing, and single-installation packaging. The generic Angular and NestJS profiles are selected from Engineering Standards 0.4.0 for implementation review; they do not prescribe this project decision. SvelteKit and Go remain documented alternatives only if concrete implementation evidence invalidates the Gallery decision. Deferred product and release questions live in [questions.md](../questions.md); the implementation queue lives in [TODO.md](../work/TODO.md).

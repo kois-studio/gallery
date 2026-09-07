@@ -8,9 +8,13 @@ Durable Gallery decisions live here. Proposed decisions are not implementation f
 - [0002 — Separate portfolio website and Gallery application](0002-separate-website-and-product.md)
 - [0003 — SQLite metadata and pluggable photo storage](0003-sqlite-and-storage-boundary.md)
 - [0004 — Progressive monorepo structure](0004-progressive-monorepo.md)
-- [0005 — Proposed narrow first-beta delivery contract](0005-proposed-first-beta-contract.md)
-- [0006 — Proposed local administrator and visitor gallery access](0006-proposed-local-auth-and-gallery-access.md)
+- [0005 — Narrow first-beta delivery contract](0005-first-beta-contract.md)
+- [0006 — Local administrator and visitor gallery access](0006-local-auth-and-gallery-access.md)
 - [0007 — Angular + NestJS framework direction](0007-angular-nestjs-framework-direction.md)
 - [0008 — Separate landing site, product applications, and deployment concerns](0008-repository-structure.md)
+- [0009 — Node and npm toolchain](0009-node-and-npm-toolchain.md)
+- [0010 — Plain SQL and explicit SQLite migrations](0010-plain-sql-and-migrations.md)
+- [0011 — Sharp media processing contract](0011-sharp-media-processing.md)
+- [0012 — Single-installation product packaging](0012-single-installation-packaging.md)
 
 Open technical choices are tracked in [`../questions.md`](../questions.md) and [`../work/TODO.md`](../work/TODO.md), not as accepted ADRs.

@@ -1,46 +1,33 @@
-# Open design questions
+# Deferred Gallery questions
 
-These questions remain intentionally open. They should be answered through evidence, comparison, or an explicit ADR before the affected implementation slice is treated as settled.
+The implementation gates are resolved in ADRs 0005–0012. This document now contains only questions that remain deliberately deferred, evidence requests, and future product decisions. It is not a second architecture source of truth.
 
-## Product and workflow
+## First-beta evidence
 
-- Which exact event workflow should Lino use for the first private beta?
-- What does “download a gallery” mean for hundreds of files: individual files, selected files, generated archive, or several options?
-- Should selections persist in one browser, across devices through a share token, or through an identified visitor flow?
-- Is expiration required for the first beta, and what should expire: access, metadata, originals, or derivatives?
-- What branding controls are essential for the first real user?
+- Observe Lino’s real event workflow and record whether server-backed visitor selections are required to complete the beta job.
+- Run the synthetic workload described in [GAL-012](work/TODO.md) against the accepted JPEG/PNG/WebP contract and initial limits.
+- Verify the accepted Node 24, Sharp, `better-sqlite3`, Docker, x64, and arm64 combination with clean installs and production builds.
+- Exercise the authorization negative-test matrix, including setup re-entry, session expiry, CSRF, share-token rotation, cross-gallery access, direct media paths, path traversal, malformed files, and brute-force behavior.
+- Execute the two-store restore drill before calling the product beta-ready.
 
-## Runtime and framework
+## Product decisions deferred after the first slice
 
-- Which frontend/runtime combination best supports a self-hosted single application and future headless use?
-- Is a single full-stack TypeScript runtime appropriate, or is a separate backend justified?
-- Which package manager, ORM/query layer, migration tool, and test stack fit the deployment and contributor constraints?
+- Are server-backed visitor selections required for Lino’s real beta? If so, define identity, persistence, submission, retrieval, retention, and export behavior in a new ADR.
+- Is individual-original download sufficient, or is an asynchronous bounded archive required? If required, define limits, expiry, cleanup, and authorization.
+- Is expiration required, and what exactly expires: access, metadata, originals, or derivatives?
+- Are visitor passwords required in addition to bearer links?
+- Which branding controls are essential for the first real user?
 
-## Authentication and authorization
+## Operations and release
 
-- Should the first installation use local credentials, an external identity provider, or a deliberately narrower administrator mechanism?
-- How are first-admin setup, password reset, sessions, logout, and credential rotation handled without requiring a Kois service?
-- How are visitor password-protected galleries authorized without exposing reusable secrets in URLs or logs?
-- When multiple photographers or administrators are introduced, what are the ownership and membership rules?
+- What backup frequency, retention, encryption, replication, RPO, and RTO should operators choose? Gallery must not publish numeric guarantees without evidence.
+- Which reverse-proxy recipes and host platforms deserve documentation after the first supported Docker path works?
+- Which OSS license should be published, and when should the public repository become a licensed open-source release? Until then, reuse rights must not be assumed.
+- Which contribution, security-reporting, release, and compatibility promises are sustainable?
 
-## Upload and processing
+## Future expansion
 
-- Should the first upload path be server-mediated, direct-to-storage, or support both later?
-- What file formats and metadata are supported initially?
-- Which processing library and runtime constraints are acceptable on modest self-hosted hardware?
-- Is in-process processing sufficient for the first beta, or is a durable job model required immediately?
-- How are retries, cancellations, restarts, and orphaned objects reconciled?
-
-## Storage and operations
-
-- What is the exact storage interface that works for both local files and S3-compatible storage?
-- How are private media read, streamed, cached, and downloaded for each provider?
-- What backup and restore guarantees can the documentation responsibly promise?
-- What health, logging, and diagnostic behavior is required for an operator without deep engineering experience?
-
-## Public project and OSS
-
-- Which license best matches the desired adoption and network-copyleft goals?
-- When should a public repository become a licensed open-source release?
-- What contribution, security-reporting, release, and compatibility promises are sustainable for Kois?
-- When is a public API stable enough for an SDK or MCP integration?
+- When does S3-compatible storage justify a second provider adapter?
+- When does a stable external API justify a headless consumer, SDK, or MCP server?
+- When do multiple administrators or photographers justify ownership, roles, and tenancy semantics?
+- What measured workload or operational constraint would justify PostgreSQL, a separate worker, resumable uploads, or multiple application instances?

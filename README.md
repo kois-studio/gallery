@@ -1,10 +1,10 @@
 # Kois Gallery
 
-Kois Gallery is a proposed open-source, self-hosted photo-delivery platform for photographers. It aims to provide beautiful client galleries while allowing each photographer to control their own deployment, storage, and data.
+Kois Gallery is an open-source, self-hosted photo-delivery platform for photographers. It aims to provide beautiful client galleries while allowing each photographer to control their own deployment, storage, and data.
 
 > Your photos. Your storage. Your infrastructure.
 
-This repository is currently in the project-design phase. It contains the public product and technical context, not an implemented application. The repository is public for transparent design and development, but a final open-source license has not yet been selected; reuse rights should not be assumed until a license is published.
+The project design gates are complete and the runtime foundation is implemented. The repository is public for transparent design and development, but a final open-source license has not yet been selected; reuse rights should not be assumed until a license is published.
 
 ## Intended first workflow
 
@@ -17,14 +17,21 @@ This repository is currently in the project-design phase. It contains the public
 
 The first real beta user is Lino Fajardo. His separate portfolio website will link to Gallery, but Gallery must remain an independent application and must not depend on Astro, Next.js, WordPress, or another photographer website framework.
 
+There are two intentionally different deployment targets around the project:
+
+- `gallery.kois.app` is the public Gallery marketing and documentation site, deployed independently and expected to use Astro and Vercel.
+- `gallery.linofajardo.com` is the first real Gallery installation, using the self-hosted product deployment described in `docs/operations/`.
+
+Photographers who adopt Gallery run the same product on infrastructure they control. A future Kois-managed hosted service would be a separate operating model and is not part of this repository’s first-release contract.
+
 ## Current status
 
-- Design documentation is being prepared before implementation.
+- Design gates are resolved; GAL-008 foundation is implemented and domain slices are pending.
 - Self-hosted installation is the initial operating model.
 - SQLite is the default metadata database direction.
 - Local filesystem storage is the first storage target.
 - S3-compatible storage is a later adapter target.
-- Angular + NestJS is the accepted framework direction; Node major version, authentication implementation, image processing, upload details, query layer, deployment packaging, API, and license decisions remain open where documented.
+- Angular + NestJS, Node 24/npm 11, plain SQL with `better-sqlite3`, Sharp, and single-container self-hosting are accepted for the first beta. Deferred product and release questions remain documented.
 
 ## Documentation
 
@@ -49,4 +56,4 @@ The Angular frontend and NestJS backend are logical application boundaries. They
 
 ## Development status
 
-No application code, deployment configuration, license, or production integration is claimed to exist yet.
+The runtime foundation is implemented; beta readiness, production integration, and the OSS license are not yet claimed.

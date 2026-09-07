@@ -12,7 +12,7 @@ Photography SaaS products provide a better experience but introduce recurring co
 
 ## Product promise
 
-Kois Gallery is an open-source, self-hosted photo-delivery platform for photographers.
+Kois Gallery is an intended open-source, self-hosted photo-delivery platform for photographers. The repository is public for design and development, but an open-source license has not yet been selected.
 
 > The simplest way to self-host beautiful client photo galleries.
 
@@ -22,8 +22,10 @@ The initial value is the combination of:
 - self-hosted operation;
 - photographer-controlled storage and infrastructure;
 - reliable delivery of large image batches;
-- simple visitor selection and download workflows;
+- simple visitor browsing and download workflows, with selections as an evidence-gated extension;
 - independence from the photographer’s portfolio website framework.
+
+Selection is part of the product direction, but its persistence and visitor identity are not assumed in the first delivery slice. The first beta must include it only if Lino’s observed workflow makes it necessary; the proposed first-beta boundary is documented in [scope.md](scope.md).
 
 ## Users
 
@@ -33,7 +35,7 @@ Owns or operates a Gallery installation, uploads and organizes photographs, conf
 
 ### Visitor/client
 
-Views a shared gallery, enters access credentials when required, browses on desktop or mobile, favorites or selects photographs, and downloads approved files.
+Views a shared gallery, enters access credentials when required, browses on desktop or mobile, optionally favorites or selects photographs when that capability is enabled, and downloads approved files.
 
 ### Self-hosting developer
 
@@ -57,6 +59,6 @@ The first release is successful when:
 - a real event-sized batch can be uploaded without silent failures;
 - visitors can browse effectively on mobile and desktop;
 - the photographer can share a stable gallery URL;
-- downloads and selections behave predictably;
+- downloads behave predictably, and selections behave predictably if they are included by the beta gate;
 - an independent developer can reproduce the setup from the README;
 - observed friction becomes documented work rather than anecdotal memory.

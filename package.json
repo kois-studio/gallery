@@ -1,0 +1,24 @@
+{
+  "name": "kois-gallery",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Self-hosted photo delivery platform for photographers.",
+  "engines": {
+    "node": ">=24.15.0 <25",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11",
+  "scripts": {
+    "install:all": "npm ci --prefix apps/web && npm ci --prefix apps/api",
+    "build:web": "npm run build --prefix apps/web",
+    "sync:web": "node scripts/sync-web-dist.mjs",
+    "build:api": "npm run build --prefix apps/api",
+    "build": "npm run build:web && npm run sync:web && npm run build:api",
+    "start:api": "npm run start:dev --prefix apps/api",
+    "test:web": "npm test --prefix apps/web -- --no-watch",
+    "test:api": "npm test --prefix apps/api",
+    "test:api:e2e": "npm run test:e2e --prefix apps/api",
+    "test": "npm run test:web && npm run test:api",
+    "lint": "npm run lint --prefix apps/api"
+  }
+}

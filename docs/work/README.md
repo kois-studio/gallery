@@ -4,4 +4,6 @@ This queue tracks unfinished Gallery design and implementation-preparation work.
 
 Use `Proposed`, `Ready`, `Active`, `Blocked`, and `Deferred` states. Keep durable decisions in [`../decisions/`](../decisions/) and current architecture facts in the relevant documentation. Do not leave important unfinished work only in a chat transcript.
 
+Session checkpoints live under [`checkpoints/`](checkpoints/) when a meaningful implementation boundary is reached.
+
 Work-item format follows the shared [Engineering Standards project work template](https://github.com/kois-studio/engineering-standards/blob/main/docs/templates/project-work.md).

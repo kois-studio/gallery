@@ -4,6 +4,10 @@
 
 The first supported path should be reproducible from a clean checkout or release using Docker Compose or an equivalently simple deployment. The goal is not to support every infrastructure provider immediately; it is to make one local/self-hosted path reliable and understandable.
 
+Vercel is relevant to the separate `landing/` marketing/documentation site, not to the persistent Gallery product installation. The first product deployment must retain durable access to SQLite and the configured photo-storage root, so serverless-only hosting is outside the first self-hosting contract.
+
+The proposed supported shape is one application container with two persistent mounts: one for SQLite/configuration state and one for the photo-storage root. A reverse proxy or equivalent TLS termination is expected for internet exposure. Multiple application instances, shared network filesystems, managed databases, and container-orchestrator deployment are outside the first support contract.
+
 The minimal installation should define:
 
 - application image or runtime;
@@ -16,6 +20,8 @@ The minimal installation should define:
 - backup and restore instructions;
 - upgrade and migration instructions.
 
+The first deployment must expose a documented health/readiness check that verifies configuration and the ability to use the database and storage root without revealing secrets or private media. Readiness must be false while required migrations or storage checks cannot complete.
+
 ## Configuration categories
 
 Configuration should distinguish:
@@ -27,6 +33,8 @@ Configuration should distinguish:
 - cookie/session settings;
 - processing limits;
 - logging and diagnostics.
+
+The setup secret and session configuration are operator secrets. Public URL and storage paths are configuration, not browser-exposed secrets. Defaults must fail closed when they would expose a private storage root or permit an unarmed first-admin flow.
 
 Secrets must be supplied through operator-controlled environment or secret configuration. They must not be committed, embedded in browser bundles, or written to logs.
 
@@ -44,6 +52,8 @@ The operator owns:
 - monitoring and incident response for their installation.
 
 Gallery documentation should make this boundary clear without pretending that self-hosting eliminates security or privacy work.
+
+The supported operator contract is intentionally modest: install one documented deployment shape, protect it with TLS and a reverse proxy, keep the two persistent stores backed up, apply upgrades after a backup, and run the recovery drill. Gallery does not promise hosted availability, automated off-site backups, incident response, or data recovery by Kois.
 
 ## Upgrade principles
 

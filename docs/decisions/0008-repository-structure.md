@@ -41,7 +41,7 @@ The `landing/` site has its own build and deployment lifecycle and is not part o
 - Angular and NestJS can evolve as explicit frontend/backend boundaries while remaining easy to package together.
 - Self-hosting artifacts have a clear home without implying that every deployment concern is part of the backend source.
 - A later shared contract or UI package can be added deliberately when duplication or a real consumer demonstrates the need.
-- The repository contains multiple JavaScript/TypeScript applications, so package-manager and workspace decisions remain a separate implementation choice.
+- The repository contains multiple JavaScript/TypeScript applications. npm is used without npm workspaces; each application owns its manifest and lockfile, while root scripts provide convenience orchestration. The policy is recorded in ADR 0009.
 
 ## Alternatives considered
 

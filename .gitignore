@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.angular/
+.data/
+apps/api/public/
+deploy/data/
+deploy/photos/
+coverage/
+*.log
