@@ -37,6 +37,52 @@ export class LocalStorageService {
         await rm(this.pathForKey(key), { force: true })
     }
 
+    async hasObject(key: string): Promise<boolean> {
+        try {
+            await this.pathForRead(key)
+            return true
+        } catch (error) {
+            if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+                return false
+            }
+            throw error
+        }
+    }
+
+    async listObjectKeys(): Promise<string[]> {
+        const keys: string[] = []
+        const visit = async (directory: string): Promise<void> => {
+            let entries
+            try {
+                entries = await readdir(directory, { withFileTypes: true })
+            } catch (error) {
+                if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
+                    return
+                }
+                throw error
+            }
+
+            for (const entry of entries) {
+                const path = join(directory, entry.name)
+                if (entry.isDirectory()) {
+                    if (relative(this.root, path) === '.tmp') {
+                        continue
+                    }
+                    await visit(path)
+                    continue
+                }
+                if (entry.isFile()) {
+                    keys.push(relative(this.root, path).split('/').join('/'))
+                } else if (entry.isSymbolicLink()) {
+                    keys.push(relative(this.root, path).split('/').join('/'))
+                }
+            }
+        }
+
+        await visit(this.root)
+        return keys
+    }
+
     async cleanupTemporaryUploads(maxAgeMs = 24 * 60 * 60 * 1000): Promise<number> {
         const temporaryDirectory = join(this.root, '.tmp', 'uploads')
         let entries: Dirent[]

@@ -10,7 +10,7 @@ This directory is the public technical and product design source of truth for Ko
 - [`product/workflows.md`](product/workflows.md) — photographer and visitor journeys.
 - [`architecture/overview.md`](architecture/overview.md) — proposed system shape and progression.
 - [`questions.md`](questions.md) — unresolved decisions requiring evidence or discussion.
-- [`work/TODO.md`](work/TODO.md) — unfinished design and implementation-preparation work.
+- [`work/TODO.md`](work/TODO.md) — unfinished implementation, verification, and release work.
 
 ## Documentation map
 
@@ -41,7 +41,7 @@ This directory is the public technical and product design source of truth for Ko
 ### Work tracking
 
 - [`work/README.md`](work/README.md) — work-item states and queue conventions.
-- [`work/TODO.md`](work/TODO.md) — unfinished design and implementation-preparation work.
+- [`work/TODO.md`](work/TODO.md) — unfinished implementation, verification, and release work.
 
 ## Context boundary
 

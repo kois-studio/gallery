@@ -48,4 +48,23 @@ describe('LocalStorageService', () => {
             rmSync(root, { recursive: true, force: true })
         }
     })
+
+    it('checks objects and lists only durable files', async () => {
+        const root = mkdtempSync(join(tmpdir(), 'gallery-storage-list-'))
+        const config = { get: vi.fn().mockReturnValue(root) } as unknown as ConfigService
+        const storage = new LocalStorageService(config)
+
+        try {
+            await storage.writeAtomically('gallery/photo/original.jpg', Buffer.from('original'))
+            await storage.writeAtomically('gallery/photo/display.webp', Buffer.from('display'))
+            mkdirSync(join(root, '.tmp', 'uploads'), { recursive: true })
+            writeFileSync(join(root, '.tmp', 'uploads', 'in-flight'), 'temporary')
+
+            await expect(storage.hasObject('gallery/photo/original.jpg')).resolves.toBe(true)
+            await expect(storage.hasObject('gallery/photo/missing.webp')).resolves.toBe(false)
+            await expect(storage.listObjectKeys()).resolves.toEqual(['gallery/photo/display.webp', 'gallery/photo/original.jpg'])
+        } finally {
+            rmSync(root, { recursive: true, force: true })
+        }
+    })
 })

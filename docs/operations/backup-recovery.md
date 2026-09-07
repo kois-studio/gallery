@@ -2,7 +2,7 @@
 
 ## Design status
 
-This is a required operational design area, not an implemented guarantee.
+This is a required operational design area. Gallery now provides a read-only storage-integrity command for the verification step, but a successful restore has not yet been exercised as a release gate.
 
 The first beta contract is an operator-run backup and restore procedure, not a Gallery-managed backup service. Gallery must make the two-store limitation explicit and provide a way to detect missing or extra media objects after recovery.
 
@@ -34,6 +34,7 @@ Before beta release, document:
 - A backup is not considered valid until it can restore into a clean installation using the same or a documented compatible Gallery version.
 - Restore starts with the application stopped, restores both stores, runs migrations only when the upgrade path says to do so, then runs reconciliation. Missing derivatives are retryable; database rows pointing to missing originals are errors requiring operator attention. Unreferenced files are reported before any deletion.
 - The operator must verify a restored gallery by opening a shared link, loading representative thumbnails and display images, downloading an original, and checking counts. Verification must use synthetic or approved assets.
+- The operator must run `npm run storage:verify` inside the restored installation. A non-zero result requires review of missing originals, missing ready-photo derivatives, or unreferenced files before the installation is exposed.
 - In-flight uploads and jobs at the time of a snapshot are not promised to resume exactly. They must be reported as incomplete and safely retried or discarded according to the documented state machine.
 - Deletion and expiration do not erase existing backups. Retention and secure disposal remain operator responsibilities.
 

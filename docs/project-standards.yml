@@ -93,19 +93,19 @@ compliance:
       next_action: Add an upgrade migration and failure-path coverage when the schema next changes.
     - id: DATA-004
       status: partial
-      evidence: The two-store database/filesystem boundary, local storage key/symlink protections, durable processing state, cancellation markers, and startup temporary-file cleanup are implemented; restore reconciliation remains incomplete.
+      evidence: The two-store database/filesystem boundary, local storage key/symlink protections, durable processing state, cancellation markers, startup temporary-file cleanup, and a read-only storage-integrity report are implemented; repair and restore reconciliation remain incomplete.
       priority: high
-      next_action: Implement and test durable processing state and restart reconciliation in GAL-012; exercise restore behavior in GAL-017.
+      next_action: Use the storage-integrity report during the GAL-017 restore exercise and define the operator repair path from its results.
     - id: DATA-007
       status: partial
-      evidence: docs/operations/backup-recovery.md defines a proposed two-store backup/restore contract; no restore exercise has been run.
+      evidence: docs/operations/backup-recovery.md defines the two-store backup/restore contract and `npm run storage:verify` checks restored object references; no restore exercise has been run.
       priority: high
       next_action: Execute GAL-017 using synthetic or approved assets before beta.
     - id: OPS-009
       status: partial
-      evidence: docs/operations/backup-recovery.md defines proposed operator responsibilities; restore procedures are not implemented or tested.
+      evidence: docs/operations/backup-recovery.md and deploy/README.md define operator responsibilities and provide a read-only integrity command; the restore procedure is not yet exercised.
       priority: high
-      next_action: Keep the recovery contract documented and execute the restore gate in GAL-017.
+      next_action: Execute the documented restore gate in GAL-017 and record the integrity report and operator actions.
     - id: OPS-001
       status: deferred
       evidence: Configuration categories and fail-closed intent are documented, but startup validation does not exist.
@@ -120,10 +120,10 @@ compliance:
       next_action: Extend readiness checks for migrations and durable domain resources during GAL-015 and GAL-016.
     - id: OPS-006
       status: partial
-      evidence: The in-process worker has bounded concurrency, restart requeue behavior, cancellation-aware completion guards, and startup temporary-file cleanup; workload and bounded-shutdown evidence remain incomplete.
+      evidence: The in-process worker has bounded concurrency, restart requeue behavior, cancellation-aware completion guards, and startup temporary-file cleanup; workload and termination evidence remain incomplete.
       rationale: The worker exists for the first beta, while lifecycle hardening remains implementation/release work.
       priority: high
-      next_action: Implement and test bounded shutdown/retry behavior in GAL-012 and GAL-016.
+      next_action: Verify interruption/requeue behavior and active-work shutdown in GAL-016/GAL-017.
     - id: API-001
       status: deferred
       evidence: Angular and NestJS are separate logical applications connected by an internal HTTP boundary, but no machine-readable contract exists yet.

@@ -15,7 +15,7 @@ The first installation has two durable stores with different consistency propert
 - SQLite is authoritative for administrator identity, sessions, galleries, photos, processing jobs, and publication/access metadata.
 - The configured storage root is authoritative for original and derived bytes. It is not a web-public directory.
 
-An upload is not complete until the original is durably stored and its metadata is committed. A photo is `ready` only when the required derivatives exist and are readable. Database rows and object files can therefore be temporarily inconsistent after a crash; startup reconciliation and an operator repair path must make that state visible and recoverable.
+An upload is not complete until the original is durably stored and its metadata is committed. A photo is `ready` only when the required derivatives exist and are readable. Database rows and object files can therefore be temporarily inconsistent after a crash; startup job recovery plus the read-only `npm run storage:verify` check make that state visible. Repair remains an operator-controlled release procedure rather than an automatic deletion or rewrite path.
 
 ## Implemented and deferred entities
 

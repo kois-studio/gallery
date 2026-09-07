@@ -29,3 +29,11 @@ docker compose -f deploy/docker-compose.yml up -d
 ```
 
 Do not commit files created under `deploy/data/` or `deploy/photos/`. Back up both directories together according to [`../docs/operations/backup-recovery.md`](../docs/operations/backup-recovery.md).
+
+After restoring both stores into a clean installation, run the read-only integrity check before exposing the installation:
+
+```sh
+docker compose -f deploy/docker-compose.yml run --rm gallery npm run storage:verify
+```
+
+The command reports missing originals, missing ready-photo derivatives, and unreferenced files. A non-zero result requires operator review; it never deletes files or rewrites the database.

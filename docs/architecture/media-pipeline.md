@@ -56,7 +56,7 @@ The first slice supports individual original downloads through an authorization-
 - A failed derivative leaves the original available for an explicit retry or operator repair. It does not make the photo publishable when a required variant is missing.
 - Gallery publication must reject or clearly quarantine photos that are not ready; the beta recommendation is to block publication until every uploaded photo is ready, with a later choice for partial galleries.
 - Cancellation marks pending or processing work as cancelled, prevents later worker claims/completion, removes the original and known derivatives, and keeps the cancelled state visible to the administrator. Abandoned multipart temporary files older than 24 hours are removed during startup.
-- Shutdown stops new processing claims and gives active work a bounded drain period. Work that does not finish is retried after restart.
+- Shutdown stops new processing claims and waits for active work to finish. If the process is terminated while work is active, the next startup requeues interrupted jobs; the restore/restart behavior remains part of release verification.
 
 ## Performance questions
 

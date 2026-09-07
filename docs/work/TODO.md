@@ -78,7 +78,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** Synthetic workload, malformed/oversized files, duplicate retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers. A 20-file synthetic baseline exists; representative camera and architecture-specific evidence remain open.
 - **Dependencies:** GAL-011 and ADR 0011.
 - **Blocker or question:** None; measurements may produce a later limits decision.
-- **Next action:** Run representative camera workload, storage-failure, architecture-specific, and restore verification; cancellation and abandoned-upload cleanup are now implemented.
+- **Next action:** Run representative camera workload, storage-failure, architecture-specific, and restore verification; use `npm run storage:verify` during the restore exercise.
 
 ### [GAL-013] [P0] [media] Generate derivatives and select a cover
 
@@ -126,7 +126,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** CI inspection, clean-container checks, tests, documentation/link validation, and readiness review for GAL-017.
 - **Dependencies:** GAL-008 through GAL-015.
 - **Blocker or question:** Release evidence remains incomplete until the restore gate passes.
-- **Next action:** Run the CI quality gates, assemble the verification matrix, and prepare the restore exercise separately.
+- **Next action:** Run the CI quality gates, execute the storage-integrity command against a restored clean installation, and assemble the remaining verification matrix for GAL-017.
 
 ### [GAL-017] [P0] [release] Execute beta verification and restore gate
 

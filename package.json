@@ -14,6 +14,7 @@
     "sync:web": "node scripts/sync-web-dist.mjs",
     "build:api": "npm run build --prefix apps/api",
     "build:landing": "npm run build --prefix landing",
+    "storage:verify": "npm run storage:verify --prefix apps/api",
     "build": "npm run build:web && npm run sync:web && npm run build:api",
     "start:api": "npm run start:dev --prefix apps/api",
     "test:web": "npm test --prefix apps/web",
