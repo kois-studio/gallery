@@ -215,6 +215,38 @@ describe('draft galleries (e2e)', () => {
             .expect(({ body }) => expect(body.files).toEqual([expect.objectContaining({ photoId, status: 'cancelled' })]))
     })
 
+    it('records a synthetic twenty-file upload and processing workload', async () => {
+        const agent = request.agent(app.getHttpServer())
+        const signIn = await agent.post('/api/auth/sign-in').send({ password: 'correct horse battery staple' }).expect(200)
+        csrfToken = signIn.body.csrfToken
+        const gallery = await agent
+            .post('/api/admin/galleries')
+            .set('X-CSRF-Token', csrfToken)
+            .send({ title: 'Synthetic workload' })
+            .expect(201)
+        const image = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
+        const uploadStarted = performance.now()
+        let uploadRequest = agent.post(`/api/admin/galleries/${gallery.body.id}/photos`).set('X-CSRF-Token', csrfToken)
+        for (let index = 0; index < 20; index += 1) {
+            uploadRequest = uploadRequest.attach('files', image, `IMG-${String(index + 1).padStart(3, '0')}.png`)
+        }
+        const uploaded = await uploadRequest.expect(201)
+        const uploadMs = Math.round(performance.now() - uploadStarted)
+        expect(uploaded.body.files).toHaveLength(20)
+
+        const processingStarted = performance.now()
+        let ready = 0
+        for (let attempt = 0; attempt < 100; attempt += 1) {
+            const status = await agent.get(`/api/admin/galleries/${gallery.body.id}/photos`).expect(200)
+            ready = status.body.files.filter((file: { status: string }) => file.status === 'ready').length
+            if (ready === 20) break
+            await new Promise(resolve => setTimeout(resolve, 100))
+        }
+        const processingMs = Math.round(performance.now() - processingStarted)
+        console.log(`[media-workload] ${JSON.stringify({ files: 20, uploadMs, processingMs, ready })}`)
+        expect(ready).toBe(20)
+    })
+
     afterAll(async () => {
         await app.close()
         delete process.env.SETUP_TOKEN

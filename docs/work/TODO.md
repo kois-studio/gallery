@@ -61,10 +61,10 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Scope:** Server-mediated multipart upload, JPEG/PNG/WebP validation, 100 MiB per-file limit, 500-file/10 GiB batch limits, 100-megapixel decoded-area limit, durable jobs, two-job concurrency, retries, cancellation, restart reconciliation, and abandoned temporary-file cleanup.
 - **Non-goals:** Do not add RAW/HEIC, direct-to-storage, resumable protocols, or a separate queue unless measured evidence changes the decision.
 - **Acceptance criteria:** Every file reports success, rejection, retryable failure, or cancellation; originals survive derivative failure; retries are idempotent; shutdown and restart preserve observable work.
-- **Verification:** Synthetic workload, malformed/oversized files, duplicate retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers.
+- **Verification:** Synthetic workload, malformed/oversized files, duplicate retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers. A 20-file synthetic baseline exists; representative camera and architecture-specific evidence remain open.
 - **Dependencies:** GAL-011 and ADR 0011.
 - **Blocker or question:** None; measurements may produce a later limits decision.
-- **Next action:** Run representative workload, storage-failure, and architecture/restore verification; cancellation and abandoned-upload cleanup are now implemented.
+- **Next action:** Run representative camera workload, storage-failure, architecture-specific, and restore verification; cancellation and abandoned-upload cleanup are now implemented.
 
 ### [GAL-013] [P0] [media] Generate derivatives and select a cover
 

@@ -3,7 +3,7 @@
 - **Session mode:** focused
 - **Repository and branch:** `kois-studio/gallery` / `main`
 - **Session goal:** GAL-012 cancellation and abandoned-upload hardening
-- **Status:** cancellation boundary completed; workload and release verification remain
+- **Status:** cancellation boundary and synthetic baseline completed; representative workload and release verification remain
 
 ## Completed
 
@@ -13,12 +13,13 @@
 - Removed originals and known derivatives when cancellation succeeds.
 - Added startup cleanup for upload staging files older than 24 hours.
 - Added repository, storage, and API end-to-end coverage for cancellation and stale temporary-file cleanup.
+- Added a 20-file synthetic workload test; the current local baseline was 10 ms upload acknowledgement and 2,497 ms until all 20 derivatives were ready.
 
 ## Verification
 
 - `npm run build` — pass.
 - `npm run test:api` — pass, 8 tests.
-- `npm run test:api:e2e` — pass, 7 tests.
+- `npm run test:api:e2e` — pass, 8 tests.
 - `npm run test:web` — pass, 2 tests.
 - `npm run lint` — pass.
 - `npm run format:check` — pass.
@@ -26,6 +27,7 @@
 ## Known limits
 
 - Representative camera workload, storage-full behavior, x64/arm64 resource measurements, and restore reconciliation remain open.
+- The synthetic baseline uses tiny PNG fixtures and must not be treated as a production performance guarantee.
 - Cancellation is administrator-controlled; browser upload aborts and gallery deletion have separate lifecycle behavior.
 - Docker image execution remains unverified locally while the Docker daemon is unavailable.
 
