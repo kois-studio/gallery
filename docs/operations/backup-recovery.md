@@ -2,7 +2,7 @@
 
 ## Design status
 
-This is a required operational design area. Gallery now provides a read-only storage-integrity command for the verification step, but a successful restore has not yet been exercised as a release gate.
+This is a required operational design area. Gallery now provides a read-only storage-integrity command and an automated synthetic two-store restore test. A container-level/operator-run restore has not yet been exercised as a release gate.
 
 The first beta contract is an operator-run backup and restore procedure, not a Gallery-managed backup service. Gallery must make the two-store limitation explicit and provide a way to detect missing or extra media objects after recovery.
 
@@ -40,4 +40,4 @@ Before beta release, document:
 
 RPO, RTO, backup frequency, retention duration, encryption-at-rest, and off-host replication remain evidence- and operator-policy questions. The project must not publish numeric guarantees before Lino’s storage risk and the supported hosting path are known.
 
-The first beta must include at least one restore exercise using synthetic or approved test assets. The result belongs in the project work queue and release evidence.
+The first beta must include at least one restore exercise using synthetic or approved test assets. The automated local exercise is an initial evidence point; the container-level/operator-run result belongs in the project work queue and release evidence.

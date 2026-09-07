@@ -123,7 +123,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Scope:** CI quality gates, critical-journey/security matrix, workload record, setup/upgrade/runbook updates, standards-contract updates, and restore-drill preparation.
 - **Non-goals:** Do not claim a successful restore or beta readiness before GAL-017.
 - **Acceptance criteria:** Clean install/build/test/security commands run or are marked unrun; current docs describe implemented behavior; the synthetic workload and recovery procedure are executable.
-- **Verification:** CI inspection, clean-container checks, tests, documentation/link validation, and readiness review for GAL-017.
+- **Verification:** CI inspection, clean-container checks, tests, documentation/link validation, the synthetic local restore e2e, and readiness review for GAL-017.
 - **Dependencies:** GAL-008 through GAL-015.
 - **Blocker or question:** Release evidence remains incomplete until the restore gate passes.
 - **Next action:** Run the CI quality gates, execute the storage-integrity command against a restored clean installation, and assemble the remaining verification matrix for GAL-017.
@@ -138,4 +138,4 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** Synthetic or explicitly approved assets only; record commands, environment, results, and unresolved risks.
 - **Dependencies:** GAL-016 and the accepted recovery contract in `docs/operations/backup-recovery.md`.
 - **Blocker or question:** This is a post-implementation gate.
-- **Next action:** Run after GAL-016 completes.
+- **Next action:** Run the container-level/operator restore gate after GAL-016; the automated local synthetic restore is now evidence, not a substitute for that gate.
