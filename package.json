@@ -9,10 +9,11 @@
   },
   "packageManager": "npm@11",
   "scripts": {
-    "install:all": "npm ci --prefix apps/web && npm ci --prefix apps/api",
+    "install:all": "npm ci --prefix apps/web && npm ci --prefix apps/api && npm ci --prefix landing",
     "build:web": "npm run build --prefix apps/web",
     "sync:web": "node scripts/sync-web-dist.mjs",
     "build:api": "npm run build --prefix apps/api",
+    "build:landing": "npm run build --prefix landing",
     "build": "npm run build:web && npm run sync:web && npm run build:api",
     "start:api": "npm run start:dev --prefix apps/api",
     "test:web": "npm test --prefix apps/web",
@@ -27,6 +28,7 @@
     "format:api:check": "npm run format:check --prefix apps/api",
     "format:web": "npm run format --prefix apps/web",
     "format:web:check": "npm run format:check --prefix apps/web",
-    "format:check": "npm run format:api:check && npm run format:web:check"
+    "format:landing:check": "npm run format:check --prefix landing",
+    "format:check": "npm run format:api:check && npm run format:web:check && npm run format:landing:check"
   }
 }

@@ -1,0 +1,34 @@
+---
+import '../styles/global.css'
+
+interface Props {
+    title?: string
+    description?: string
+}
+
+const {
+    title = 'Kois Gallery — self-hosted photo delivery',
+    description = 'A focused, self-hosted photo delivery platform for photographers who want beautiful galleries and control of their own infrastructure.',
+} = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="description" content={description} />
+        <meta name="generator" content={Astro.generator} />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="canonical" href="https://gallery.kois.app/" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://gallery.kois.app/" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <title>{title}</title>
+    </head>
+    <body>
+        <slot />
+    </body>
+</html>

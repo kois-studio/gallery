@@ -2,6 +2,20 @@
 
 This queue contains only unfinished implementation, verification, and release work. Durable decisions live in [`docs/decisions/`](../decisions/); deferred product questions live in [`docs/questions.md`](../questions.md).
 
+## Public landing track
+
+### [LANDING-001] [P1] [web] Publish the Gallery marketing and documentation site
+
+- **Status:** Active
+- **Goal:** Explain the current self-hosted Gallery product clearly and direct interested users to the repository and setup guide.
+- **Scope:** Independent static Astro site, responsive presentation, current-capability/future-capability boundary, metadata, GitHub and Kois links, and an independently verifiable Vercel deployment.
+- **Non-goals:** Do not implement product functionality here; do not claim a published license, hosted SaaS, S3 support, selections, SDK, or MCP availability before those capabilities are accepted and verified.
+- **Acceptance criteria:** Astro build and formatting pass; the page works at desktop and mobile widths; copy matches the root README and product docs; unsupported capabilities remain explicitly future work; deployment configuration is documented when the external project is connected.
+- **Verification:** `npm run build:landing`, `npm run format:landing:check`, local rendered inspection, and deployment verification.
+- **Dependencies:** Current product README and self-hosting guide.
+- **Blocker or question:** Vercel account/project access is required for the final deployment step.
+- **Next action:** Complete local visual/accessibility review, then configure the production deployment when access is available.
+
 ## First-release sequence
 
 The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 → GAL-013 → GAL-014 → GAL-015 → GAL-016 → GAL-017. GAL-008 established the runtime foundation and is recorded in the implementation checkpoint. GAL-005 is an independent OSS-release gate and is not an implementation prerequisite.

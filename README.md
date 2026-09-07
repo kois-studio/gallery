@@ -60,4 +60,4 @@ The runtime foundation, local administrator flow, gallery/storage flow, media pr
 
 ## Quality checks
 
-Run `npm run lint` for API oxlint plus frontend Biome checks, `npm run format:check` for API Prettier plus frontend Biome formatting checks, and `npm run test:web:e2e` for the packaged browser journey. The API follows the repository’s four-space, 140-column, no-semicolon Prettier profile; the Angular application uses Biome 1.9.2 for formatting, import organization, and linting.
+Run `npm run lint` for API oxlint plus frontend Biome checks, `npm run format:check` for API Prettier, frontend Biome, and landing Astro/Prettier checks, and `npm run test:web:e2e` for the packaged browser journey. Build the independent marketing site with `npm run build:landing`. The API follows the repository’s four-space, 140-column, no-semicolon Prettier profile; the Angular application uses Biome 1.9.2 for formatting, import organization, and linting.
