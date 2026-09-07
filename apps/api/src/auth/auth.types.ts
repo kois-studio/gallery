@@ -1,11 +1,11 @@
 export interface AuthSession {
-  id: string;
-  administratorId: string;
-  csrfTokenHash: string;
+    id: string
+    administratorId: string
+    csrfTokenHash: string
 }
 
 export interface AuthResult {
-  sessionToken: string;
-  csrfToken: string;
-  expiresAt: string;
+    sessionToken: string
+    csrfToken: string
+    expiresAt: string
 }

@@ -19,6 +19,13 @@
     "test:api": "npm test --prefix apps/api",
     "test:api:e2e": "npm run test:e2e --prefix apps/api",
     "test": "npm run test:web && npm run test:api",
-    "lint": "npm run lint --prefix apps/api"
+    "lint:api": "npm run lint --prefix apps/api",
+    "lint:web": "npm run lint:check --prefix apps/web",
+    "lint": "npm run lint:api && npm run lint:web",
+    "format:api": "npm run format --prefix apps/api",
+    "format:api:check": "npm run format:check --prefix apps/api",
+    "format:web": "npm run format --prefix apps/web",
+    "format:web:check": "npm run format:check --prefix apps/web",
+    "format:check": "npm run format:api:check && npm run format:web:check"
   }
 }

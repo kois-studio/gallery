@@ -92,15 +92,15 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 
 ### [GAL-015] [P0] [web] Implement visitor browsing and individual downloads
 
-- **Status:** Ready
+- **Status:** Active
 - **Goal:** Complete the usable visitor delivery journey without exposing originals during browsing.
 - **Scope:** Responsive Angular gallery grid, derivative delivery, larger view, loading/empty/error/retry states, keyboard/focus behavior, accessibility, and authorized streaming of individual originals.
 - **Non-goals:** Do not add archives, selection submission, QR generation, or extensive branding.
 - **Acceptance criteria:** Visitors browse a representative gallery on mobile and desktop; derivatives are used for viewing; authorized visitors can download one original; unauthorized requests fail; private metadata and storage paths remain hidden.
-- **Verification:** Playwright critical journey, keyboard/manual accessibility, responsive checks, large-file streaming, Lighthouse/equivalent audit, and authorization tests.
+- **Verification:** Angular build/tests, API authorization coverage, keyboard/manual accessibility, responsive checks, large-file streaming, Playwright critical journey, and Lighthouse/equivalent audit. Browser and performance evidence remain open.
 - **Dependencies:** GAL-014 and GAL-013.
 - **Blocker or question:** Final browser/performance targets are release evidence, not a reason to expand scope silently.
-- **Next action:** Implement the narrow browse/download journey.
+- **Next action:** Add browser-level critical-journey coverage and record responsive/accessibility/performance evidence.
 
 ### [GAL-016] [P0] [verification] Complete release verification and operator documentation
 

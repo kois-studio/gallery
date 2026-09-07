@@ -56,4 +56,8 @@ The Angular frontend and NestJS backend are logical application boundaries. They
 
 ## Development status
 
-The runtime foundation is implemented; beta readiness, production integration, and the OSS license are not yet claimed.
+The runtime foundation, local administrator flow, gallery/storage flow, media processing, private delivery API, and initial Angular administration/visitor flow are implemented. Beta readiness, production integration, browser/performance evidence, and the OSS license are not yet claimed.
+
+## Quality checks
+
+Run `npm run lint` for API oxlint plus frontend Biome checks, and `npm run format:check` for API Prettier plus frontend Biome formatting checks. The API follows the repository’s four-space, 140-column, no-semicolon Prettier profile; the Angular application uses Biome 1.9.2 for formatting, import organization, and linting.

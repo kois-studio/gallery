@@ -1,219 +1,183 @@
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import request from 'supertest';
-import { App } from 'supertest/types';
+import { INestApplication } from '@nestjs/common'
+import { Test, TestingModule } from '@nestjs/testing'
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import request from 'supertest'
+import { App } from 'supertest/types'
 
 describe('draft galleries (e2e)', () => {
-  let app: INestApplication<App>;
-  let dataDirectory: string;
-  let csrfToken: string;
-  const setupToken = 'local-gallery-test-setup-token-with-at-least-32-characters';
+    let app: INestApplication<App>
+    let dataDirectory: string
+    let csrfToken: string
+    const setupToken = 'local-gallery-test-setup-token-with-at-least-32-characters'
 
-  beforeAll(async () => {
-    dataDirectory = mkdtempSync(join(tmpdir(), 'gallery-domain-'));
-    process.env.NODE_ENV = 'test';
-    process.env.DATABASE_PATH = join(dataDirectory, 'gallery.db');
-    process.env.STORAGE_PATH = join(dataDirectory, 'photos');
-    process.env.SETUP_TOKEN = setupToken;
+    beforeAll(async () => {
+        dataDirectory = mkdtempSync(join(tmpdir(), 'gallery-domain-'))
+        process.env.NODE_ENV = 'test'
+        process.env.DATABASE_PATH = join(dataDirectory, 'gallery.db')
+        process.env.STORAGE_PATH = join(dataDirectory, 'photos')
+        process.env.SETUP_TOKEN = setupToken
 
-    const { AppModule } = await import('./../src/app.module.js');
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    app = moduleFixture.createNestApplication();
-    await app.init();
+        const { AppModule } = await import('./../src/app.module.js')
+        const moduleFixture: TestingModule = await Test.createTestingModule({
+            imports: [AppModule],
+        }).compile()
+        app = moduleFixture.createNestApplication()
+        await app.init()
 
-    const setup = await request(app.getHttpServer())
-      .post('/api/auth/setup')
-      .set('X-Setup-Token', setupToken)
-      .send({ password: 'correct horse battery staple' })
-      .expect(201);
-    csrfToken = setup.body.csrfToken;
-  });
+        const setup = await request(app.getHttpServer())
+            .post('/api/auth/setup')
+            .set('X-Setup-Token', setupToken)
+            .send({ password: 'correct horse battery staple' })
+            .expect(201)
+        csrfToken = setup.body.csrfToken
+    })
 
-  it('requires administrator authentication and manages draft galleries', async () => {
-    await request(app.getHttpServer())
-      .post('/api/admin/galleries')
-      .send({ title: 'Unauthenticated gallery' })
-      .expect(401);
+    it('requires administrator authentication and manages draft galleries', async () => {
+        await request(app.getHttpServer()).post('/api/admin/galleries').send({ title: 'Unauthenticated gallery' }).expect(401)
 
-    const agent = request.agent(app.getHttpServer());
-    await agent
-      .post('/api/auth/sign-in')
-      .send({ password: 'correct horse battery staple' })
-      .expect(200)
-      .expect(({ body }) => {
-        csrfToken = body.csrfToken;
-      });
+        const agent = request.agent(app.getHttpServer())
+        await agent
+            .post('/api/auth/sign-in')
+            .send({ password: 'correct horse battery staple' })
+            .expect(200)
+            .expect(({ body }) => {
+                csrfToken = body.csrfToken
+            })
 
-    await agent
-      .post('/api/admin/galleries')
-      .set('X-CSRF-Token', csrfToken)
-      .send({ title: '' })
-      .expect(400);
+        await agent.post('/api/admin/galleries').set('X-CSRF-Token', csrfToken).send({ title: '' }).expect(400)
 
-    const first = await agent
-      .post('/api/admin/galleries')
-      .set('X-CSRF-Token', csrfToken)
-      .send({
-        title: 'María & Pablo',
-        description: 'Wedding preview',
-        eventDate: '2026-09-07',
-      })
-      .expect(201);
+        const first = await agent
+            .post('/api/admin/galleries')
+            .set('X-CSRF-Token', csrfToken)
+            .send({
+                title: 'María & Pablo',
+                description: 'Wedding preview',
+                eventDate: '2026-09-07',
+            })
+            .expect(201)
 
-    expect(first.body).toMatchObject({
-      slug: 'maria-pablo',
-      title: 'María & Pablo',
-      status: 'draft',
-      eventDate: '2026-09-07',
-    });
+        expect(first.body).toMatchObject({
+            slug: 'maria-pablo',
+            title: 'María & Pablo',
+            status: 'draft',
+            eventDate: '2026-09-07',
+        })
 
-    const second = await agent
-      .post('/api/admin/galleries')
-      .set('X-CSRF-Token', csrfToken)
-      .send({ title: 'María & Pablo' })
-      .expect(201);
-    expect(second.body.slug).toBe('maria-pablo-2');
+        const second = await agent.post('/api/admin/galleries').set('X-CSRF-Token', csrfToken).send({ title: 'María & Pablo' }).expect(201)
+        expect(second.body.slug).toBe('maria-pablo-2')
 
-    await agent
-      .patch(`/api/admin/galleries/${first.body.id}`)
-      .set('X-CSRF-Token', csrfToken)
-      .send({ title: 'María & Pablo - final', description: null, eventDate: null })
-      .expect(200)
-      .expect(({ body }) => {
-        expect(body.title).toBe('María & Pablo - final');
-        expect(body.description).toBeNull();
-      });
+        await agent
+            .patch(`/api/admin/galleries/${first.body.id}`)
+            .set('X-CSRF-Token', csrfToken)
+            .send({ title: 'María & Pablo - final', description: null, eventDate: null })
+            .expect(200)
+            .expect(({ body }) => {
+                expect(body.title).toBe('María & Pablo - final')
+                expect(body.description).toBeNull()
+            })
 
-    await agent.get('/api/admin/galleries').expect(200).expect(({ body }) => {
-      expect(body.galleries).toHaveLength(2);
-    });
+        await agent
+            .get('/api/admin/galleries')
+            .expect(200)
+            .expect(({ body }) => {
+                expect(body.galleries).toHaveLength(2)
+            })
 
-    await agent
-      .delete(`/api/admin/galleries/${second.body.id}`)
-      .set('X-CSRF-Token', csrfToken)
-      .expect(204);
-    await agent.get(`/api/admin/galleries/${second.body.id}`).expect(404);
-  });
+        await agent.delete(`/api/admin/galleries/${second.body.id}`).set('X-CSRF-Token', csrfToken).expect(204)
+        await agent.get(`/api/admin/galleries/${second.body.id}`).expect(404)
+    })
 
-  it('stages accepted image bytes and reports rejected files without silent loss', async () => {
-    const agent = request.agent(app.getHttpServer());
-    const signIn = await agent
-      .post('/api/auth/sign-in')
-      .send({ password: 'correct horse battery staple' })
-      .expect(200);
-    csrfToken = signIn.body.csrfToken;
+    it('stages accepted image bytes and reports rejected files without silent loss', async () => {
+        const agent = request.agent(app.getHttpServer())
+        const signIn = await agent.post('/api/auth/sign-in').send({ password: 'correct horse battery staple' }).expect(200)
+        csrfToken = signIn.body.csrfToken
 
-    const gallery = await agent
-      .post('/api/admin/galleries')
-      .set('X-CSRF-Token', csrfToken)
-      .send({ title: 'Upload test' })
-      .expect(201);
+        const gallery = await agent.post('/api/admin/galleries').set('X-CSRF-Token', csrfToken).send({ title: 'Upload test' }).expect(201)
 
-    const image = Buffer.from(
-      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
-      'base64',
-    );
-    const accepted = await agent
-      .post(`/api/admin/galleries/${gallery.body.id}/photos`)
-      .set('X-CSRF-Token', csrfToken)
-      .attach('files', image, 'IMG_001.PNG')
-      .expect(201);
+        const image = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
+        const accepted = await agent
+            .post(`/api/admin/galleries/${gallery.body.id}/photos`)
+            .set('X-CSRF-Token', csrfToken)
+            .attach('files', image, 'IMG_001.PNG')
+            .expect(201)
 
-    expect(accepted.body.files).toEqual([
-      expect.objectContaining({
-        originalName: 'IMG_001.PNG',
-        bytes: image.length,
-        status: 'queued',
-      }),
-    ]);
+        expect(accepted.body.files).toEqual([
+            expect.objectContaining({
+                originalName: 'IMG_001.PNG',
+                bytes: image.length,
+                status: 'queued',
+            }),
+        ])
 
-    const rejected = await agent
-      .post(`/api/admin/galleries/${gallery.body.id}/photos`)
-      .set('X-CSRF-Token', csrfToken)
-      .attach('files', Buffer.from('not an image'), 'notes.txt')
-      .expect(201);
-    expect(rejected.body.files).toEqual([
-      expect.objectContaining({ originalName: 'notes.txt', status: 'rejected' }),
-    ]);
+        const rejected = await agent
+            .post(`/api/admin/galleries/${gallery.body.id}/photos`)
+            .set('X-CSRF-Token', csrfToken)
+            .attach('files', Buffer.from('not an image'), 'notes.txt')
+            .expect(201)
+        expect(rejected.body.files).toEqual([expect.objectContaining({ originalName: 'notes.txt', status: 'rejected' })])
 
-    let photoStatus: { photoId: string; status: string } | undefined;
-    for (let attempt = 0; attempt < 20; attempt += 1) {
-      const response = await agent.get(`/api/admin/galleries/${gallery.body.id}/photos`).expect(200);
-      photoStatus = response.body.files[0];
-      if (photoStatus.status === 'ready') {
-        break;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-    expect(photoStatus?.status).toBe('ready');
+        let photoStatus: { photoId: string; status: string } | undefined
+        for (let attempt = 0; attempt < 20; attempt += 1) {
+            const response = await agent.get(`/api/admin/galleries/${gallery.body.id}/photos`).expect(200)
+            photoStatus = response.body.files[0]
+            if (photoStatus.status === 'ready') {
+                break
+            }
+            await new Promise(resolve => setTimeout(resolve, 100))
+        }
+        expect(photoStatus?.status).toBe('ready')
 
-    await agent
-      .patch(`/api/admin/galleries/${gallery.body.id}/cover`)
-      .set('X-CSRF-Token', csrfToken)
-      .send({ photoId: photoStatus?.photoId })
-      .expect(200)
-      .expect(({ body }) => {
-        expect(body.coverPhotoId).toBe(photoStatus?.photoId);
-      });
+        await agent
+            .patch(`/api/admin/galleries/${gallery.body.id}/cover`)
+            .set('X-CSRF-Token', csrfToken)
+            .send({ photoId: photoStatus?.photoId })
+            .expect(200)
+            .expect(({ body }) => {
+                expect(body.coverPhotoId).toBe(photoStatus?.photoId)
+            })
 
-    const published = await agent
-      .post(`/api/admin/galleries/${gallery.body.id}/publish`)
-      .set('X-CSRF-Token', csrfToken)
-      .expect(201);
-    const sharePath = published.body.sharePath as string;
-    const [, , slug, token] = sharePath.split('/');
-    expect(slug).toBe('upload-test');
-    expect(token).toEqual(expect.any(String));
+        const published = await agent.post(`/api/admin/galleries/${gallery.body.id}/publish`).set('X-CSRF-Token', csrfToken).expect(201)
+        const sharePath = published.body.sharePath as string
+        const [, , slug, token] = sharePath.split('/')
+        expect(slug).toBe('upload-test')
+        expect(token).toEqual(expect.any(String))
 
-    await request(app.getHttpServer())
-      .post(`/api/share/${slug}/invalid-token/session`)
-      .expect(403);
+        await request(app.getHttpServer()).post(`/api/share/${slug}/invalid-token/session`).expect(403)
 
-    const visitor = request.agent(app.getHttpServer());
-    await visitor.post(`/api/share/${slug}/${token}/session`).expect(200);
-    const metadata = await visitor.get(`/api/shared/galleries/${slug}`).expect(200);
-    expect(metadata.body.gallery).toMatchObject({ slug, title: 'Upload test' });
-    expect(metadata.body.photos).toHaveLength(1);
+        const visitor = request.agent(app.getHttpServer())
+        await visitor.post(`/api/share/${slug}/${token}/session`).expect(200)
+        const metadata = await visitor.get(`/api/shared/galleries/${slug}`).expect(200)
+        expect(metadata.body.gallery).toMatchObject({ slug, title: 'Upload test' })
+        expect(metadata.body.photos).toHaveLength(1)
 
-    await visitor
-      .get(`/api/shared/galleries/${slug}/photos/${photoStatus?.photoId}/thumbnail`)
-      .expect(200)
-      .expect('Content-Type', /image\/webp/);
-    await visitor
-      .get(`/api/shared/galleries/${slug}/photos/${photoStatus?.photoId}/original`)
-      .expect(200)
-      .expect('Content-Disposition', /attachment/);
+        await visitor
+            .get(`/api/shared/galleries/${slug}/photos/${photoStatus?.photoId}/thumbnail`)
+            .expect(200)
+            .expect('Content-Type', /image\/webp/)
+        await visitor
+            .get(`/api/shared/galleries/${slug}/photos/${photoStatus?.photoId}/original`)
+            .expect(200)
+            .expect('Content-Disposition', /attachment/)
 
-    const rotated = await agent
-      .post(`/api/admin/galleries/${gallery.body.id}/rotate-link`)
-      .set('X-CSRF-Token', csrfToken)
-      .expect(201);
-    await visitor.get(`/api/shared/galleries/${slug}`).expect(401);
+        const rotated = await agent.post(`/api/admin/galleries/${gallery.body.id}/rotate-link`).set('X-CSRF-Token', csrfToken).expect(201)
+        await visitor.get(`/api/shared/galleries/${slug}`).expect(401)
 
-    const [, , rotatedSlug, rotatedToken] = (rotated.body.sharePath as string).split('/');
-    const rotatedVisitor = request.agent(app.getHttpServer());
-    await rotatedVisitor
-      .post(`/api/share/${rotatedSlug}/${rotatedToken}/session`)
-      .expect(200);
-    await rotatedVisitor.get(`/api/shared/galleries/${rotatedSlug}`).expect(200);
+        const [, , rotatedSlug, rotatedToken] = (rotated.body.sharePath as string).split('/')
+        const rotatedVisitor = request.agent(app.getHttpServer())
+        await rotatedVisitor.post(`/api/share/${rotatedSlug}/${rotatedToken}/session`).expect(200)
+        await rotatedVisitor.get(`/api/shared/galleries/${rotatedSlug}`).expect(200)
 
-    await agent
-      .post(`/api/admin/galleries/${gallery.body.id}/unpublish`)
-      .set('X-CSRF-Token', csrfToken)
-      .expect(201);
-    await rotatedVisitor.get(`/api/shared/galleries/${rotatedSlug}`).expect(401);
-  });
+        await agent.post(`/api/admin/galleries/${gallery.body.id}/unpublish`).set('X-CSRF-Token', csrfToken).expect(201)
+        await rotatedVisitor.get(`/api/shared/galleries/${rotatedSlug}`).expect(401)
+    })
 
-  afterAll(async () => {
-    await app.close();
-    delete process.env.SETUP_TOKEN;
-    delete process.env.DATABASE_PATH;
-    delete process.env.STORAGE_PATH;
-    rmSync(dataDirectory, { recursive: true, force: true });
-  });
-});
+    afterAll(async () => {
+        await app.close()
+        delete process.env.SETUP_TOKEN
+        delete process.env.DATABASE_PATH
+        delete process.env.STORAGE_PATH
+        rmSync(dataDirectory, { recursive: true, force: true })
+    })
+})
