@@ -88,4 +88,61 @@ describe('ProcessingRepository', () => {
         })
         database.close()
     })
+
+    it('retries processing failures and terminally fails after the maximum attempts', () => {
+        const database = new Database(':memory:')
+        database.pragma('foreign_keys = ON')
+        runMigrations(database)
+        database
+            .prepare(
+                `INSERT INTO galleries (id, slug, title, created_at, updated_at) VALUES ('gallery', 'gallery', 'Gallery', 'now', 'now')`,
+            )
+            .run()
+        database
+            .prepare(
+                `INSERT INTO photos
+          (id, gallery_id, original_name, original_key, mime_type, original_bytes,
+           processing_status, created_at, updated_at)
+         VALUES ('photo', 'gallery', 'photo.jpg', 'original/photo.jpg', 'image/jpeg', 1,
+           'pending', 'now', 'now')`,
+            )
+            .run()
+        database
+            .prepare(
+                `INSERT INTO processing_jobs
+          (id, photo_id, status, attempts, available_at, created_at, updated_at)
+         VALUES ('job', 'photo', 'queued', 0, 'now', 'now', 'now')`,
+            )
+            .run()
+
+        const service = new ProcessingRepository({ connection: database } as never)
+        expect(service.claimNext('now')?.attempts).toBe(1)
+        service.markFailed('photo', 1, 'synthetic processing failure', 'failed-once')
+        expect(database.prepare('SELECT status, attempts, last_error FROM processing_jobs').get()).toMatchObject({
+            status: 'queued',
+            attempts: 1,
+            last_error: 'synthetic processing failure',
+        })
+        expect(database.prepare('SELECT processing_status, processing_error FROM photos').get()).toEqual({
+            processing_status: 'pending',
+            processing_error: 'synthetic processing failure',
+        })
+
+        database.prepare("UPDATE processing_jobs SET available_at = 'now'").run()
+        expect(service.claimNext('now')?.attempts).toBe(2)
+        service.markFailed('photo', 2, 'second processing failure', 'failed-twice')
+        database.prepare("UPDATE processing_jobs SET available_at = 'now'").run()
+        expect(service.claimNext('now')?.attempts).toBe(3)
+        service.markFailed('photo', 3, 'terminal processing failure', 'failed-terminal')
+        expect(database.prepare('SELECT status, attempts, last_error FROM processing_jobs').get()).toMatchObject({
+            status: 'failed',
+            attempts: 3,
+            last_error: 'terminal processing failure',
+        })
+        expect(database.prepare('SELECT processing_status, processing_error FROM photos').get()).toEqual({
+            processing_status: 'failed',
+            processing_error: 'terminal processing failure',
+        })
+        database.close()
+    })
 })

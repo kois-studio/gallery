@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import sharp from 'sharp'
 import request from 'supertest'
 import { App } from 'supertest/types'
 import { DatabaseService } from '../src/database/database.service.js'
@@ -224,7 +225,17 @@ describe('draft galleries (e2e)', () => {
             .set('X-CSRF-Token', csrfToken)
             .send({ title: 'Synthetic workload' })
             .expect(201)
-        const image = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
+        const width = 1600
+        const height = 1200
+        const pixels = Buffer.alloc(width * height * 3)
+        for (let offset = 0; offset < pixels.length; offset += 3) {
+            pixels[offset] = (offset / 3) % 251
+            pixels[offset + 1] = (offset / 7) % 251
+            pixels[offset + 2] = (offset / 13) % 251
+        }
+        const image = await sharp(pixels, { raw: { width, height, channels: 3 } })
+            .jpeg({ quality: 84 })
+            .toBuffer()
         const uploadStarted = performance.now()
         let uploadRequest = agent.post(`/api/admin/galleries/${gallery.body.id}/photos`).set('X-CSRF-Token', csrfToken)
         for (let index = 0; index < 20; index += 1) {
@@ -243,7 +254,9 @@ describe('draft galleries (e2e)', () => {
             await new Promise(resolve => setTimeout(resolve, 100))
         }
         const processingMs = Math.round(performance.now() - processingStarted)
-        console.log(`[media-workload] ${JSON.stringify({ files: 20, uploadMs, processingMs, ready })}`)
+        console.log(
+            `[media-workload] ${JSON.stringify({ files: 20, width, height, bytesPerFile: image.length, uploadMs, processingMs, ready })}`,
+        )
         expect(ready).toBe(20)
     })
 

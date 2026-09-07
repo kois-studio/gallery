@@ -14,6 +14,7 @@ The implementation gates are resolved in ADRs 0005–0012. This document now con
 
 - Are server-backed visitor selections required for Lino’s real beta? If so, define identity, persistence, submission, retrieval, retention, and export behavior in a new ADR.
 - Is individual-original download sufficient, or is an asynchronous bounded archive required? If required, define limits, expiry, cleanup, and authorization.
+- Does a real client workflow require a retry-safe batch idempotency key, or is explicit per-file retry sufficient for the first beta?
 - Is expiration required, and what exactly expires: access, metadata, originals, or derivatives?
 - Are visitor passwords required in addition to bearer links?
 - Which branding controls are essential for the first real user?

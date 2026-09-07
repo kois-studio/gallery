@@ -48,7 +48,7 @@ The first slice supports individual original downloads through an authorization-
 
 ## State and failure rules
 
-- A photo row is created with a server-generated ID and an idempotency key for the upload attempt. Repeated client retries must not create duplicate logical photos when the same attempt is retried.
+- A photo row is created with a server-generated ID for each accepted upload. The current first slice does not expose a client idempotency key, so repeated submission of the same multipart request may create distinct photos; retry-safe batch identity remains a deferred requirement if automated clients need it.
 - Original bytes are written to a temporary location, validated, and atomically moved into their final key before the photo is considered stored.
 - A processing job claims work with an attempt and timestamp. On restart, stale claims become retryable; queued jobs are picked up by the in-process worker.
 - Variant keys are deterministic from the photo ID and variant name. A retry may replace an incomplete output but must not mark the photo ready until both required variants are finalized.
