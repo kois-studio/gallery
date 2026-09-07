@@ -16,6 +16,7 @@
     "start:prod": "node dist/main",
     "admin:reset": "node scripts/reset-admin-password.mjs",
     "storage:verify": "node scripts/verify-storage.mjs",
+    "storage:repair": "node scripts/repair-storage.mjs",
     "lint": "oxlint src/ test/",
     "test": "vitest run",
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",

@@ -78,7 +78,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** Synthetic workload, malformed/oversized files, processing retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers. A deterministic 20-file 1600×1200 synthetic baseline exists; representative camera and architecture-specific evidence remain open. Upload idempotency is not yet part of the first request contract.
 - **Dependencies:** GAL-011 and ADR 0011.
 - **Blocker or question:** None; measurements may produce a later limits decision.
-- **Next action:** Run representative camera workload, storage-failure, architecture-specific, and restore verification; use `npm run storage:verify` during the restore exercise.
+- **Next action:** Run representative camera workload, storage-failure, architecture-specific, and container/operator restore verification; use `storage:verify` and approved `storage:repair` during the restore exercise.
 
 ### [GAL-013] [P0] [media] Generate derivatives and select a cover
 
@@ -123,7 +123,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Scope:** CI quality gates, critical-journey/security matrix, workload record, setup/upgrade/runbook updates, standards-contract updates, and restore-drill preparation.
 - **Non-goals:** Do not claim a successful restore or beta readiness before GAL-017.
 - **Acceptance criteria:** Clean install/build/test/security commands run or are marked unrun; current docs describe implemented behavior; the synthetic workload and recovery procedure are executable.
-- **Verification:** CI inspection, clean-container checks, tests, documentation/link validation, the synthetic local restore e2e, and readiness review for GAL-017.
+- **Verification:** CI inspection, clean-container checks, tests, documentation/link validation, the synthetic local restore e2e, storage verification/repair evidence, and readiness review for GAL-017.
 - **Dependencies:** GAL-008 through GAL-015.
 - **Blocker or question:** Release evidence remains incomplete until the restore gate passes.
 - **Next action:** Run the CI quality gates, execute the storage-integrity command against a restored clean installation, and assemble the remaining verification matrix for GAL-017.

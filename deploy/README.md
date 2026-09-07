@@ -37,3 +37,11 @@ docker compose -f deploy/docker-compose.yml run --rm gallery npm run storage:ver
 ```
 
 The command reports missing originals, missing ready-photo derivatives, and unreferenced files. A non-zero result requires operator review; it never deletes files or rewrites the database.
+
+After reviewing the report, requeue missing derivatives and mark missing originals as failed with the explicit repair command:
+
+```sh
+docker compose -f deploy/docker-compose.yml run --rm gallery npm run storage:repair -- --confirm-repair
+```
+
+The repair command does not delete unreferenced files. Run the integrity check again after the service has processed requeued derivatives.

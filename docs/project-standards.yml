@@ -93,9 +93,9 @@ compliance:
       next_action: Add an upgrade migration and failure-path coverage when the schema next changes.
     - id: DATA-004
       status: partial
-      evidence: The two-store database/filesystem boundary, local storage key/symlink protections, durable processing state, cancellation markers, startup temporary-file cleanup, and a read-only storage-integrity report are implemented; repair and restore reconciliation remain incomplete.
+      evidence: The two-store database/filesystem boundary, local storage key/symlink protections, durable processing state, cancellation markers, startup temporary-file cleanup, read-only integrity reporting, and confirmation-gated repair are implemented; the container/operator restore gate remains open.
       priority: high
-      next_action: Use the storage-integrity report during the GAL-017 restore exercise and define the operator repair path from its results.
+      next_action: Use verification and repair during the GAL-017 restore exercise and record the operator result.
     - id: DATA-007
       status: partial
       evidence: docs/operations/backup-recovery.md defines the two-store backup/restore contract; `npm run storage:verify` and the synthetic two-store recovery e2e check restored object references, but the container/operator gate remains open.
@@ -103,7 +103,7 @@ compliance:
       next_action: Execute GAL-017 using synthetic or approved assets before beta.
     - id: OPS-009
       status: partial
-      evidence: docs/operations/backup-recovery.md and deploy/README.md define operator responsibilities and provide a read-only integrity command; the local synthetic restore is automated, while the container-level procedure is not yet exercised.
+      evidence: docs/operations/backup-recovery.md and deploy/README.md define operator responsibilities and provide integrity verification plus confirmation-gated repair; the local synthetic restore is automated, while the container-level procedure is not yet exercised.
       priority: high
       next_action: Execute the documented restore gate in GAL-017 and record the integrity report and operator actions.
     - id: OPS-001

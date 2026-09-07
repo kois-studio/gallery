@@ -11,6 +11,11 @@ export interface StorageIntegrityReport {
     unreferencedObjects: string[]
 }
 
+export interface StorageRepairResult {
+    requeuedPhotos: string[]
+    failedPhotos: string[]
+}
+
 interface PhotoStorageRow {
     id: string
     original_key: string
@@ -80,5 +85,50 @@ export class StorageIntegrityService {
 
     static hasProblems(report: StorageIntegrityReport): boolean {
         return report.missingOriginals.length > 0 || report.missingDerivatives.length > 0 || report.unreferencedObjects.length > 0
+    }
+
+    repair(report: StorageIntegrityReport, now = new Date().toISOString()): StorageRepairResult {
+        const missingOriginals = new Set(report.missingOriginals)
+        const requeuePhotos = [...new Set(report.missingDerivatives.map(derivative => derivative.photoId))].filter(
+            photoId => !missingOriginals.has(photoId),
+        )
+        const repair = this.database.connection.transaction(() => {
+            const failOriginal = this.database.connection.prepare(
+                `UPDATE photos
+           SET processing_status = 'failed', processing_error = 'Original object missing during storage integrity check', updated_at = ?
+           WHERE id = ? AND cancelled_at IS NULL`,
+            )
+            const failJob = this.database.connection.prepare(
+                `UPDATE processing_jobs
+           SET status = 'failed', claimed_at = NULL, last_error = 'Original object missing during storage integrity check', updated_at = ?
+           WHERE photo_id = ? AND cancelled_at IS NULL`,
+            )
+            const resetPhoto = this.database.connection.prepare(
+                `UPDATE photos
+           SET thumbnail_key = NULL, display_key = NULL, width = NULL, height = NULL,
+               processing_status = 'pending', processing_error = 'Derivative missing during storage integrity check', updated_at = ?
+           WHERE id = ? AND cancelled_at IS NULL`,
+            )
+            const resetJob = this.database.connection.prepare(
+                `INSERT INTO processing_jobs
+          (id, photo_id, status, attempts, available_at, created_at, updated_at)
+         VALUES (?, ?, 'queued', 0, ?, ?, ?)
+         ON CONFLICT(photo_id) DO UPDATE SET
+           status = 'queued', attempts = 0, available_at = ?, claimed_at = NULL,
+           last_error = NULL, cancelled_at = NULL, updated_at = ?`,
+            )
+
+            for (const photoId of missingOriginals) {
+                failOriginal.run(now, photoId)
+                failJob.run(now, photoId)
+            }
+            for (const photoId of requeuePhotos) {
+                resetPhoto.run(now, photoId)
+                resetJob.run(photoId, photoId, now, now, now, now, now)
+            }
+        })
+
+        repair()
+        return { requeuedPhotos: requeuePhotos, failedPhotos: [...missingOriginals] }
     }
 }
