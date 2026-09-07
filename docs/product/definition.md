@@ -2,7 +2,7 @@
 
 ## Status
 
-This is a proposed product definition for the design phase. It is not an implementation contract yet.
+This is the working product definition for the first implementation. Release guarantees remain evidence-gated in the work queue and operations documents.
 
 ## Problem
 

@@ -31,9 +31,9 @@ compliance:
   rules:
     - id: DOC-001
       status: partial
-      evidence: docs/AGENTS.md exists, but the project has no implementation commands yet.
+      evidence: docs/AGENTS.md documents project-implementation sessions, repository boundaries, validation commands, and release-state honesty.
       priority: high
-      next_action: Update the project instructions when the runtime and implementation toolchain are selected.
+      next_action: Keep implementation and landing instructions aligned with the accepted stack and operating model.
     - id: DOC-002
       status: compliant
       evidence: docs/README.md indexes the maintained project documentation.
@@ -43,12 +43,12 @@ compliance:
       status: compliant
       evidence: docs/work/TODO.md is the tracked unfinished-work queue.
       priority: medium
-      next_action: Keep design and implementation-preparation work itemized.
+      next_action: Keep unfinished implementation, verification, landing, and release work itemized.
     - id: DOC-003
       status: partial
-      evidence: Product, architecture, and operations sources are identified, but the previous scope/workflow documents duplicated unresolved beta promises; this design review narrows and cross-links them.
+      evidence: Product, architecture, operations, work, and checkpoint sources are indexed; implemented behavior and unresolved beta evidence are now cross-linked.
       priority: high
-      next_action: Keep first-beta behavior in product scope/workflows and implementation facts separate once code exists.
+      next_action: Keep product intent, implementation facts, and release evidence separate as the beta evolves.
     - id: SEC-001
       status: partial
       evidence: docs/architecture/boundaries.md records administrator, visitor, media, storage, and operator trust boundaries; threat review and negative tests remain open.
@@ -56,14 +56,14 @@ compliance:
       next_action: Complete the threat and responsibility review before beta release.
     - id: SEC-003
       status: partial
-      evidence: The local administrator session boundary, CSRF checks, and denied-access tests are implemented; visitor bearer-link enforcement remains pending.
+      evidence: The local administrator session boundary, CSRF checks, visitor bearer-link enforcement, token rotation, unpublish revocation, and denied-access tests are implemented; the full release matrix remains open.
       priority: high
-      next_action: Complete the visitor bearer-link negative-test matrix in GAL-014 and GAL-016.
+      next_action: Complete the production-proxy and full negative-test matrix in GAL-016/GAL-017.
     - id: SEC-004
       status: partial
-      evidence: Upload count/size/signature validation, generated storage keys, atomic writes, and symlink rejection are implemented; fuzzing and private-media delivery tests remain open.
+      evidence: Upload count/size/signature validation, generated storage keys, atomic writes, symlink rejection, private-media authorization, and direct-object denial are implemented; fuzzing and release-scale failure tests remain open.
       priority: high
-      next_action: Extend malformed-file, token, and direct-object rejection tests in GAL-012, GAL-014, and GAL-016.
+      next_action: Extend malformed-file, token, storage-failure, and direct-object rejection tests in GAL-012 and GAL-016/GAL-017.
     - id: SEC-005
       status: partial
       evidence: Private media, database, storage, backups, and operator responsibilities are documented; retention, encryption, and deletion behavior remain incomplete.
@@ -71,20 +71,20 @@ compliance:
       next_action: Resolve the beta privacy/retention policy and document operator controls before release.
     - id: SEC-006
       status: partial
-      evidence: Documentation prohibits secret and private-media leakage and requests safe structured diagnostics; no logger or error contract exists yet.
+      evidence: Documentation prohibits secret and private-media leakage; NestJS and worker logging exist with bounded messages, but a structured diagnostic/error contract remains open.
       priority: medium
       next_action: Define safe log fields and external error behavior during implementation.
     - id: SEC-008
-      status: deferred
-      evidence: Authentication rejection, session, CSRF, and setup re-entry tests exist; upload, private-media, and cross-gallery rejection tests remain pending.
-      rationale: The access model is accepted and its first administrator boundary is implemented; later product boundaries still need negative tests.
+      status: partial
+      evidence: Authentication rejection, session, CSRF, setup re-entry, upload authorization, private-media, token rotation, unpublish, and cross-gallery rejection tests exist; release-proxy and brute-force evidence remain pending.
+      rationale: The access model is accepted and implemented for the first product boundary; release verification remains.
       priority: high
-      next_action: Add upload-validation, private-media, and cross-gallery tests in GAL-012, GAL-014, and GAL-016.
+      next_action: Complete release security verification in GAL-016/GAL-017.
     - id: DATA-001
       status: partial
-      evidence: The first-beta tables, repositories, gallery domain service, photo upload service, and lifecycle boundaries now exist; visitor delivery remains.
+      evidence: The first-beta tables, repositories, gallery domain service, photo upload service, private delivery service, and lifecycle boundaries exist; selections and broader delivery remain deferred.
       priority: high
-      next_action: Implement the persisted gallery lifecycle and repositories in GAL-011 through GAL-014.
+      next_action: Verify the implemented lifecycle against the release matrix and real workflow evidence.
     - id: DATA-002
       status: partial
       evidence: The numbered SQL migration runner and clean-install/idempotent-run tests exist; upgrade and migration-failure coverage remain incomplete.
@@ -107,17 +107,17 @@ compliance:
       priority: high
       next_action: Execute the documented restore gate in GAL-017 and record the integrity report and operator actions.
     - id: OPS-001
-      status: deferred
-      evidence: Configuration categories and fail-closed intent are documented, but startup validation does not exist.
-      rationale: Runtime and configuration schema were deferred during the design gate and are now implementation work.
+      status: partial
+      evidence: Zod startup validation covers runtime environment, port, database path, storage path, CORS origin, and optional setup token; deployment-specific secret and filesystem checks remain open.
+      rationale: The first runtime configuration exists and must remain fail-closed as new settings are added.
       priority: high
-      next_action: Extend the validated startup configuration and failure tests during GAL-009 through GAL-016.
+      next_action: Add configuration failure-path tests and verify production deployment values in GAL-016/GAL-017.
     - id: OPS-005
       status: partial
-      evidence: The foundation exposes health/readiness behavior and startup migrations; worker/storage/domain readiness still needs release verification.
+      evidence: The API exposes health/readiness behavior, startup migrations, and writable database/storage checks; worker and release-container readiness still need verification.
       rationale: The runtime foundation exists; later slices must extend readiness as durable domain resources are added.
       priority: medium
-      next_action: Extend readiness checks for migrations and durable domain resources during GAL-015 and GAL-016.
+      next_action: Verify readiness and health behavior in the packaged container during GAL-016/GAL-017.
     - id: OPS-006
       status: partial
       evidence: The in-process worker has bounded concurrency, restart requeue behavior, cancellation-aware completion guards, and startup temporary-file cleanup; workload and termination evidence remain incomplete.
@@ -125,197 +125,197 @@ compliance:
       priority: high
       next_action: Verify interruption/requeue behavior and active-work shutdown in GAL-016/GAL-017.
     - id: API-001
-      status: deferred
-      evidence: Angular and NestJS are separate logical applications connected by an internal HTTP boundary, but no machine-readable contract exists yet.
-      rationale: There is no independently consumed public API, but the internal frontend/backend contract should be made explicit once the route surface is implemented.
+      status: partial
+      evidence: Angular and NestJS are separate logical applications connected by a tested internal HTTP boundary; a machine-readable public contract remains intentionally deferred.
+      rationale: There is no independently consumed public API, but the internal boundary is now implemented and must remain coherent before headless consumers are accepted.
       priority: medium
-      next_action: Define and verify the internal HTTP contract during GAL-010 through GAL-015; reassess the required strength before accepting a headless consumer, SDK, MCP server, or public API.
+      next_action: Record the internal route contract and reassess public contract strength before accepting a headless consumer, SDK, MCP server, or public API.
     - id: WEB-001
-      status: deferred
-      evidence: The first slice will expose public/private browser routes, but no frontend has been implemented or audited.
-      rationale: Rendered-page audits require the selected runtime and representative routes.
+      status: partial
+      evidence: Angular admin and visitor routes are implemented and covered by a packaged Playwright journey; manual accessibility, performance, and production proxy audits remain open.
+      rationale: The functional browser slice exists; release-quality rendered-page evidence remains.
       priority: medium
-      next_action: Add Lighthouse or equivalent audits for admin and visitor routes before beta.
+      next_action: Complete responsive, accessibility, performance, and production-proxy audits before beta.
     - id: ANGULAR-001
-      status: deferred
-      evidence: The Angular shell exists, but feature-oriented product boundaries are not implemented yet.
-      rationale: Feature organization will be assessed as the product slices are added.
+      status: partial
+      evidence: Angular admin/auth, gallery management, upload, and visitor delivery components are organized by product capability; the visual system remains intentionally small.
+      rationale: The first product capabilities are implemented; the structure should be revisited if selections or theming are added.
       priority: medium
-      next_action: Organize Angular work by business capability and verify boundaries during GAL-015/GAL-016.
+      next_action: Keep capability boundaries coherent during release hardening and future feature work.
     - id: ANGULAR-002
-      status: deferred
-      evidence: The architecture separates Angular presentation/client orchestration from NestJS application and domain logic, but no components exist.
-      rationale: Component responsibility cannot be verified before implementation.
+      status: partial
+      evidence: Angular components handle presentation and client orchestration while NestJS services/repositories enforce domain and authorization rules; representative responsibilities are covered by the implemented journey.
+      rationale: The boundary is implemented for the first slice; later UI capabilities must preserve it.
       priority: high
-      next_action: Review representative components for presentation/orchestration-only responsibility during GAL-015.
+      next_action: Review new components against the same boundary during release hardening.
     - id: ANGULAR-003
-      status: deferred
-      evidence: Strict typed Angular APIs are required by the selected profile; only the initial Angular shell exists.
-      rationale: Representative API boundaries are implementation work.
+      status: partial
+      evidence: The Angular API service has typed request/response models and upload progress handling; a generated or machine-readable contract remains deferred.
+      rationale: The first internal boundary is typed in code, while an independently consumed API contract is not yet required.
       priority: high
-      next_action: Configure and verify typed Angular APIs during GAL-010, GAL-012, and GAL-015.
+      next_action: Keep typed models synchronized with NestJS routes and reassess contract generation before headless consumers.
     - id: ANGULAR-004
-      status: deferred
-      evidence: Upload, processing, and authenticated workflows are documented as explicit stateful journeys, but no Angular forms/state exist.
-      rationale: Workflow state must be verified against implemented UI behavior.
+      status: partial
+      evidence: Auth, upload, processing, cancellation, publication, and visitor browsing states are represented with Angular signals and tested through the critical browser journey.
+      rationale: The first UI slice models its relevant state; selections, richer retry UX, and broader workflows remain deferred.
       priority: high
-      next_action: Model loading, failure, retry, cancellation, and success states in GAL-012 and GAL-015.
+      next_action: Verify failure/retry/accessibility behavior in release review and extend states only for accepted workflows.
     - id: ANGULAR-005
-      status: deferred
-      evidence: Styling and icon choices remain open within the Angular application profile; no UI implementation exists.
-      rationale: Optional defaults should be selected only when the UI slice is implemented.
+      status: partial
+      evidence: A coherent SCSS visual system is implemented for the first admin and visitor surfaces without a separate icon dependency.
+      rationale: The first beta intentionally uses a small visual system; extensive theming remains deferred.
       priority: low
-      next_action: Select one coherent styling/icon approach during GAL-015 and document any deviation.
+      next_action: Keep styling accessible and consistent; revisit theming only when a real photographer requirement exists.
     - id: ANGULAR-006
-      status: deferred
-      evidence: Angular input and API-response validation is required by the selected profile, but no client boundary exists.
-      rationale: No implementation evidence is available.
+      status: partial
+      evidence: Angular forms constrain required local inputs and the API service uses typed response models; NestJS remains authoritative for runtime validation.
+      rationale: Client validation improves interaction but cannot replace backend boundary checks.
       priority: high
-      next_action: Add validation at Angular form and HTTP boundaries and test rejection paths during GAL-010, GAL-012, and GAL-015.
+      next_action: Add focused client rejection tests where they improve UX and retain backend negative tests as the security contract.
     - id: ANGULAR-007
-      status: deferred
-      evidence: Client state ownership/lifecycle is a documented design requirement, but no shared Angular services or state exist.
-      rationale: State lifecycle cannot be verified before implementation.
+      status: partial
+      evidence: Feature-local signals own admin and visitor view state; the API service owns only upload activity and no global store is introduced.
+      rationale: The first product slice has no justified cross-feature state requirement.
       priority: high
-      next_action: Document and test state scope/reset/synchronization during GAL-012 and GAL-015.
+      next_action: Preserve feature-local ownership and introduce shared state only when a concrete cross-route workflow requires it.
     - id: ANGULAR-008
-      status: deferred
-      evidence: The architecture keeps domain/application rules outside Angular components, but no business-rule tests exist.
-      rationale: No components or tests have been implemented.
+      status: partial
+      evidence: Domain and authorization rules remain in NestJS services/repositories; Angular components orchestrate HTTP interactions and view state.
+      rationale: The first slice has no complex client-only domain rules.
       priority: medium
-      next_action: Keep non-trivial rules independently testable during GAL-009 through GAL-015.
+      next_action: Keep new non-trivial client rules independently testable rather than embedding them in templates.
     - id: ANGULAR-009
-      status: deferred
-      evidence: Authorization and failure-test requirements are documented, but no Angular routes, guards, interceptors, or effects exist.
-      rationale: Implementation is intentionally deferred.
+      status: partial
+      evidence: Angular routes cover setup, sign-in, admin, share bootstrap, and visitor browsing; backend guards remain authoritative and client routing does not claim authorization.
+      rationale: The first app relies on server session/bearer authorization rather than duplicating security rules in the client.
       priority: high
-      next_action: Add focused client failure/auth tests where Angular owns interaction behavior; keep backend authorization authoritative.
+      next_action: Add client route/error tests where they materially improve onboarding while preserving backend denial tests.
     - id: ANGULAR-010
-      status: deferred
-      evidence: No Angular observable/signal effects or subscriptions exist to inspect.
-      rationale: Lifecycle verification requires implementation.
+      status: partial
+      evidence: HTTP subscriptions are scoped to component interactions and signal state; the critical browser journey passes without known teardown failures.
+      rationale: The first slice has limited long-lived reactive work and no global effect system.
       priority: high
-      next_action: Verify teardown and repeated navigation/initialization behavior during GAL-015/GAL-016.
+      next_action: Check repeated navigation and teardown during accessibility/release review.
     - id: ANGULAR-011
-      status: deferred
-      evidence: The critical browser journey is defined, but no Angular end-to-end tests exist.
-      rationale: The project has no implementation or browser test environment yet.
+      status: partial
+      evidence: Playwright covers administrator setup/upload/publish and visitor browse/download at desktop and mobile viewport configurations.
+      rationale: The core journey exists; broader matrix and production-host checks remain.
       priority: high
-      next_action: Add critical journey coverage in GAL-015 and execute it in GAL-016.
+      next_action: Extend the matrix with negative, keyboard, and production-proxy cases before beta.
     - id: ANGULAR-012
-      status: deferred
-      evidence: The selected profile requires strict Angular template and dependency-injection checks, but no Angular compiler configuration exists.
-      rationale: Runtime and framework files are not created during design.
+      status: partial
+      evidence: Angular strict injection/input compiler options are enabled and production builds pass; the full strict template profile remains to be reviewed.
+      rationale: The selected framework baseline is active, with remaining profile evidence tracked separately.
       priority: high
-      next_action: Enable and verify strict Angular compiler settings during GAL-015.
+      next_action: Verify the remaining strict template/profile checks in release review.
     - id: ANGULAR-013
       status: partial
-      evidence: docs/architecture/overview.md and docs/architecture/boundaries.md explicitly make NestJS/backend authorization authoritative; no implementation or bypass tests exist.
+      evidence: docs/architecture/overview.md and docs/architecture/boundaries.md make NestJS/backend authorization authoritative; direct unauthenticated, cross-gallery, revoked-link, and direct-object denial paths are covered.
       priority: high
-      next_action: Verify direct-request and alternate-client denial in GAL-014 and GAL-016.
+      next_action: Complete the remaining release security matrix and reverse-proxy checks.
     - id: ANGULAR-014
-      status: deferred
-      evidence: Loading, empty, success, failure, cancellation, and retry states are specified for upload and browsing, but no Angular views exist.
-      rationale: UI state behavior cannot be claimed before implementation.
+      status: partial
+      evidence: Loading, empty, success, error, cancellation, and ready states exist in the implemented admin/visitor views; richer retry UX remains limited.
+      rationale: The first beta exposes the states needed by the current workflow.
       priority: high
-      next_action: Implement and test applicable async states in GAL-012 and GAL-015.
+      next_action: Verify the implemented states during browser/accessibility review and add retry behavior where evidence requires it.
     - id: ANGULAR-015
-      status: deferred
-      evidence: The proposed application identifies client-state ownership as a boundary, but no Angular state persistence or cache exists.
-      rationale: No implementation evidence exists.
+      status: partial
+      evidence: View state is intentionally ephemeral and feature-local; no persistent client cache or global state is required by the first beta.
+      rationale: Persistence would create synchronization and privacy obligations without a current requirement.
       priority: medium
-      next_action: Document scope, persistence, reset, and synchronization for each shared client state during GAL-015.
+      next_action: Reassess persistence only if selections, offline work, or a multi-step workflow makes it necessary.
     - id: NEST-001
-      status: deferred
-      evidence: NestJS modules now separate access, gallery, storage, and upload/processing responsibilities; delivery remains to be implemented.
-      rationale: Capability boundaries exist for the implemented slices and need review as later capabilities arrive.
+      status: partial
+      evidence: NestJS modules separate access, gallery, storage, upload/processing, and share delivery responsibilities.
+      rationale: The first capability boundaries are implemented; future selections and adapters may introduce new modules.
       priority: medium
-      next_action: Organize NestJS modules by capability during GAL-009 through GAL-014.
+      next_action: Preserve capability boundaries while completing release hardening.
     - id: NEST-002
-      status: deferred
-      evidence: Implemented controllers delegate validation and domain operations to application services/repositories; later delivery controllers remain.
+      status: partial
+      evidence: Implemented controllers delegate domain operations to services/repositories, including auth, galleries, uploads, and visitor delivery.
       rationale: The separation is now observable in the auth, gallery, storage, and upload slices.
       priority: high
-      next_action: Review controller/service separation during GAL-010 through GAL-014.
+      next_action: Review new release/operator commands against the same separation.
     - id: NEST-003
-      status: deferred
-      evidence: Gallery, upload, processing, and storage rules are implemented in services/repositories separate from HTTP handlers; broader delivery rules remain.
+      status: partial
+      evidence: Gallery, upload, processing, storage, integrity, and share rules are implemented in services/repositories separate from HTTP handlers.
       rationale: Transport-independent rules are now testable for the implemented slices.
       priority: high
-      next_action: Exercise domain rules without starting HTTP transport where practical during GAL-009 through GAL-014.
+      next_action: Keep new recovery and release behavior transport-independent where practical.
     - id: NEST-004
-      status: deferred
-      evidence: DTO and runtime validation is required for NestJS boundaries, but no DTOs, pipes, schemas, or adapters exist.
-      rationale: Implementation has not started.
+      status: partial
+      evidence: Zod validates configuration, service boundaries validate domain inputs, and controllers reject malformed/unauthorized requests; DTO generation is not used.
+      rationale: The first application uses explicit schemas and service validation rather than a DTO-heavy transport layer.
       priority: high
-      next_action: Implement and test validated DTO/configuration/persistence boundaries in GAL-009 through GAL-014.
+      next_action: Extend negative tests as new routes or request shapes are added.
     - id: NEST-005
-      status: deferred
-      evidence: Safe error mapping, structured logging, and correlation are required design concerns, but no NestJS service exists.
-      rationale: No runtime evidence exists.
+      status: partial
+      evidence: NestJS maps boundary failures to safe HTTP responses and the worker logs bounded processing errors; structured correlation and a formal error envelope remain open.
+      rationale: The first beta has safe basic errors but not an observability system.
       priority: medium
-      next_action: Implement consistent safe errors/logging during GAL-009 through GAL-015 and verify them in GAL-016.
+      next_action: Define the minimal release logging/error contract before production beta.
     - id: NEST-006
-      status: deferred
-      evidence: Proposed application capabilities have named ownership boundaries, but no NestJS modules/public interfaces exist.
-      rationale: Module responsibility is not claimable before implementation.
+      status: partial
+      evidence: Auth, gallery, storage, upload/processing, and share modules expose capability-specific providers/controllers; no public module API is promised.
+      rationale: The application is a single installation, not a plugin or microservice platform.
       priority: high
-      next_action: Define and review each NestJS module interface during GAL-009 through GAL-014.
+      next_action: Review module exports and boundaries when recovery or future adapters expand.
     - id: NEST-007
-      status: deferred
-      evidence: The architecture requires explicit cross-capability dependencies, but no NestJS dependency graph exists.
-      rationale: Implementation review is required.
+      status: partial
+      evidence: Module imports and provider injection make cross-capability dependencies explicit; storage and database are global infrastructure boundaries.
+      rationale: The first monolith does not need a separate dependency-graph artifact.
       priority: medium
-      next_action: Review module exports/provider boundaries during GAL-009 through GAL-014.
+      next_action: Revisit dependency direction if S3, SDK, MCP, or selections become active consumers.
     - id: NEST-008
       status: partial
-      evidence: Architecture explicitly places authorization and domain invariants beyond Angular and NestJS controllers; no alternate-entry-point enforcement tests exist.
+      evidence: Architecture places authorization and domain invariants beyond controllers; service/repository tests and HTTP e2e tests cover direct and alternate entry points for the current slices.
       priority: high
-      next_action: Verify service/domain enforcement through direct and alternate requests in GAL-014 and GAL-016.
+      next_action: Extend alternate-entry-point tests for each new privileged operation.
     - id: NEST-009
-      status: deferred
-      evidence: External input validation is specified for uploads, configuration, tokens, and HTTP requests, but no NestJS boundary exists.
-      rationale: No implementation evidence exists.
+      status: partial
+      evidence: Configuration, passwords, gallery inputs, upload headers/content, tokens, and route authorization are validated at NestJS boundaries.
+      rationale: The current surface has implementation evidence; fuzzing and full malformed-input coverage remain release work.
       priority: high
-      next_action: Add validation and negative tests across NestJS entry points during GAL-009 through GAL-014.
+      next_action: Extend malformed-input and failure-path tests during release verification.
     - id: NEST-010
-      status: deferred
-      evidence: Stable safe error contracts are required by the design, but no NestJS error DTOs/filters exist.
-      rationale: Error behavior cannot be verified before implementation.
+      status: partial
+      evidence: Controllers return safe status/message responses for current failure paths; a versioned error DTO/filter contract is not yet required.
+      rationale: The first beta has one internal frontend consumer and no public API compatibility promise.
       priority: high
-      next_action: Define and test safe error contracts during GAL-009 through GAL-014.
+      next_action: Record the internal error expectations and formalize them before a second consumer.
     - id: NEST-011
-      status: deferred
+      status: partial
       evidence: NestJS startup validation covers runtime paths, URLs, ports, and the optional setup secret; secret leakage and deployment checks remain open.
       rationale: The initial runtime configuration exists; later slices must keep new settings validated and secret-safe.
       priority: high
-      next_action: Implement validated configuration and secret handling in GAL-009 through GAL-014.
+      next_action: Verify production values, mounted permissions, and secret handling in the container gate.
     - id: NEST-012
-      status: deferred
+      status: partial
       evidence: SQLite, local storage, and Sharp processing providers exist behind application-facing services; S3 and other adapters remain deferred.
       rationale: The first local installation has implementation evidence for its selected infrastructure boundaries.
       priority: high
-      next_action: Implement and test adapters during GAL-009, GAL-011, GAL-012, and GAL-013.
+      next_action: Keep the local adapters reliable; add S3 compatibility only when a real deployment requires it.
     - id: NEST-013
       status: partial
       evidence: Gallery writes use database constraints, local atomic-write boundaries, transactional photo/job creation, and durable cancellation markers; storage-failure recovery remains open.
       priority: high
       next_action: Implement and test transaction/partial-failure behavior during GAL-009, GAL-011, GAL-012, and GAL-017.
     - id: NEST-014
-      status: deferred
-      evidence: The NestJS in-process worker claims durable jobs, limits concurrency, retries failures, requeues interrupted claims, honors cancellation, and cleans stale upload temporary files; workload and bounded-shutdown evidence remain open.
+      status: partial
+      evidence: The NestJS in-process worker claims durable jobs, limits concurrency, retries failures, requeues interrupted claims, honors cancellation, and cleans stale upload temporary files; representative workload and termination evidence remain open.
       rationale: The first worker implementation exists, while release-scale behavior is still unverified.
       priority: high
-      next_action: Implement duplicate/retry/shutdown behavior in GAL-012 and verify it in GAL-016/GAL-017.
+      next_action: Verify duplicate/retry/interruption behavior and representative workload in GAL-016/GAL-017.
     - id: NEST-015
-      status: deferred
-      evidence: Database, storage, and in-process worker lifecycle resources exist; bounded shutdown and release-container checks remain open.
+      status: partial
+      evidence: Database, storage, and in-process worker lifecycle resources exist; termination and release-container checks remain open.
       rationale: Runtime lifecycle is implemented for the first process shape and needs release verification.
       priority: high
-      next_action: Extend lifecycle/readiness/shutdown behavior in GAL-009, GAL-012, and GAL-016.
+      next_action: Verify lifecycle, readiness, and shutdown behavior in GAL-016/GAL-017.
     - id: NEST-016
-      status: deferred
-      evidence: Angular will consume a NestJS HTTP interface across a logical frontend/backend boundary, but no published or machine-readable contract exists yet.
+      status: partial
+      evidence: Angular consumes a NestJS HTTP interface across a logical frontend/backend boundary, but no published or machine-readable contract is promised yet.
       rationale: The first release has no independent public API consumer, but the internal contract and compatibility behavior still need implementation evidence.
       priority: medium
       next_action: Define the contract and compatibility behavior during GAL-010 and GAL-015; reassess if a headless frontend, SDK, MCP server, or other independent consumer is accepted.

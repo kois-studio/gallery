@@ -26,7 +26,7 @@ Photographers who adopt Gallery run the same product on infrastructure they cont
 
 ## Current status
 
-- Design gates are resolved; GAL-008 foundation is implemented and domain slices are pending.
+- Design gates are resolved; the first product vertical slice and public landing site are implemented, while release evidence and beta gates remain open.
 - Self-hosted installation is the initial operating model.
 - SQLite is the default metadata database direction.
 - Local filesystem storage is the first storage target.

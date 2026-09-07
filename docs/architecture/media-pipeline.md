@@ -2,7 +2,7 @@
 
 ## Design status
 
-The first implementation is in progress. The server-mediated upload, local original storage, durable job rows, in-process worker, Sharp derivatives, and ready-only cover selection now exist; workload measurements and full release exercises remain outstanding.
+The first implementation is functional but not beta-ready. The server-mediated upload, local original storage, durable job rows, in-process worker, Sharp derivatives, ready-only cover selection, cancellation, and integrity checks now exist; representative workload measurements and full release exercises remain outstanding.
 
 ## Implemented lifecycle
 
