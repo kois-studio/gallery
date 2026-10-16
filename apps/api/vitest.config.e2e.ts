@@ -9,5 +9,7 @@ export default defineConfig({
         root: './',
         include: ['**/*.e2e-spec.ts'],
         fileParallelism: false,
+        // These suites wait for real image processing, which is slower on shared CI runners.
+        testTimeout: 30_000,
     },
 })
