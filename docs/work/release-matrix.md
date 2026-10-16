@@ -14,9 +14,10 @@ Gallery is a functional first vertical slice and a beta candidate in active hard
 | Gallery domain | Draft creation, slug uniqueness, cover selection, publication guards | Pass |
 | Uploads | JPEG/PNG/WebP signature checks, size/count/batch limits, visible rejection state, atomic local storage | Pass |
 | Processing | Durable jobs, two-worker bound, Sharp derivatives, retry state, cancellation, interrupted-job requeue, partial-derivative cleanup, operator-visible processing errors, and a packaged 20-file synthetic batch | Pass locally and in an arm64 container; camera/scale evidence open |
-| Private delivery | Bearer-link exchange, scoped visitor session, rotation, unpublish revocation, derivative/original authorization | Pass locally |
+| Private delivery | Bearer-link exchange, per-gallery path-scoped visitor sessions, recoverable links, republish keeps the link, rotation revokes it, take-offline revocation, derivative/original authorization, Range-capable originals with UTF-8 filenames | Pass locally (API e2e `lifecycle` and `gallery` suites) |
 | Production boundary probe | Production cookies, unauthenticated admin denial, explicit `/data` and `/photos` denial, disallowed CORS origin, readiness, security headers, and removal of Express fingerprinting | Pass in a fresh production-mode container; real reverse-proxy/TLS evidence open |
-| Browser journey | Angular admin setup/upload/publish and visitor browse/download through packaged Playwright | Pass locally |
+| Browser journey | Angular setup, per-file upload with client-side rejection, cover, publish, post-publication edit, bookmark reload, lightbox keyboard navigation and focus return, download, unavailable-link page, photo deletion, and no CSP violations through packaged Playwright | Pass locally on 2026-10-17 |
+| Gallery lifecycle | Retry and delete failed photos, publication not blocked by failed photos, editable published galleries, cover fallback, gallery deletion with object cleanup, capture-time ordering, display-oriented dimensions | Pass locally on 2026-10-17 |
 | Recovery | Synthetic SQLite plus storage copy into a clean installation, integrity report, restored private link and media access | Pass locally and in an isolated arm64 container; representative/production evidence open |
 | Storage recovery | Read-only `storage:verify` plus confirmation-gated `storage:repair` before and after isolated container restore | Pass locally; representative storage-failure evidence open |
 | Container runtime | Multi-stage image build, non-root startup, five SQLite migrations, healthcheck, `/api/ready`, Angular static delivery, empty-storage verification, and isolated restore on Docker Desktop arm64 | Pass locally on arm64 and emulated amd64; representative evidence remains open |
@@ -34,7 +35,7 @@ The latest packaged-container workload signal is 20 synthetic 1600×1200 JPEGs: 
 - Complete the production reverse-proxy, secure-cookie, readiness, and direct-media security checks.
 - Perform manual responsive/accessibility/performance review on representative desktop and mobile browsers.
 - Decide the OSS license before publishing a meaningful stable release.
-- Observe Lino’s workflow and decide whether server-backed selections are required for this beta.
+- Deliver one real event with Lino (GAL-018) and decide from it whether server-backed selections or batch downloads are required for this beta.
 
 ## Known intentional boundaries
 

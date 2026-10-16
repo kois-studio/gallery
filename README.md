@@ -13,7 +13,7 @@ The project design gates are complete and the runtime foundation is implemented.
 3. Gallery processes browser-friendly variants.
 4. The photographer chooses a cover and visibility.
 5. They publish and share a private, revocable URL.
-6. Visitors browse and download individual originals; server-backed selections are a separate beta gate based on Lino’s observed workflow.
+6. Visitors browse and download individual originals from the same bookmarkable link; the photographer can keep editing the gallery after publishing. Server-backed selections are a separate beta gate based on Lino’s observed workflow.
 
 The first real beta user is Lino Fajardo. His separate portfolio website will link to Gallery, but Gallery must remain an independent application and must not depend on Astro, Next.js, WordPress, or another photographer website framework.
 
@@ -56,7 +56,7 @@ The Angular frontend and NestJS backend are logical application boundaries. They
 
 ## Development status
 
-The runtime foundation, local administrator flow, gallery/storage flow, media processing, private delivery API, and initial Angular administration/visitor flow are implemented. Beta readiness, production integration, browser/performance evidence, and the OSS license are not yet claimed.
+The runtime foundation, local administrator flow, gallery lifecycle (including editing after publication, retry, and deletion), media processing, private delivery, and the Angular administration and visitor experience are implemented. The next milestone is one real event delivered with Lino. Beta readiness, production integration, real-device evidence, and the OSS license are not yet claimed.
 
 ## Quality checks
 

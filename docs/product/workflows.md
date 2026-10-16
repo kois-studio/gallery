@@ -12,8 +12,10 @@ These workflows are proposed and will be refined through Lino’s real usage.
 6. Choose a cover photograph.
 7. Configure the draft for private link sharing.
 8. Preview the visitor experience.
-9. Publish the gallery through a private, revocable share link.
-10. Copy the share URL.
+9. Publish the gallery through a private share link.
+10. Copy the share URL at any time from the gallery page.
+11. Keep editing after publication: fix details, change the cover, add late photographs, retry or delete failed ones. Visitors only see processed photographs.
+12. Take the gallery offline (the link stops working until it is published again) or replace the link (the old link stops working for good).
 
 Password access, public indexing, expiration, QR generation, and extensive branding are not part of the recommended first slice. A later gallery access mode must not weaken the server-side authorization rules.
 
@@ -24,7 +26,7 @@ Password access, public indexing, expiration, QR generation, and extensive brand
 3. Browse a responsive grid using optimized derivatives.
 4. Open a larger view without downloading originals by default.
 5. Download an individual original photograph.
-6. Return later using the share link or scoped access mechanism without exposing private media through guessable URLs.
+6. Return later by opening the same link or bookmark; it keeps working until the photographer replaces it or takes the gallery offline.
 
 Batch archives are deferred. If introduced, they must be generated asynchronously, have bounded lifetime and size, and be authorized against the same gallery access context.
 

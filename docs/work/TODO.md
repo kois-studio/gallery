@@ -4,7 +4,7 @@ This queue contains only unfinished implementation, verification, and release wo
 
 ## Current delivery mode
 
-Gallery is now in release-evidence mode. The first product vertical slice and local Docker installation are implemented; disposable local setup and seeded-demo flows are available for repeated product review. New product scope should remain frozen while the clean-install, restore, operator, browser, and representative-workload gates are executed. New requirements discovered during verification should be recorded as follow-up work instead of being implemented opportunistically during the gate.
+Gallery is a working vertical slice heading for its first real delivery. The 2026-10-17 review ([checkpoint](checkpoints/2026-10-17-workflow-review.md)) found that the frozen scope could not survive a normal photographer workflow, so the scope freeze is lifted. The fixes listed in that checkpoint are implemented, and the next priority is one real event delivered with Lino (GAL-018), not further synthetic evidence. Record friction from that delivery as new work items.
 
 ## Public landing track
 
@@ -82,7 +82,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** Synthetic workload, malformed/oversized files, processing retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers. Deterministic 20-file baselines and arm64/amd64 startup evidence exist; representative camera and host-specific performance evidence remain open. Upload idempotency is not yet part of the first request contract.
 - **Dependencies:** GAL-011 and ADR 0011.
 - **Blocker or question:** None; measurements may produce a later limits decision.
-- **Next action:** Run representative camera workload and storage-failure verification; use `storage:verify` and approved `storage:repair` during any operator-approved restore exercise. Container, restore, and architecture startup gates now have local evidence.
+- **Next action:** Run representative camera workload and storage-failure verification; use `storage:verify` and approved `storage:repair` during any operator-approved restore exercise. The web client now uploads one file per request (three in parallel, network failures retried), failed photos can be retried or deleted, and failed or cancelled photos no longer block publication (ADR 0013).
 
 ### [GAL-013] [P0] [media] Generate derivatives and select a cover
 
@@ -118,7 +118,7 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** Angular build/tests, API authorization coverage, Playwright critical journey, keyboard/manual accessibility, responsive checks, large-file streaming, and Lighthouse/equivalent audit. Manual and performance evidence remain open.
 - **Dependencies:** GAL-014 and GAL-013.
 - **Blocker or question:** Final browser/performance targets are release evidence, not a reason to expand scope silently.
-- **Next action:** Record responsive/accessibility/performance evidence, then prepare GAL-016’s release matrix.
+- **Next action:** The visitor page now uses a cover hero, aspect-preserving justified rows, a keyboard/swipe lightbox with focus management, Range-capable original downloads, and stable bookmarkable share URLs; the Playwright journey covers it. Manual screen-reader and real-device review plus a Lighthouse pass remain open.
 
 ### [GAL-016] [P0] [verification] Complete release verification and operator documentation
 
@@ -143,3 +143,29 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Dependencies:** GAL-016 and the accepted recovery contract in `docs/operations/backup-recovery.md`.
 - **Blocker or question:** This is a post-implementation gate.
 - **Next action:** Execute the remaining beta gates after GAL-016: representative workload, reverse-proxy/security, browser, and operator review. The synthetic container restore and local production-mode probe are evidence, not substitutes for those gates.
+
+## Real-use track
+
+### [GAL-018] [P0] [validation] Deliver one real event with Lino
+
+- **Status:** Ready
+- **Goal:** Replace synthetic evidence with one real delivery: real camera files, real clients, real devices.
+- **Scope:** Choose an event Lino can share, run Gallery on infrastructure David controls (a VPS behind the documented Caddy recipe, or a temporary tunnel), upload the full set, send the link, and record upload/processing time, client devices, questions, and failures.
+- **Non-goals:** Do not build selections, archives, or branding before this delivery shows they are needed.
+- **Acceptance criteria:** Lino's clients open and download photos from a real link; every friction point is recorded as a work item or a closed question.
+- **Verification:** A short delivery report in `docs/work/checkpoints/` with measurements and observations, and no private photos or client data in the repository.
+- **Dependencies:** Lino's availability and an approved event.
+- **Blocker or question:** Needs David and Lino.
+- **Next action:** Pick the event and the hosting path.
+
+### [GAL-019] [P2] [media] Regenerate derivatives for existing installations
+
+- **Status:** Proposed
+- **Goal:** Let an operator regenerate thumbnails, display images, dimensions, and capture times after a derivative contract change.
+- **Scope:** A confirmation-gated maintenance command that requeues ready photos for processing.
+- **Non-goals:** Do not change originals.
+- **Acceptance criteria:** Photos processed before migration 0006 gain aspect-preserving thumbnails, display-oriented dimensions, and capture times.
+- **Verification:** Unit test plus a restore-style e2e.
+- **Dependencies:** None.
+- **Blocker or question:** Only worth building once a real installation predates the change; no such installation exists yet.
+- **Next action:** Revisit if an installation needs it.

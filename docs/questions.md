@@ -19,6 +19,14 @@ The implementation gates are resolved in ADRs 0005–0012. This document now con
 - Are visitor passwords required in addition to bearer links?
 - Which branding controls are essential for the first real user?
 
+## Toolchain
+
+- ADR 0009 selects npm 11, while the maintainer's workspace convention prefers Bun for installs and scripts. The root scripts currently call `npm --prefix` and fail under `bun run`. Decide whether to keep npm (and document the exception) or migrate root orchestration, CI, and the Docker build to Bun after confirming that `better-sqlite3` and `sharp` install cleanly; record the outcome as an ADR.
+
+## Media follow-ups
+
+- Should a third, roughly 1600px derivative be added so phones do not load the 2400px display image in the lightbox? Measure real camera files during GAL-018 first.
+
 ## Operations and release
 
 - What backup frequency, retention, encryption, replication, RPO, and RTO should operators choose? Gallery must not publish numeric guarantees without evidence.
