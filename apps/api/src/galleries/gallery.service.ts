@@ -1,9 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import { randomUUID } from 'node:crypto'
-import { randomBytes } from 'node:crypto'
+import { randomBytes, randomUUID } from 'node:crypto'
 import { hashToken } from '../auth/auth.service.js'
+import { LocalStorageService } from '../storage/storage.service.js'
+import { PhotoRepository, type PhotoRecord } from '../uploads/photo.repository.js'
 import { GalleryRepository, type GalleryRecord } from './gallery.repository.js'
-import { PhotoRepository } from '../uploads/photo.repository.js'
 
 export interface GalleryInput {
     title: string
@@ -16,6 +16,7 @@ export class GalleryService {
     constructor(
         private readonly galleries: GalleryRepository,
         private readonly photos: PhotoRepository,
+        private readonly storage: LocalStorageService,
     ) {}
 
     create(input: GalleryInput): GalleryRecord {
@@ -44,39 +45,27 @@ export class GalleryService {
     }
 
     update(id: string, input: GalleryInput): GalleryRecord {
-        const current = this.get(id)
-        const changes = this.galleries.updateDraft({
+        this.get(id)
+        this.galleries.updateDetails({
             id,
             ...input,
             now: new Date().toISOString(),
         })
-
-        if (changes === 0 && current.status !== 'draft') {
-            throw new ConflictException('Published galleries cannot be edited in this slice')
-        }
-
         return this.get(id)
     }
 
-    delete(id: string): void {
-        const current = this.get(id)
-        if (current.status !== 'draft') {
-            throw new ConflictException('Published galleries cannot be deleted in this slice')
-        }
-        if (this.galleries.countPhotos(id) > 0) {
-            throw new ConflictException('Gallery with stored photos cannot be deleted in this slice')
-        }
-
-        if (this.galleries.deleteDraft(id) === 0) {
+    async delete(id: string): Promise<void> {
+        this.get(id)
+        const photos = this.photos.listByGallery(id)
+        if (this.galleries.delete(id) === 0) {
             throw new NotFoundException('Gallery not found')
         }
+        // Metadata is removed first; an object left behind by a failed removal is reported by storage:verify.
+        await removePhotoObjects(this.storage, photos)
     }
 
     setCover(id: string, photoId: string): GalleryRecord {
-        const gallery = this.get(id)
-        if (gallery.status !== 'draft') {
-            throw new ConflictException('Published galleries cannot be changed in this slice')
-        }
+        this.get(id)
         const photo = this.photos.getById(photoId)
         if (!photo || photo.gallery_id !== id) {
             throw new NotFoundException('Photo not found in gallery')
@@ -89,28 +78,27 @@ export class GalleryService {
         return this.get(id)
     }
 
+    /** Falls back to the first ready photo after the cover is removed, or clears the cover when none remain. */
+    replaceCover(id: string): void {
+        this.galleries.setCover(id, this.photos.firstReady(id)?.id ?? null, new Date().toISOString())
+    }
+
     publish(id: string): { gallery: GalleryRecord; sharePath: string } {
         const gallery = this.get(id)
         if (gallery.status !== 'draft') {
             throw new ConflictException('Gallery is already published')
         }
-        const photos = this.photos.listByGallery(id)
-        if (photos.length === 0 || !gallery.cover_photo_id) {
-            throw new ConflictException('A gallery needs photos and a cover before publication')
-        }
-        if (this.photos.countNotReady(id) > 0) {
-            throw new ConflictException('All photos must finish processing before publication')
-        }
-        if (!this.photos.getByGalleryAndId(id, gallery.cover_photo_id)) {
-            throw new ConflictException('The selected cover does not belong to this gallery')
+        const cover = gallery.cover_photo_id ? this.photos.getByGalleryAndId(id, gallery.cover_photo_id) : undefined
+        if (!cover || cover.processing_status !== 'ready') {
+            throw new ConflictException('A gallery needs a processed cover photo before publication')
         }
 
-        const token = randomBytes(32).toString('base64url')
+        // Republishing restores the existing link; rotation is the explicit way to invalidate it.
+        const token = gallery.share_token ?? randomBytes(32).toString('base64url')
         const now = new Date().toISOString()
-        this.galleries.publish(id, hashToken(token), now)
-        this.galleries.revokeVisitorSessions(id, now)
+        this.galleries.publish(id, token, hashToken(token), now)
         const published = this.get(id)
-        return { gallery: published, sharePath: `/g/${published.slug}/${token}` }
+        return { gallery: published, sharePath: sharePath(published)! }
     }
 
     rotateShareLink(id: string): { gallery: GalleryRecord; sharePath: string } {
@@ -121,10 +109,10 @@ export class GalleryService {
 
         const token = randomBytes(32).toString('base64url')
         const now = new Date().toISOString()
-        this.galleries.rotateShareToken(id, hashToken(token), now)
+        this.galleries.rotateShareToken(id, token, hashToken(token), now)
         this.galleries.revokeVisitorSessions(id, now)
         const rotated = this.get(id)
-        return { gallery: rotated, sharePath: `/g/${rotated.slug}/${token}` }
+        return { gallery: rotated, sharePath: sharePath(rotated)! }
     }
 
     unpublish(id: string): GalleryRecord {
@@ -148,6 +136,16 @@ export class GalleryService {
         }
         return candidate
     }
+}
+
+/** The visitor path for a published gallery, or undefined when no readable link exists. */
+export function sharePath(gallery: GalleryRecord): string | undefined {
+    return gallery.status === 'published' && gallery.share_token ? `/g/${gallery.slug}/${gallery.share_token}` : undefined
+}
+
+export async function removePhotoObjects(storage: LocalStorageService, photos: PhotoRecord[]): Promise<void> {
+    const keys = photos.flatMap(photo => [photo.original_key, photo.thumbnail_key, photo.display_key]).filter(key => key !== null)
+    await Promise.allSettled(keys.map(key => storage.remove(key)))
 }
 
 export function slugify(value: string): string {

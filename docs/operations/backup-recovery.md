@@ -13,6 +13,8 @@ Gallery data has at least two coordinated components:
 
 A database-only backup is insufficient. A media-only backup may lose gallery structure, selections, visibility, or processing state.
 
+Both stores are private data. The SQLite database contains the working share link of every published gallery (ADR 0013), so anyone holding a database backup can open those galleries until their links are rotated. Store and transfer backups with the same care as the photographs themselves.
+
 ## Initial recovery contract to define
 
 Before beta release, document:

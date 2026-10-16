@@ -52,22 +52,22 @@ export class AuthController {
 
     private setAuthCookies(response: Response, sessionToken: string, csrfToken: string, expiresAt: string): void {
         const secure = shouldUseSecureCookies(this.config)
-        const maxAge = Math.max(0, Date.parse(expiresAt) - Date.now())
+        const maxAgeMs = Date.parse(expiresAt) - Date.now()
         response.setHeader('Set-Cookie', [
             cookieValue(`${sessionCookieName}=${encodeURIComponent(sessionToken)}`, {
                 httpOnly: true,
                 secure,
-                maxAge,
+                maxAgeMs,
             }),
-            cookieValue(`${csrfCookieName}=${encodeURIComponent(csrfToken)}`, { secure, maxAge }),
+            cookieValue(`${csrfCookieName}=${encodeURIComponent(csrfToken)}`, { secure, maxAgeMs }),
         ])
     }
 
     private clearAuthCookies(response: Response): void {
         const secure = shouldUseSecureCookies(this.config)
         response.setHeader('Set-Cookie', [
-            cookieValue(`${sessionCookieName}=`, { httpOnly: true, secure, maxAge: 0 }),
-            cookieValue(`${csrfCookieName}=`, { secure, maxAge: 0 }),
+            cookieValue(`${sessionCookieName}=`, { httpOnly: true, secure, maxAgeMs: 0 }),
+            cookieValue(`${csrfCookieName}=`, { secure, maxAgeMs: 0 }),
         ])
     }
 }

@@ -74,7 +74,15 @@ describe('ProcessingRepository', () => {
         expect(service.cancel('photo', 'cancelled')).toBe(true)
         expect(service.claimNext('later')).toBeUndefined()
         expect(
-            service.markComplete({ photoId: 'photo', thumbnailKey: 'thumb', displayKey: 'display', width: 1, height: 1, now: 'later' }),
+            service.markComplete({
+                photoId: 'photo',
+                thumbnailKey: 'thumb',
+                displayKey: 'display',
+                width: 1,
+                height: 1,
+                capturedAt: null,
+                now: 'later',
+            }),
         ).toBe(false)
         expect(database.prepare('SELECT processing_status, processing_error, cancelled_at FROM photos').get()).toEqual({
             processing_status: 'failed',

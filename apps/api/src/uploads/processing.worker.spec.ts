@@ -48,6 +48,7 @@ describe('ProcessingWorker', () => {
             width: null,
             height: null,
             position: 0,
+            captured_at: null,
             processing_status: 'processing',
             processing_error: null,
             cancelled_at: null,

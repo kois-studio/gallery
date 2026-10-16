@@ -13,6 +13,7 @@ export interface PhotoRecord {
     width: number | null
     height: number | null
     position: number
+    captured_at: string | null
     processing_status: 'pending' | 'processing' | 'ready' | 'failed' | 'cancelled'
     processing_error: string | null
     cancelled_at: string | null
@@ -69,11 +70,12 @@ export class PhotoRepository {
         return this.getById(input.id)!
     }
 
-    countNotReady(galleryId: string): number {
-        const row = this.database.connection
-            .prepare("SELECT COUNT(*) AS count FROM photos WHERE gallery_id = ? AND processing_status != 'ready'")
-            .get(galleryId) as { count: number }
-        return row.count
+    firstReady(galleryId: string): PhotoRecord | undefined {
+        return this.listByGallery(galleryId).find(photo => photo.processing_status === 'ready')
+    }
+
+    delete(galleryId: string, id: string): number {
+        return this.database.connection.prepare('DELETE FROM photos WHERE gallery_id = ? AND id = ?').run(galleryId, id).changes
     }
 
     getByGalleryAndId(galleryId: string, id: string): PhotoRecord | undefined {
@@ -92,7 +94,11 @@ export class PhotoRepository {
 
     listByGallery(galleryId: string): PhotoRecord[] {
         return this.database.connection
-            .prepare('SELECT * FROM photos WHERE gallery_id = ? ORDER BY position ASC, id ASC')
+            .prepare(
+                `SELECT * FROM photos
+         WHERE gallery_id = ?
+         ORDER BY captured_at IS NULL, captured_at ASC, position ASC, id ASC`,
+            )
             .all(galleryId)
             .map(photo =>
                 withCancellationStatus(

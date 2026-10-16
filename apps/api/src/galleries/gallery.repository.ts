@@ -10,6 +10,7 @@ export interface GalleryRecord {
     status: 'draft' | 'published'
     cover_photo_id: string | null
     share_token_hash: string | null
+    share_token: string | null
     created_at: string
     updated_at: string
     published_at: string | null
@@ -46,12 +47,12 @@ export class GalleryRepository {
         return this.database.connection.prepare('SELECT * FROM galleries WHERE id = ?').get(id) as GalleryRecord | undefined
     }
 
-    updateDraft(input: { id: string; title: string; description: string | null; eventDate: string | null; now: string }): number {
+    updateDetails(input: { id: string; title: string; description: string | null; eventDate: string | null; now: string }): number {
         return this.database.connection
             .prepare(
                 `UPDATE galleries
          SET title = ?, description = ?, event_date = ?, updated_at = ?
-         WHERE id = ? AND status = 'draft'`,
+         WHERE id = ?`,
             )
             .run(input.title, input.description, input.eventDate, input.now, input.id).changes
     }
@@ -63,20 +64,20 @@ export class GalleryRepository {
         return row.count
     }
 
-    deleteDraft(id: string): number {
-        return this.database.connection.prepare("DELETE FROM galleries WHERE id = ? AND status = 'draft'").run(id).changes
+    delete(id: string): number {
+        return this.database.connection.prepare('DELETE FROM galleries WHERE id = ?').run(id).changes
     }
 
     slugExists(slug: string): boolean {
         return Boolean(this.database.connection.prepare('SELECT 1 FROM galleries WHERE slug = ?').get(slug))
     }
 
-    setCover(id: string, photoId: string, now: string): number {
+    setCover(id: string, photoId: string | null, now: string): number {
         return this.database.connection
             .prepare(
                 `UPDATE galleries
          SET cover_photo_id = ?, updated_at = ?
-         WHERE id = ? AND status = 'draft'`,
+         WHERE id = ?`,
             )
             .run(photoId, now, id).changes
     }
@@ -86,31 +87,31 @@ export class GalleryRepository {
             GalleryRecord | undefined
     }
 
-    publish(id: string, shareTokenHash: string, now: string): number {
+    publish(id: string, shareToken: string, shareTokenHash: string, now: string): number {
         return this.database.connection
             .prepare(
                 `UPDATE galleries
-         SET status = 'published', share_token_hash = ?, published_at = ?, updated_at = ?
+         SET status = 'published', share_token = ?, share_token_hash = ?, published_at = ?, updated_at = ?
          WHERE id = ? AND status = 'draft'`,
             )
-            .run(shareTokenHash, now, now, id).changes
+            .run(shareToken, shareTokenHash, now, now, id).changes
     }
 
-    rotateShareToken(id: string, shareTokenHash: string, now: string): number {
+    rotateShareToken(id: string, shareToken: string, shareTokenHash: string, now: string): number {
         return this.database.connection
             .prepare(
                 `UPDATE galleries
-         SET share_token_hash = ?, published_at = COALESCE(published_at, ?), updated_at = ?
+         SET share_token = ?, share_token_hash = ?, published_at = COALESCE(published_at, ?), updated_at = ?
          WHERE id = ? AND status = 'published'`,
             )
-            .run(shareTokenHash, now, now, id).changes
+            .run(shareToken, shareTokenHash, now, now, id).changes
     }
 
     unpublish(id: string, now: string): number {
         return this.database.connection
             .prepare(
                 `UPDATE galleries
-         SET status = 'draft', share_token_hash = NULL, published_at = NULL, updated_at = ?
+         SET status = 'draft', published_at = NULL, updated_at = ?
          WHERE id = ? AND status = 'published'`,
             )
             .run(now, id).changes

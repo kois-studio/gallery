@@ -22,6 +22,8 @@ docker compose -f deploy/docker-compose.yml up --build -d
 
 `GALLERY_PORT` can change the loopback port used by the container, for example `GALLERY_PORT=3100 docker compose -f deploy/docker-compose.yml up -d`; the reverse proxy must point to the same host port.
 
+Compose sets `TRUST_PROXY=loopback, uniquelocal` so that sign-in throttling sees the real client address forwarded by a reverse proxy on the same host. This is safe only because the container port is bound to loopback; if you publish the port on another interface, unset `TRUST_PROXY` or narrow it to your proxy's address.
+
 Production mode uses secure administrator and visitor cookies by default. Do not set `COOKIE_SECURE=false` for an internet-facing installation; that override exists only for the plain-HTTP local setup and demo commands.
 
 The container serves the Gallery application and API only. The `/data/` and `/photos/` mount paths are not public routes and direct requests to them return `404`; do not expose those host directories through a separate web server or reverse-proxy rule. The application also emits baseline security response headers, but TLS termination, proxy hardening, and host firewall policy remain operator responsibilities.

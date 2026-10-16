@@ -2,9 +2,12 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import sharp from 'sharp'
 import { ProcessingRepository, type ProcessingWork } from './processing.repository.js'
 import { LocalStorageService } from '../storage/storage.service.js'
+import { readCaptureTime } from './capture-time.js'
 
 const maximumDecodedPixels = 100_000_000
 const maximumConcurrency = 2
+const displayEdge = 2400
+const thumbnailEdge = 800
 
 @Injectable()
 export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
@@ -74,15 +77,18 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
                 throw new Error('Image exceeds the decoded-pixel limit')
             }
 
-            const display = await sharp(originalPath, { limitInputPixels: maximumDecodedPixels })
-                .rotate()
-                .resize({ width: 2400, height: 2400, fit: 'inside', withoutEnlargement: true })
-                .webp({ quality: 84 })
-                .toBuffer()
-            const thumbnail = await sharp(originalPath, { limitInputPixels: maximumDecodedPixels })
-                .rotate()
-                .resize({ width: 480, height: 480, fit: 'cover', withoutEnlargement: true })
-                .webp({ quality: 78 })
+            // Decode the original once into a display-sized sRGB raster and derive both variants from it.
+            const { data, info } = await sharp(originalPath, { limitInputPixels: maximumDecodedPixels })
+                .autoOrient()
+                .resize({ width: displayEdge, height: displayEdge, fit: 'inside', withoutEnlargement: true })
+                .toColourspace('srgb')
+                .raw({ depth: 'uchar' })
+                .toBuffer({ resolveWithObject: true })
+            const raster = { raw: { width: info.width, height: info.height, channels: info.channels } }
+            const display = await sharp(data, raster).webp({ quality: 84 }).toBuffer()
+            const thumbnail = await sharp(data, raster)
+                .resize({ width: thumbnailEdge, height: thumbnailEdge, fit: 'inside', withoutEnlargement: true })
+                .webp({ quality: 80 })
                 .toBuffer()
 
             if (this.jobs.isCancelled(work.id)) {
@@ -99,8 +105,9 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
                 photoId: work.id,
                 thumbnailKey,
                 displayKey,
-                width: metadata.width,
-                height: metadata.height,
+                width: metadata.autoOrient?.width ?? metadata.width,
+                height: metadata.autoOrient?.height ?? metadata.height,
+                capturedAt: readCaptureTime(metadata.exif),
                 now: new Date().toISOString(),
             })
             if (!completed) {

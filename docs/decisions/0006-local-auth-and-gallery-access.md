@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-09-06
 - **Supersedes:** None
-- **Superseded by:** None
+- **Superseded by:** Partly by [ADR 0013](0013-recoverable-share-links-and-editable-publication.md) (share-token storage and unpublish semantics)
 
 ## Context
 

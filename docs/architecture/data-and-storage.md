@@ -57,7 +57,7 @@ Local storage requirements:
 
 ## Data lifecycle
 
-For each persisted entity, the design must document creation, update, publication, expiration, deletion, backup, restore, and migration behavior. Database migrations and photo-object cleanup must not silently diverge. Cancellation is implemented for pending/processing photos; gallery deletion and full reconciliation remain release work.
+For each persisted entity, the design must document creation, update, publication, expiration, deletion, backup, restore, and migration behavior. Database migrations and photo-object cleanup must not silently diverge. Cancellation is implemented for pending/processing photos. Photo and gallery deletion remove metadata first and then the known original and derivative objects; an object left behind by a failed removal is reported by `storage:verify`. Full automatic reconciliation remains release work.
 
 Important invariants include:
 

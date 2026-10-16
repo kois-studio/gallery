@@ -75,17 +75,18 @@ export class ProcessingRepository {
         displayKey: string
         width: number
         height: number
+        capturedAt: string | null
         now: string
     }): boolean {
         const complete = this.database.connection.transaction(() => {
             const photoUpdate = this.database.connection
                 .prepare(
                     `UPDATE photos
-           SET thumbnail_key = ?, display_key = ?, width = ?, height = ?,
+           SET thumbnail_key = ?, display_key = ?, width = ?, height = ?, captured_at = ?,
                processing_status = 'ready', processing_error = NULL, updated_at = ?
            WHERE id = ? AND processing_status = 'processing' AND cancelled_at IS NULL`,
                 )
-                .run(input.thumbnailKey, input.displayKey, input.width, input.height, input.now, input.photoId)
+                .run(input.thumbnailKey, input.displayKey, input.width, input.height, input.capturedAt, input.now, input.photoId)
             if (photoUpdate.changes === 0) {
                 return false
             }
@@ -123,6 +124,31 @@ export class ProcessingRepository {
         })
 
         fail()
+    }
+
+    retry(photoId: string, now: string): boolean {
+        const retry = this.database.connection.transaction(() => {
+            const photoUpdate = this.database.connection
+                .prepare(
+                    `UPDATE photos
+           SET processing_status = 'pending', processing_error = NULL, updated_at = ?
+           WHERE id = ? AND processing_status = 'failed' AND cancelled_at IS NULL`,
+                )
+                .run(now, photoId)
+            if (photoUpdate.changes === 0) {
+                return false
+            }
+            this.database.connection
+                .prepare(
+                    `UPDATE processing_jobs
+           SET status = 'queued', attempts = 0, available_at = ?, claimed_at = NULL, last_error = NULL, updated_at = ?
+           WHERE photo_id = ? AND cancelled_at IS NULL`,
+                )
+                .run(now, now, photoId)
+            return true
+        })
+
+        return retry()
     }
 
     isCancelled(photoId: string): boolean {

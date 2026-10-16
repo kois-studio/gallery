@@ -1,8 +1,8 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { randomUUID } from 'node:crypto'
 import { basename } from 'node:path'
 import { rm } from 'node:fs/promises'
-import { GalleryService } from '../galleries/gallery.service.js'
+import { GalleryService, removePhotoObjects } from '../galleries/gallery.service.js'
 import { LocalStorageService } from '../storage/storage.service.js'
 import { PhotoRepository, type PhotoRecord } from './photo.repository.js'
 import { ProcessingRepository } from './processing.repository.js'
@@ -35,10 +35,7 @@ export class UploadService {
     ) {}
 
     async upload(galleryId: string, files: UploadedFile[]): Promise<UploadResult[]> {
-        const gallery = this.galleries.get(galleryId)
-        if (gallery.status !== 'draft') {
-            throw new ConflictException('Photos can only be uploaded to draft galleries')
-        }
+        this.galleries.get(galleryId)
         if (files.length === 0) {
             throw new BadRequestException('At least one file is required')
         }
@@ -67,7 +64,7 @@ export class UploadService {
         this.galleries.get(galleryId)
         const photo = this.photos.getByGalleryAndId(galleryId, photoId)
         if (!photo) {
-            throw new BadRequestException('Photo not found')
+            throw new NotFoundException('Photo not found')
         }
         return photo
     }
@@ -87,6 +84,31 @@ export class UploadService {
             photo.display_key ? this.storage.remove(photo.display_key) : Promise.resolve(),
         ])
         return { photoId: photo.id, status: 'cancelled' }
+    }
+
+    async delete(galleryId: string, photoId: string): Promise<void> {
+        const photo = this.get(galleryId, photoId)
+        if (this.photos.delete(galleryId, photo.id) === 0) {
+            throw new NotFoundException('Photo not found')
+        }
+        // Metadata goes first so visitors stop seeing the photo even if object removal fails.
+        await removePhotoObjects(this.storage, [photo])
+
+        const gallery = this.galleries.get(galleryId)
+        if (gallery.cover_photo_id === photo.id) {
+            this.galleries.replaceCover(galleryId)
+        }
+    }
+
+    retry(galleryId: string, photoId: string): { photoId: string; status: 'pending' } {
+        const photo = this.get(galleryId, photoId)
+        if (photo.processing_status !== 'failed') {
+            throw new ConflictException('Only failed photos can be retried')
+        }
+        if (!this.jobs.retry(photo.id, new Date().toISOString())) {
+            throw new ConflictException('The photo could not be retried')
+        }
+        return { photoId: photo.id, status: 'pending' }
     }
 
     private async persistFile(galleryId: string, file: UploadedFile): Promise<UploadResult> {
@@ -161,8 +183,17 @@ async function detectSourceFormat(path: string): Promise<{ extension: 'jpg' | 'p
     }
 }
 
+/** Multer exposes multipart filenames as latin1; recover the UTF-8 name browsers actually send. */
+export function decodeMultipartFilename(name: string): string {
+    if ([...name].some(character => character.charCodeAt(0) > 0xff)) {
+        return name
+    }
+    const decoded = Buffer.from(name, 'latin1').toString('utf8')
+    return decoded.includes('\uFFFD') ? name : decoded
+}
+
 function safeOriginalName(originalName: string): string {
-    const name = basename(originalName)
+    const name = basename(decodeMultipartFilename(originalName))
         .split('')
         .filter(character => character.charCodeAt(0) >= 32)
         .join('')

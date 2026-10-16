@@ -2,7 +2,7 @@ import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, Pa
 import { z } from 'zod'
 import { AdminAuthGuard } from '../auth/admin-auth.guard.js'
 import { CsrfGuard } from '../auth/csrf.guard.js'
-import { GalleryService, type GalleryInput } from './gallery.service.js'
+import { GalleryService, sharePath, type GalleryInput } from './gallery.service.js'
 
 const galleryInputSchema = z.object({
     title: z.string().trim().min(1).max(160),
@@ -45,8 +45,8 @@ export class GalleryController {
     @Delete(':id')
     @HttpCode(204)
     @UseGuards(CsrfGuard)
-    delete(@Param('id') id: string): void {
-        this.galleries.delete(id)
+    async delete(@Param('id') id: string): Promise<void> {
+        await this.galleries.delete(id)
     }
 
     @Patch(':id/cover')
@@ -105,5 +105,6 @@ function serializeGallery(gallery: ReturnType<GalleryService['get']>) {
         createdAt: gallery.created_at,
         updatedAt: gallery.updated_at,
         publishedAt: gallery.published_at,
+        sharePath: sharePath(gallery) ?? null,
     }
 }

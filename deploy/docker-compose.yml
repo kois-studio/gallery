@@ -12,6 +12,8 @@ services:
       STORAGE_PATH: /photos
       CORS_ORIGIN: ${CORS_ORIGIN-http://localhost:3000}
       COOKIE_SECURE: ${COOKIE_SECURE-}
+      # The port is bound to loopback, so only a proxy on this host can reach the container.
+      TRUST_PROXY: ${TRUST_PROXY-loopback, uniquelocal}
       SETUP_TOKEN: ${SETUP_TOKEN-}
     volumes:
       - ${GALLERY_DATA_DIR:-./data}:/data

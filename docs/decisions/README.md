@@ -16,5 +16,6 @@ Durable Gallery decisions live here. Proposed decisions are not implementation f
 - [0010 — Plain SQL and explicit SQLite migrations](0010-plain-sql-and-migrations.md)
 - [0011 — Sharp media processing contract](0011-sharp-media-processing.md)
 - [0012 — Single-installation product packaging](0012-single-installation-packaging.md)
+- [0013 — Recoverable share links and editable published galleries](0013-recoverable-share-links-and-editable-publication.md)
 
 Open technical choices are tracked in [`../questions.md`](../questions.md) and [`../work/TODO.md`](../work/TODO.md), not as accepted ADRs.
