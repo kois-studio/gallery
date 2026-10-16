@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/coverage
+**/.angular
+**/.astro
+**/playwright-report
+**/test-results
+.git
+.github
+deploy/data
+deploy/photos
+*.log
