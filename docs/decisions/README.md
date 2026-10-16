@@ -17,5 +17,6 @@ Durable Gallery decisions live here. Proposed decisions are not implementation f
 - [0011 — Sharp media processing contract](0011-sharp-media-processing.md)
 - [0012 — Single-installation product packaging](0012-single-installation-packaging.md)
 - [0013 — Recoverable share links and editable published galleries](0013-recoverable-share-links-and-editable-publication.md)
+- [0014 — MIT license](0014-mit-license.md)
 
 Open technical choices are tracked in [`../questions.md`](../questions.md) and [`../work/TODO.md`](../work/TODO.md), not as accepted ADRs.

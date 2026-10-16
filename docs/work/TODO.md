@@ -22,19 +22,7 @@ Gallery is a working vertical slice heading for its first real delivery. The 202
 
 ## First-release sequence
 
-The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 → GAL-013 → GAL-014 → GAL-015 → GAL-016 → GAL-017. GAL-008 established the runtime foundation and is recorded in the implementation checkpoint. GAL-005 is an independent OSS-release gate and is not an implementation prerequisite.
-
-### [GAL-005] [P1] [oss] Choose and publish a license before the first meaningful public release
-
-- **Status:** Blocked
-- **Goal:** Publish Gallery under an explicit license compatible with its intended adoption model.
-- **Scope:** Compare AGPLv3, Apache 2.0, and other justified candidates against adoption goals, network use, and dependency obligations; record the decision and add the license file.
-- **Non-goals:** Do not add a misleading placeholder license.
-- **Acceptance criteria:** The trade-off is documented, an ADR records the decision, the selected license is present, and README wording matches the actual release status.
-- **Verification:** Dependency/license review and repository inspection.
-- **Dependencies:** None
-- **Blocker or question:** David/Kois decision required before release.
-- **Next action:** Prepare the license comparison without treating it as settled.
+The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 → GAL-013 → GAL-014 → GAL-015 → GAL-016 → GAL-017. GAL-008 established the runtime foundation and is recorded in the implementation checkpoint. GAL-005 (license) is complete: MIT, ADR 0014.
 
 ### [GAL-009] [P0] [data] Implement SQLite schema and migrations
 

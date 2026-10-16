@@ -34,7 +34,6 @@ The latest packaged-container workload signal is 20 synthetic 1600×1200 JPEGs: 
 - Record storage-full/permission failure behavior and resource measurements on the supported deployment architectures, including arm64 if it remains supported.
 - Complete the production reverse-proxy, secure-cookie, readiness, and direct-media security checks.
 - Perform manual responsive/accessibility/performance review on representative desktop and mobile browsers.
-- Decide the OSS license before publishing a meaningful stable release.
 - Deliver one real event with Lino (GAL-018) and decide from it whether server-backed selections or batch downloads are required for this beta.
 
 ## Known intentional boundaries

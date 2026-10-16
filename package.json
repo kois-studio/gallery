@@ -2,6 +2,7 @@
   "name": "kois-gallery",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "description": "Self-hosted photo delivery platform for photographers.",
   "engines": {
     "node": ">=24.15.0 <25",

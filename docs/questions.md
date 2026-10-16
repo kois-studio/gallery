@@ -31,7 +31,6 @@ The implementation gates are resolved in ADRs 0005–0012. This document now con
 
 - What backup frequency, retention, encryption, replication, RPO, and RTO should operators choose? Gallery must not publish numeric guarantees without evidence.
 - Which reverse-proxy recipes and host platforms deserve documentation after the first supported Docker path works?
-- Which OSS license should be published, and when should the public repository become a licensed open-source release? Until then, reuse rights must not be assumed.
 - Which contribution, security-reporting, release, and compatibility promises are sustainable?
 
 ## Future expansion

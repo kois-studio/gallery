@@ -326,9 +326,6 @@ deferred_work:
   - id: DESIGN-001
     reason: Framework and lower-level implementation choices are accepted; implementation evidence is still absent.
     next_action: Implement and verify the accepted domain slices in GAL-009 through GAL-016.
-  - id: DESIGN-002
-    reason: License selection requires an explicit OSS adoption decision and dependency review.
-    next_action: Decide before the first meaningful public release.
   - id: DESIGN-003
     reason: Visitor selection semantics, password access, expiration, batch archives, branding, and supported source formats require Lino/workload evidence.
     next_action: Resolve through Lino observation, workload evidence, and the deferred questions; do not add placeholder product or schema commitments.

@@ -12,7 +12,7 @@ Photography SaaS products provide a better experience but introduce recurring co
 
 ## Product promise
 
-Kois Gallery is an intended open-source, self-hosted photo-delivery platform for photographers. The repository is public for design and development, but an open-source license has not yet been selected.
+Kois Gallery is an open-source, self-hosted photo-delivery platform for photographers, released under the MIT license (ADR 0014).
 
 > The simplest way to self-host beautiful client photo galleries.
 

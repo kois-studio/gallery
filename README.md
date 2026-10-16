@@ -4,7 +4,7 @@ Kois Gallery is an open-source, self-hosted photo-delivery platform for photogra
 
 > Your photos. Your storage. Your infrastructure.
 
-The project design gates are complete and the runtime foundation is implemented. The repository is public for transparent design and development, but a final open-source license has not yet been selected; reuse rights should not be assumed until a license is published.
+Gallery is open source under the [MIT license](LICENSE). The first vertical slice is implemented and is heading for its first real delivery.
 
 ## Intended first workflow
 
@@ -56,7 +56,7 @@ The Angular frontend and NestJS backend are logical application boundaries. They
 
 ## Development status
 
-The runtime foundation, local administrator flow, gallery lifecycle (including editing after publication, retry, and deletion), media processing, private delivery, and the Angular administration and visitor experience are implemented. The next milestone is one real event delivered with Lino. Beta readiness, production integration, real-device evidence, and the OSS license are not yet claimed.
+The runtime foundation, local administrator flow, gallery lifecycle (including editing after publication, retry, and deletion), media processing, private delivery, and the Angular administration and visitor experience are implemented. The next milestone is one real event delivered with Lino. Beta readiness, production integration, and real-device evidence are not yet claimed.
 
 ## Quality checks
 
