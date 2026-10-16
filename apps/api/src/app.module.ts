@@ -26,7 +26,7 @@ import { ShareModule } from './shares/share.module.js'
         ShareModule,
         ServeStaticModule.forRoot({
             rootPath: join(dirname(fileURLToPath(import.meta.url)), '..', 'public'),
-            exclude: ['/api/{*any}'],
+            exclude: ['/api/{*any}', '/data/{*any}', '/photos/{*any}'],
         }),
     ],
     controllers: [AppController],

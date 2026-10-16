@@ -6,7 +6,7 @@ The first supported path should be reproducible from a clean checkout or release
 
 Vercel is relevant to the separate `landing/` marketing/documentation site, not to the persistent Gallery product installation. The first product deployment must retain durable access to SQLite and the configured photo-storage root, so serverless-only hosting is outside the first self-hosting contract.
 
-The supported first shape is one application container with two persistent mounts: one for SQLite/configuration state and one for the photo-storage root. A reverse proxy or equivalent TLS termination is expected for internet exposure. Multiple application instances, shared network filesystems, managed databases, and container-orchestrator deployment are outside the first support contract.
+The supported first shape is one application container with two persistent mounts: one for SQLite/configuration state and one for the photo-storage root. Compose binds the application to loopback by default, and a reverse proxy or equivalent TLS termination is expected for internet exposure; [`deploy/Caddyfile.example`](../../deploy/Caddyfile.example) provides the minimal Caddy shape. Multiple application instances, shared network filesystems, managed databases, and container-orchestrator deployment are outside the first support contract.
 
 The minimal installation should define:
 
@@ -31,6 +31,7 @@ Configuration should distinguish:
 - local storage path;
 - object-storage endpoint, bucket, region, and credentials when supported;
 - cookie/session settings;
+- cookie transport policy (`COOKIE_SECURE` defaults to secure cookies in production);
 - processing limits;
 - logging and diagnostics.
 
@@ -56,6 +57,8 @@ The operator owns:
 Gallery documentation should make this boundary clear without pretending that self-hosting eliminates security or privacy work.
 
 The supported operator contract is intentionally modest: install one documented deployment shape, protect it with TLS and a reverse proxy, keep the two persistent stores backed up, apply upgrades after a backup, and run the recovery drill. Gallery does not promise hosted availability, automated off-site backups, incident response, or data recovery by Kois.
+
+The application does not publish its `/data/` or `/photos/` mount paths as web routes; direct requests are rejected. Operators must still ensure that a separate reverse proxy, static server, backup endpoint, or file-sharing service does not expose those host directories. Gallery emits baseline security headers, while TLS, proxy policy, network exposure, and host security remain operator responsibilities.
 
 ## Upgrade principles
 

@@ -1,0 +1,6 @@
+# Replace gallery.example.com with the public hostname for this installation.
+# Caddy obtains and renews the TLS certificate automatically when DNS points to
+# this host and ports 80/443 are reachable from the internet.
+gallery.example.com {
+    reverse_proxy 127.0.0.1:3000
+}

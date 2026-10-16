@@ -4,6 +4,7 @@ import { createReadStream } from 'node:fs'
 import type { Response } from 'express'
 import type { GalleryConfiguration } from '../configuration.js'
 import { cookieValue, visitorCookieName } from '../auth/cookies.js'
+import { shouldUseSecureCookies } from '../auth/cookie-policy.js'
 import { GalleryRepository } from '../galleries/gallery.repository.js'
 import { PhotoRepository } from '../uploads/photo.repository.js'
 import { LocalStorageService } from '../storage/storage.service.js'
@@ -22,7 +23,7 @@ export class ShareController {
     exchange(@Param('slug') slug: string, @Param('token') token: string, @Res({ passthrough: true }) response: Response) {
         const grant = this.shares.exchange(slug, token)
         const session = grant.session
-        const secure = this.config.get('NODE_ENV', { infer: true }) === 'production'
+        const secure = shouldUseSecureCookies(this.config)
         response.setHeader(
             'Set-Cookie',
             cookieValue(`${visitorCookieName}=${encodeURIComponent(grant.cookieValue)}`, {

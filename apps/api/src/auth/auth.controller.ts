@@ -7,6 +7,7 @@ import { AdminAuthGuard, type AuthenticatedRequest } from './admin-auth.guard.js
 import { AuthService } from './auth.service.js'
 import { CsrfGuard } from './csrf.guard.js'
 import { cookieValue, csrfCookieName, readCookies, sessionCookieName } from './cookies.js'
+import { shouldUseSecureCookies } from './cookie-policy.js'
 
 const passwordSchema = z.string().min(12).max(256)
 
@@ -50,7 +51,7 @@ export class AuthController {
     }
 
     private setAuthCookies(response: Response, sessionToken: string, csrfToken: string, expiresAt: string): void {
-        const secure = this.config.get('NODE_ENV', { infer: true }) === 'production'
+        const secure = shouldUseSecureCookies(this.config)
         const maxAge = Math.max(0, Date.parse(expiresAt) - Date.now())
         response.setHeader('Set-Cookie', [
             cookieValue(`${sessionCookieName}=${encodeURIComponent(sessionToken)}`, {
@@ -63,7 +64,7 @@ export class AuthController {
     }
 
     private clearAuthCookies(response: Response): void {
-        const secure = this.config.get('NODE_ENV', { infer: true }) === 'production'
+        const secure = shouldUseSecureCookies(this.config)
         response.setHeader('Set-Cookie', [
             cookieValue(`${sessionCookieName}=`, { httpOnly: true, secure, maxAge: 0 }),
             cookieValue(`${csrfCookieName}=`, { secure, maxAge: 0 }),
