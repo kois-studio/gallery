@@ -11,8 +11,8 @@ import { GalleryApiService } from '../api/gallery-api.service'
       @if (loading()) { <div class="center-state"><div class="spinner" aria-hidden="true"></div><p>Loading gallery…</p></div> }
       @if (error()) { <div class="center-state"><p class="error">This gallery link is no longer available.</p><a routerLink="/" class="secondary-button">Return home</a></div> }
       @if (gallery(); as current) {
-        <header class="visitor-header"><a class="wordmark" routerLink="/">Kois Gallery</a><span>Private gallery</span></header>
-        <section class="visitor-intro"><p class="eyebrow">{{ current.eventDate || 'A collection of photographs' }}</p><h1>{{ current.title }}</h1>@if (current.description) { <p class="muted">{{ current.description }}</p> }</section>
+        <header class="visitor-header"><a class="wordmark" routerLink="/">Gallery</a><span>Private delivery</span></header>
+        <section class="visitor-intro"><p class="eyebrow">{{ current.eventDate || 'A collection of photographs' }}</p><h1>{{ current.title }}</h1>@if (current.description) { <p class="muted">{{ current.description }}</p> }<div class="visitor-meta"><span>{{ photos().length }} photographs</span><span>Private link</span></div></section>
         <section class="visitor-grid" aria-label="Photographs">
           @for (photo of photos(); track photo.photoId) {
             <button class="visitor-photo" type="button" (click)="openPhoto(photo)">

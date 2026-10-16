@@ -10,7 +10,7 @@ import { Gallery, GalleryApiService, GalleryPhoto } from '../api/gallery-api.ser
     template: `
     <main class="admin-page">
       <header class="app-header">
-        <a class="wordmark" routerLink="/">Kois Gallery</a>
+        <a class="wordmark" routerLink="/">Gallery</a>
         <div class="header-actions">
           <span class="operator-label">Local administrator</span>
           <button class="text-button" type="button" (click)="signOut()">Sign out</button>
@@ -97,13 +97,14 @@ import { Gallery, GalleryApiService, GalleryPhoto } from '../api/gallery-api.ser
                       @if (photo.status === 'ready' && photo.displayUrl) { <img [src]="photo.displayUrl" [alt]="photo.originalName" loading="lazy" /> }
                       @else { <div class="photo-placeholder"><span>{{ photo.status }}</span></div> }
                       <div class="photo-card-footer"><span>{{ photo.originalName }}</span>@if (photo.status === 'ready' && gallery.status === 'draft') { <button class="text-button" type="button" (click)="setCover(photo.photoId)">{{ gallery.coverPhotoId === photo.photoId ? 'Cover' : 'Set cover' }}</button> } @if (photo.status === 'pending' || photo.status === 'processing') { <button class="text-button" type="button" (click)="cancelPhoto(photo.photoId)">Cancel</button> }</div>
+                      @if (photo.processingError) { <p class="photo-error">{{ photo.processingError }}</p> }
                     </article>
                   }
                 </div>
               } @else { <p class="empty-state">No photographs yet. Add a batch to start building this gallery.</p> }
             </section>
           } @else {
-            <div class="welcome-state"><p class="eyebrow">Your workspace</p><h2>Make space for the moment.</h2><p class="muted">Create a draft gallery to begin uploading and preparing a private delivery.</p><button class="primary-button" type="button" (click)="startNew()">Create your first gallery</button></div>
+            <div class="welcome-state"><p class="eyebrow">Your workspace</p><h2>Start with a gallery.</h2><p class="muted">Create a draft gallery to begin uploading and preparing a private delivery.</p><button class="primary-button" type="button" (click)="startNew()">Create your first gallery</button></div>
           }
         </section>
       </div>

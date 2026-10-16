@@ -9,7 +9,7 @@ import { GalleryApiService } from '../api/gallery-api.service'
     imports: [CommonModule, FormsModule, RouterLink],
     template: `
     <main class="auth-page">
-      <a class="back-link" routerLink="/">Kois Gallery</a>
+      <a class="back-link" routerLink="/">Gallery</a>
       <section class="auth-card" aria-labelledby="login-title">
         <p class="eyebrow">Administrator access</p>
         <h1 id="login-title">Welcome back.</h1>
