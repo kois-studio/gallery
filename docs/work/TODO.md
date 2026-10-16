@@ -2,6 +2,10 @@
 
 This queue contains only unfinished implementation, verification, and release work. Durable decisions live in [`docs/decisions/`](../decisions/); deferred product questions live in [`docs/questions.md`](../questions.md).
 
+## Current delivery mode
+
+Gallery is now in release-evidence mode. The first product vertical slice and local Docker installation are implemented; disposable local setup and seeded-demo flows are available for repeated product review. New product scope should remain frozen while the clean-install, restore, operator, browser, and representative-workload gates are executed. New requirements discovered during verification should be recorded as follow-up work instead of being implemented opportunistically during the gate.
+
 ## Public landing track
 
 ### [LANDING-001] [P1] [web] Publish the Gallery marketing and documentation site
@@ -75,10 +79,10 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Scope:** Server-mediated multipart upload, JPEG/PNG/WebP validation, 100 MiB per-file limit, 500-file/10 GiB batch limits, 100-megapixel decoded-area limit, durable jobs, two-job concurrency, retries, cancellation, restart reconciliation, and abandoned temporary-file cleanup.
 - **Non-goals:** Do not add RAW/HEIC, direct-to-storage, resumable protocols, or a separate queue unless measured evidence changes the decision.
 - **Acceptance criteria:** Every file reports success, rejection, retryable failure, or cancellation; originals survive derivative failure; retries are idempotent; shutdown and restart preserve observable work.
-- **Verification:** Synthetic workload, malformed/oversized files, processing retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers. A deterministic 20-file 1600×1200 synthetic baseline exists; representative camera and architecture-specific evidence remain open. Upload idempotency is not yet part of the first request contract.
+- **Verification:** Synthetic workload, malformed/oversized files, processing retry, cancellation, restart, storage-full, processing-failure, and concurrency tests on x64 and arm64 containers. Deterministic 20-file baselines and arm64/amd64 startup evidence exist; representative camera and host-specific performance evidence remain open. Upload idempotency is not yet part of the first request contract.
 - **Dependencies:** GAL-011 and ADR 0011.
 - **Blocker or question:** None; measurements may produce a later limits decision.
-- **Next action:** Run representative camera workload, storage-failure, architecture-specific, and container/operator restore verification; use `storage:verify` and approved `storage:repair` during the restore exercise.
+- **Next action:** Run representative camera workload and storage-failure verification; use `storage:verify` and approved `storage:repair` during any operator-approved restore exercise. Container, restore, and architecture startup gates now have local evidence.
 
 ### [GAL-013] [P0] [media] Generate derivatives and select a cover
 
@@ -118,15 +122,15 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 
 ### [GAL-016] [P0] [verification] Complete release verification and operator documentation
 
-- **Status:** Blocked
+- **Status:** Active
 - **Goal:** Prepare a truthful beta candidate with reproducible checks and executable recovery instructions.
 - **Scope:** CI quality gates, critical-journey/security matrix, workload record, setup/upgrade/runbook updates, standards-contract updates, and restore-drill preparation.
 - **Non-goals:** Do not claim a successful restore or beta readiness before GAL-017.
 - **Acceptance criteria:** Clean install/build/test/security commands run or are marked unrun; current docs describe implemented behavior; the synthetic workload and recovery procedure are executable.
 - **Verification:** [`release-matrix.md`](release-matrix.md), CI inspection, clean-container checks, tests, documentation/link validation, the synthetic local restore e2e, storage verification/repair evidence, and readiness review for GAL-017.
 - **Dependencies:** GAL-008 through GAL-015.
-- **Blocker or question:** Release evidence remains incomplete until the restore gate passes.
-- **Next action:** Run the CI quality gates, execute the storage-integrity command against a restored clean installation, and assemble the remaining verification matrix for GAL-017.
+- **Blocker or question:** Release evidence remains incomplete until the representative workload, browser review, production-proxy checks, and operator behavior pass or are explicitly documented as caveats.
+- **Next action:** Use the disposable local setup/demo flows for product and operator review. Then use the documented Caddy recipe and loopback-only container binding as the baseline for a real reverse-proxy/TLS verification. Assemble the remaining GAL-017 evidence: representative workload, browser review, and operator-facing caveats. Do not expand the product scope during this work.
 
 ### [GAL-017] [P0] [release] Execute beta verification and restore gate
 
@@ -138,4 +142,4 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 - **Verification:** Synthetic or explicitly approved assets only; record commands, environment, results, and unresolved risks.
 - **Dependencies:** GAL-016 and the accepted recovery contract in `docs/operations/backup-recovery.md`.
 - **Blocker or question:** This is a post-implementation gate.
-- **Next action:** Run the container-level/operator restore gate after GAL-016; the automated local synthetic restore is now evidence, not a substitute for that gate.
+- **Next action:** Execute the remaining beta gates after GAL-016: representative workload, reverse-proxy/security, browser, and operator review. The synthetic container restore and local production-mode probe are evidence, not substitutes for those gates.

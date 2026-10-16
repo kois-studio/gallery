@@ -2,7 +2,7 @@
 
 ## Design status
 
-This is a required operational design area. Gallery now provides a read-only storage-integrity command and an automated synthetic two-store restore test. A container-level/operator-run restore has not yet been exercised as a release gate.
+This is a required operational design area. Gallery provides a read-only storage-integrity command, an automated synthetic two-store restore test, and a successful synthetic container-level restore exercise on Docker Desktop arm64. Representative photographer data and production-host evidence remain open.
 
 The first beta contract is an operator-run backup and restore procedure, not a Gallery-managed backup service. Gallery must make the two-store limitation explicit and provide a way to detect missing or extra media objects after recovery.
 
@@ -40,4 +40,6 @@ Before beta release, document:
 
 RPO, RTO, backup frequency, retention duration, encryption-at-rest, and off-host replication remain evidence- and operator-policy questions. The project must not publish numeric guarantees before Lino’s storage risk and the supported hosting path are known.
 
-The first beta must include at least one restore exercise using synthetic or approved test assets. The automated local exercise is an initial evidence point; the container-level/operator-run result belongs in the project work queue and release evidence.
+The first beta must include at least one restore exercise using synthetic or approved test assets. On 2026-09-08, a source container was configured, uploaded to, processed, published, and accessed; SQLite and the complete photo-storage root were then copied into a new container. The restored container passed readiness, `storage:verify` reported one checked photo, three referenced objects, and three present objects with no problems, approved repair made no changes, and the restored thumbnail and original were downloaded successfully.
+
+This is an initial container-level evidence point, not a production guarantee. Representative camera files, event-sized workload measurements, reverse-proxy behavior, and an independently repeated operator exercise remain release evidence.

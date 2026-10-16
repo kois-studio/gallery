@@ -56,9 +56,9 @@ compliance:
       next_action: Complete the threat and responsibility review before beta release.
     - id: SEC-003
       status: partial
-      evidence: The local administrator session boundary, CSRF checks, visitor bearer-link enforcement, token rotation, unpublish revocation, and denied-access tests are implemented; the full release matrix remains open.
+      evidence: The local administrator session boundary, CSRF checks, visitor bearer-link enforcement, token rotation, unpublish revocation, denied-access tests, production cookie flags, explicit operator-path denial, CORS rejection, and baseline security headers are implemented; real reverse-proxy behavior remains open.
       priority: high
-      next_action: Complete the production-proxy and full negative-test matrix in GAL-016/GAL-017.
+      next_action: Complete the real reverse-proxy/TLS and full negative-test matrix in GAL-016/GAL-017.
     - id: SEC-004
       status: partial
       evidence: Upload count/size/signature validation, generated storage keys, atomic writes, symlink rejection, private-media authorization, and direct-object denial are implemented; fuzzing and release-scale failure tests remain open.
@@ -76,7 +76,7 @@ compliance:
       next_action: Define safe log fields and external error behavior during implementation.
     - id: SEC-008
       status: partial
-      evidence: Authentication rejection, session expiry, CSRF, setup re-entry, failed-login throttling, upload authorization, private-media, token rotation, unpublish, and cross-gallery rejection tests exist; production-proxy behavior remains pending.
+      evidence: Authentication rejection, session expiry, CSRF, setup re-entry, failed-login throttling, upload authorization, private-media, token rotation, unpublish, cross-gallery rejection, production cookie, operator-path, CORS, and security-header checks exist; production-proxy behavior remains pending.
       rationale: The access model is accepted and implemented for the first product boundary; release verification remains.
       priority: high
       next_action: Complete release security verification in GAL-016/GAL-017.
@@ -93,19 +93,19 @@ compliance:
       next_action: Add an upgrade migration and failure-path coverage when the schema next changes.
     - id: DATA-004
       status: partial
-      evidence: The two-store database/filesystem boundary, local storage key/symlink protections, durable processing state, cancellation markers, startup temporary-file cleanup, read-only integrity reporting, and confirmation-gated repair are implemented; the container/operator restore gate remains open.
+      evidence: The two-store database/filesystem boundary, local storage key/symlink protections, durable processing state, cancellation markers, startup temporary-file cleanup, read-only integrity reporting, and confirmation-gated repair are implemented; an isolated arm64 container restore passed with no missing or unreferenced objects.
       priority: high
-      next_action: Use verification and repair during the GAL-017 restore exercise and record the operator result.
+      next_action: Exercise storage-failure behavior and repeat verification with representative or operator-approved assets during GAL-017.
     - id: DATA-007
       status: partial
-      evidence: docs/operations/backup-recovery.md defines the two-store backup/restore contract; `npm run storage:verify` and the synthetic two-store recovery e2e check restored object references, but the container/operator gate remains open.
+      evidence: docs/operations/backup-recovery.md defines the two-store backup/restore contract; `npm run storage:verify`, the synthetic two-store recovery e2e check, and an isolated arm64 container restore all restored object references successfully.
       priority: high
-      next_action: Execute GAL-017 using synthetic or approved assets before beta.
+      next_action: Record representative workload, production-host, and operator caveats in GAL-017 before beta.
     - id: OPS-009
       status: partial
-      evidence: docs/operations/backup-recovery.md and deploy/README.md define operator responsibilities and provide integrity verification plus confirmation-gated repair; the local synthetic restore is automated, while the container-level procedure is not yet exercised.
+      evidence: docs/operations/backup-recovery.md and deploy/README.md define operator responsibilities and provide integrity verification plus confirmation-gated repair; the documented two-store shape has passed an isolated arm64 container restore with synthetic assets.
       priority: high
-      next_action: Execute the documented restore gate in GAL-017 and record the integrity report and operator actions.
+      next_action: Repeat the documented procedure with representative or operator-approved assets and record production-host caveats in GAL-017.
     - id: OPS-001
       status: partial
       evidence: Zod startup validation covers runtime environment, port, database path, storage path, CORS origin, and optional setup token; deployment-specific secret and filesystem checks remain open.
@@ -114,10 +114,10 @@ compliance:
       next_action: Add configuration failure-path tests and verify production deployment values in GAL-016/GAL-017.
     - id: OPS-005
       status: partial
-      evidence: The API exposes health/readiness behavior, startup migrations, and writable database/storage checks; worker and release-container readiness still need verification.
+      evidence: The API exposes health/readiness behavior, startup migrations, and writable database/storage checks; Compose healthcheck and `/api/ready` pass in arm64 and amd64 packaged containers.
       rationale: The runtime foundation exists; later slices must extend readiness as durable domain resources are added.
       priority: medium
-      next_action: Verify readiness and health behavior in the packaged container during GAL-016/GAL-017.
+      next_action: Verify readiness through the intended reverse proxy and document production configuration values during GAL-016/GAL-017.
     - id: OPS-006
       status: partial
       evidence: The in-process worker has bounded concurrency, restart requeue behavior, cancellation-aware completion guards, and startup temporary-file cleanup; workload and termination evidence remain incomplete.
@@ -298,21 +298,21 @@ compliance:
       next_action: Keep the local adapters reliable; add S3 compatibility only when a real deployment requires it.
     - id: NEST-013
       status: partial
-      evidence: Gallery writes use database constraints, local atomic-write boundaries, transactional photo/job creation, and durable cancellation markers; storage-failure recovery remains open.
+      evidence: Gallery writes use database constraints, local atomic-write boundaries, transactional photo/job creation, durable cancellation markers, and cleanup of partial derivative writes; release-scale storage-failure recovery remains open.
       priority: high
-      next_action: Implement and test transaction/partial-failure behavior during GAL-009, GAL-011, GAL-012, and GAL-017.
+      next_action: Complete release-scale storage-failure and restore verification in GAL-016/GAL-017.
     - id: NEST-014
       status: partial
-      evidence: The NestJS in-process worker claims durable jobs, limits concurrency, retries failures, requeues interrupted claims, honors cancellation, and cleans stale upload temporary files; representative workload and termination evidence remain open.
+      evidence: The NestJS in-process worker claims durable jobs, limits concurrency, retries failures, requeues interrupted claims, honors cancellation, cleans stale upload temporary files, and removes partial derivatives after failed work; representative workload and termination evidence remain open.
       rationale: The first worker implementation exists, while release-scale behavior is still unverified.
       priority: high
       next_action: Verify processing retry/interruption behavior and representative workload in GAL-016/GAL-017; decide whether upload idempotency is needed.
     - id: NEST-015
       status: partial
-      evidence: Database, storage, and in-process worker lifecycle resources exist; termination and release-container checks remain open.
+      evidence: Database, storage, and in-process worker lifecycle resources exist; arm64 and amd64 release images start and pass readiness, and the arm64 image participates in the isolated restore exercise.
       rationale: Runtime lifecycle is implemented for the first process shape and needs release verification.
       priority: high
-      next_action: Verify lifecycle, readiness, and shutdown behavior in GAL-016/GAL-017.
+      next_action: Verify graceful shutdown with active processing and record production operator behavior in GAL-016/GAL-017.
     - id: NEST-016
       status: partial
       evidence: Angular consumes a NestJS HTTP interface across a logical frontend/backend boundary, but no published or machine-readable contract is promised yet.
