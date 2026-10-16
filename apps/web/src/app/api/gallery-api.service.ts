@@ -25,6 +25,7 @@ export interface GalleryPhoto {
     originalName: string
     bytes: number
     status: 'pending' | 'processing' | 'ready' | 'failed' | 'cancelled'
+    processingError?: string
     width?: number | null
     height?: number | null
     thumbnailUrl?: string

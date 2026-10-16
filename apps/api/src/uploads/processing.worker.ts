@@ -107,8 +107,8 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
                 await this.removeVariants(displayKey, thumbnailKey)
             }
         } catch (error) {
+            await this.removeVariants(displayKey, thumbnailKey)
             if (this.jobs.isCancelled(work.id)) {
-                await this.removeVariants(displayKey, thumbnailKey)
                 return
             }
             const message = error instanceof Error ? error.message.slice(0, 240) : 'Processing failed'
@@ -118,6 +118,12 @@ export class ProcessingWorker implements OnModuleInit, OnModuleDestroy {
     }
 
     private async removeVariants(displayKey: string, thumbnailKey: string): Promise<void> {
-        await Promise.all([this.storage.remove(displayKey), this.storage.remove(thumbnailKey)])
+        const results = await Promise.allSettled([this.storage.remove(displayKey), this.storage.remove(thumbnailKey)])
+        for (const result of results) {
+            if (result.status === 'rejected') {
+                const message = result.reason instanceof Error ? result.reason.message : 'Unknown storage cleanup failure'
+                this.logger.warn(`Unable to remove a derivative after processing interruption: ${message}`)
+            }
+        }
     }
 }

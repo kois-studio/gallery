@@ -36,6 +36,7 @@ export class UploadController {
                 originalName: photo.original_name,
                 bytes: photo.original_bytes,
                 status: photo.processing_status,
+                processingError: photo.processing_error ?? undefined,
                 displayUrl:
                     photo.processing_status === 'ready' ? `/api/admin/galleries/${galleryId}/photos/${photo.id}/display` : undefined,
             })),
