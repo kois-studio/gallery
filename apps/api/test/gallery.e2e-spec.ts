@@ -8,6 +8,7 @@ import sharp from 'sharp'
 import request from 'supertest'
 import { App } from 'supertest/types'
 import { DatabaseService } from '../src/database/database.service.js'
+import { createMediaFixtures } from './fixtures/media/index.js'
 
 describe('draft galleries (e2e)', () => {
     let app: INestApplication<App>
@@ -92,6 +93,11 @@ describe('draft galleries (e2e)', () => {
         await agent.get(`/api/admin/galleries/${second.body.id}`).expect(404)
     })
 
+    it('does not serve operator storage paths through the public static fallback', async () => {
+        await request(app.getHttpServer()).get('/data/gallery.db').expect(404)
+        await request(app.getHttpServer()).get('/photos/example.jpg').expect(404)
+    })
+
     it('stages accepted image bytes and reports rejected files without silent loss', async () => {
         const agent = request.agent(app.getHttpServer())
         const signIn = await agent.post('/api/auth/sign-in').send({ password: 'correct horse battery staple' }).expect(200)
@@ -121,7 +127,7 @@ describe('draft galleries (e2e)', () => {
             .expect(201)
         expect(rejected.body.files).toEqual([expect.objectContaining({ originalName: 'notes.txt', status: 'rejected' })])
 
-        let photoStatus: { photoId: string; status: string } | undefined
+        let photoStatus: { photoId: string; status: string; processingError?: string } | undefined
         for (let attempt = 0; attempt < 20; attempt += 1) {
             const response = await agent.get(`/api/admin/galleries/${gallery.body.id}/photos`).expect(200)
             photoStatus = response.body.files[0]
@@ -131,6 +137,7 @@ describe('draft galleries (e2e)', () => {
             await new Promise(resolve => setTimeout(resolve, 100))
         }
         expect(photoStatus?.status).toBe('ready')
+        expect(photoStatus?.processingError).toBeUndefined()
 
         await agent
             .patch(`/api/admin/galleries/${gallery.body.id}/cover`)
@@ -176,6 +183,43 @@ describe('draft galleries (e2e)', () => {
         await rotatedVisitor.get(`/api/shared/galleries/${rotatedSlug}`).expect(401)
     })
 
+    it('accepts the supported media matrix and rejects invalid or unsupported content', async () => {
+        const agent = request.agent(app.getHttpServer())
+        const signIn = await agent.post('/api/auth/sign-in').send({ password: 'correct horse battery staple' }).expect(200)
+        csrfToken = signIn.body.csrfToken
+        const gallery = await agent
+            .post('/api/admin/galleries')
+            .set('X-CSRF-Token', csrfToken)
+            .send({ title: 'Media fixture matrix' })
+            .expect(201)
+        const fixtures = await createMediaFixtures()
+        let uploadRequest = agent.post(`/api/admin/galleries/${gallery.body.id}/photos`).set('X-CSRF-Token', csrfToken)
+        for (const fixture of [...fixtures.supported, ...fixtures.rejected]) {
+            uploadRequest = uploadRequest.attach('files', fixture.buffer, fixture.filename)
+        }
+
+        const uploaded = await uploadRequest.expect(201)
+        expect(uploaded.body.files).toHaveLength(7)
+        expect(uploaded.body.files.filter((file: { status: string }) => file.status === 'queued')).toHaveLength(4)
+        expect(uploaded.body.files.filter((file: { status: string }) => file.status === 'rejected')).toHaveLength(3)
+        expect(uploaded.body.files).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ originalName: 'fixture-malformed.jpg', status: 'rejected' }),
+                expect.objectContaining({ originalName: 'fixture-empty.webp', status: 'rejected' }),
+                expect.objectContaining({ originalName: 'fixture-unsupported.gif', status: 'rejected' }),
+            ]),
+        )
+
+        let ready = 0
+        for (let attempt = 0; attempt < 40; attempt += 1) {
+            const status = await agent.get(`/api/admin/galleries/${gallery.body.id}/photos`).expect(200)
+            ready = status.body.files.filter((file: { status: string }) => file.status === 'ready').length
+            if (ready === fixtures.supported.length) break
+            await new Promise(resolve => setTimeout(resolve, 100))
+        }
+        expect(ready).toBe(fixtures.supported.length)
+    })
+
     it('cancels pending processing and keeps the cancelled state visible to the administrator', async () => {
         const agent = request.agent(app.getHttpServer())
         const signIn = await agent.post('/api/auth/sign-in').send({ password: 'correct horse battery staple' }).expect(200)
@@ -213,7 +257,15 @@ describe('draft galleries (e2e)', () => {
         await agent
             .get(`/api/admin/galleries/${gallery.body.id}/photos`)
             .expect(200)
-            .expect(({ body }) => expect(body.files).toEqual([expect.objectContaining({ photoId, status: 'cancelled' })]))
+            .expect(({ body }) =>
+                expect(body.files).toEqual([
+                    expect.objectContaining({
+                        photoId,
+                        status: 'cancelled',
+                        processingError: 'Cancelled by administrator',
+                    }),
+                ]),
+            )
     })
 
     it('records a synthetic twenty-file upload and processing workload', async () => {
