@@ -30,6 +30,7 @@ This directory is the public technical and product design source of truth for Ko
 ### Operations
 
 - [`operations/self-hosting.md`](operations/self-hosting.md)
+- [`operations/local-testing.md`](operations/local-testing.md)
 - [`operations/backup-recovery.md`](operations/backup-recovery.md)
 - [`../deploy/README.md`](../deploy/README.md) — current first-beta container packaging.
 

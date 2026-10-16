@@ -61,3 +61,5 @@ The runtime foundation, local administrator flow, gallery/storage flow, media pr
 ## Quality checks
 
 Run `npm run lint` for API oxlint plus frontend Biome checks, `npm run format:check` for API Prettier, frontend Biome, and landing Astro/Prettier checks, and `npm run test:web:e2e` for the packaged browser journey. Build the independent marketing site with `npm run build:landing`; inspect a restored local-storage installation with `npm run storage:verify`. The API follows the repository’s four-space, 140-column, no-semicolon Prettier profile; the Angular application uses Biome 1.9.2 for formatting, import organization, and linting.
+
+For repeatable local product review, run `npm run local:setup` for a clean first-run installation or `npm run local:demo` for a seeded single-container demo. Run `npm run test:local:flows` to execute both disposable Docker flows automatically. See [`docs/operations/local-testing.md`](docs/operations/local-testing.md) for details.

@@ -5,15 +5,11 @@ const setupToken = 'playwright-test-setup-token-with-at-least-32-characters'
 const image = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
 
 test('administrator can publish a gallery and a visitor can browse and download', async ({ page, request }) => {
-    const setup = await request.post('/api/auth/setup', {
-        headers: { 'X-Setup-Token': setupToken },
-        data: { password },
-    })
-    expect(setup.status()).toBe(201)
-
-    await page.goto('/login')
-    await page.getByLabel('Password').fill(password)
-    await page.getByRole('button', { name: 'Sign in' }).click()
+    await page.goto('/setup')
+    await page.getByLabel('Setup token').fill(setupToken)
+    await page.getByLabel('Administrator password').fill(password)
+    await page.getByLabel('Repeat password').fill(password)
+    await page.getByRole('button', { name: 'Create administrator' }).click()
     await expect(page).toHaveURL(/\/admin$/)
 
     await page.getByLabel('New gallery').fill('Browser journey')

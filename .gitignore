@@ -2,6 +2,7 @@ node_modules/
 dist/
 .angular/
 .data/
+.local/
 apps/api/public/
 deploy/data/
 deploy/photos/
