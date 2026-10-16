@@ -97,7 +97,7 @@ export class PhotoRepository {
             .prepare(
                 `SELECT * FROM photos
          WHERE gallery_id = ?
-         ORDER BY captured_at IS NULL, captured_at ASC, position ASC, id ASC`,
+         ORDER BY captured_at IS NULL, captured_at ASC, original_name COLLATE NOCASE ASC, position ASC, id ASC`,
             )
             .all(galleryId)
             .map(photo =>

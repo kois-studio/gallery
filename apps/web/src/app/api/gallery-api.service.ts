@@ -1,6 +1,6 @@
 import { HttpClient, HttpEvent, HttpEventType, HttpHeaders } from '@angular/common/http'
 import { Injectable, inject, signal } from '@angular/core'
-import { Observable, map } from 'rxjs'
+import { Observable, filter, map } from 'rxjs'
 
 export interface AuthResponse {
     csrfToken: string
@@ -18,6 +18,7 @@ export interface Gallery {
     createdAt: string
     updatedAt: string
     publishedAt: string | null
+    sharePath: string | null
 }
 
 export interface GalleryPhoto {
@@ -28,6 +29,7 @@ export interface GalleryPhoto {
     processingError?: string
     width?: number | null
     height?: number | null
+    capturedAt?: string | null
     thumbnailUrl?: string
     displayUrl?: string
     originalUrl?: string
@@ -37,7 +39,10 @@ interface GalleryListResponse {
     galleries: Gallery[]
 }
 
-interface UploadResponse {
+export type SharedGallery = SharedGalleryResponse['gallery']
+export type SharedPhoto = SharedGalleryResponse['photos'][number]
+
+export interface UploadResponse {
     files: Array<{
         photoId?: string
         originalName: string
@@ -56,7 +61,7 @@ interface SharedGalleryResponse {
         coverPhotoId: string | null
     }
     photos: Array<
-        GalleryPhoto & {
+        Pick<GalleryPhoto, 'photoId' | 'originalName' | 'width' | 'height'> & {
             thumbnailUrl: string
             displayUrl: string
             originalUrl: string
@@ -129,11 +134,10 @@ export class GalleryApiService {
         })
     }
 
-    upload(id: string, files: File[]): Observable<{ progress: number; response?: UploadResponse }> {
+    /** Uploads one file per request so a network failure only affects that file and can be retried on its own. */
+    uploadFile(id: string, file: File): Observable<{ progress: number; response?: UploadResponse }> {
         const body = new FormData()
-        for (const file of files) {
-            body.append('files', file, file.name)
-        }
+        body.append('files', file, file.name)
 
         return this.http
             .post<UploadResponse>(`/api/admin/galleries/${id}/photos`, body, {
@@ -143,16 +147,40 @@ export class GalleryApiService {
                 reportProgress: true,
             })
             .pipe(
-                map((event: HttpEvent<UploadResponse>) => {
-                    if (event.type === HttpEventType.UploadProgress) {
-                        return { progress: event.total ? Math.round((event.loaded / event.total) * 100) : 0 }
-                    }
+                filter(
+                    (event: HttpEvent<UploadResponse>) =>
+                        event.type === HttpEventType.UploadProgress || event.type === HttpEventType.Response,
+                ),
+                map((event) => {
                     if (event.type === HttpEventType.Response) {
                         return { progress: 100, response: event.body ?? undefined }
                     }
-                    return { progress: 0 }
+                    const progress = event.type === HttpEventType.UploadProgress && event.total ? event.loaded / event.total : 0
+                    return { progress: Math.min(99, Math.round(progress * 100)) }
                 }),
             )
+    }
+
+    retryPhoto(galleryId: string, photoId: string): Observable<{ photoId: string; status: 'pending' }> {
+        return this.http.post<{ photoId: string; status: 'pending' }>(
+            `/api/admin/galleries/${galleryId}/photos/${photoId}/retry`,
+            {},
+            { headers: this.csrfHeaders(), withCredentials: true },
+        )
+    }
+
+    deletePhoto(galleryId: string, photoId: string): Observable<void> {
+        return this.http.delete<void>(`/api/admin/galleries/${galleryId}/photos/${photoId}`, {
+            headers: this.csrfHeaders(),
+            withCredentials: true,
+        })
+    }
+
+    deleteGallery(galleryId: string): Observable<void> {
+        return this.http.delete<void>(`/api/admin/galleries/${galleryId}`, {
+            headers: this.csrfHeaders(),
+            withCredentials: true,
+        })
     }
 
     cancelPhoto(galleryId: string, photoId: string): Observable<{ photoId: string; status: 'cancelled' }> {
