@@ -31,7 +31,7 @@ This public repository MUST NOT copy private Kois strategy, private relationship
 - Keep unresolved questions visible; do not silently choose high-impact architecture, authentication, storage, deployment, or licensing decisions.
 - The Angular + NestJS framework direction and implementation gates are accepted in ADRs 0007–0012. Keep implementation aligned with those decisions; record any material change as a new ADR.
 - GAL-008 through GAL-015 have established the current product slice; GAL-012, GAL-016, and GAL-017 remain active for reliability, release evidence, and container/operator verification.
-- Treat Lino's workflow as a validation source, not as a reason to make Gallery Lino-specific.
+- Treat the beta photographer’s workflow as a validation source, not as a reason to make Gallery photographer-specific.
 - Do not add SDK, MCP, framework adapters, PostgreSQL support, or hosted SaaS architecture before a real consumer or requirement justifies it.
 
 ## Implementation-state rules for later

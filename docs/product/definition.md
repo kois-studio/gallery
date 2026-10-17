@@ -25,7 +25,7 @@ The initial value is the combination of:
 - simple visitor browsing and download workflows, with selections as an evidence-gated extension;
 - independence from the photographer’s portfolio website framework.
 
-Selection is part of the product direction, but its persistence and visitor identity are not assumed in the first delivery slice. The first beta must include it only if Lino’s observed workflow makes it necessary; the proposed first-beta boundary is documented in [scope.md](scope.md).
+Selection is part of the product direction, but its persistence and visitor identity are not assumed in the first delivery slice. The first beta must include it only if the beta photographer’s observed workflow makes it necessary; the proposed first-beta boundary is documented in [scope.md](scope.md).
 
 ## Users
 
@@ -43,7 +43,7 @@ Installs Gallery from a clean checkout or release, configures storage and public
 
 ## First real validation user
 
-Lino Fajardo is the first real photographer and beta user. His workflow is evidence for the product, not the product’s permanent audience, name, or scope. The reusable product must remain photographer-independent and must not embed Lino-specific assumptions.
+The first real beta user is a working event photographer. Their workflow is evidence for the product, not the product’s permanent audience, name, or scope. The reusable product must remain photographer-independent and must not embed photographer-specific assumptions.
 
 ## Product boundaries
 
@@ -55,7 +55,7 @@ Gallery is not initially a Kois-managed SaaS. Each photographer is expected to o
 
 The first release is successful when:
 
-- Lino can install or receive a reproducible installation;
+- The beta photographer can install or receive a reproducible installation;
 - a real event-sized batch can be uploaded without silent failures;
 - visitors can browse effectively on mobile and desktop;
 - the photographer can share a stable gallery URL;

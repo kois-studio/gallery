@@ -30,4 +30,4 @@ The Gallery landing and Angular product surfaces were redesigned as an independe
 
 ## Follow-up
 
-The final visual review should use approved real photography in a representative self-hosted gallery. The landing’s current image surfaces are intentionally synthetic and must not be presented as Lino or client work.
+The final visual review should use approved real photography in a representative self-hosted gallery. The landing’s current image surfaces are intentionally synthetic and must not be presented as the beta photographer’s work or client work.

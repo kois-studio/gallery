@@ -17,7 +17,7 @@ The container uses two persistent mounts:
 - `/data` for SQLite, sessions/configuration state, migrations, and durable job state; and
 - `/photos` for originals, derivatives, and declared temporary/recovery objects.
 
-The product container does not provide TLS termination. Internet-facing operators place a reverse proxy or equivalent TLS boundary in front of it. Vercel is used only for the separate `landing/` marketing/documentation site at `gallery.kois.app`; it is not a supported runtime for the persistent Gallery product or the first Lino installation at `gallery.linofajardo.com`.
+The product container does not provide TLS termination. Internet-facing operators place a reverse proxy or equivalent TLS boundary in front of it. Vercel is used only for the separate `landing/` marketing/documentation site at `gallery.kois.app`; it is not a supported runtime for the persistent Gallery product or the first beta installation.
 
 Development may run Angular’s dev server and NestJS separately with an explicit proxy. Production and self-hosting use the single packaged installation. The first supported distribution is Debian-based Node 24 Docker on x64 and arm64; Alpine is not part of the initial support contract because native dependency behavior must remain predictable.
 

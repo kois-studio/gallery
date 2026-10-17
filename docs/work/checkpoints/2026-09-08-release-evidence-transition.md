@@ -73,7 +73,7 @@ The built image also processed a 20-file synthetic multipart batch on Docker Des
 - all derivatives were ready after 3,143 ms;
 - sampled container memory was approximately 160 MiB.
 
-The files were generated 1600×1200 JPEGs, so this is a packaged engineering baseline rather than evidence from camera originals or an event-sized Lino workload.
+The files were generated 1600×1200 JPEGs, so this is a packaged engineering baseline rather than evidence from camera originals or an event-sized workload from the beta photographer.
 
 ## Automated quality evidence
 
@@ -91,7 +91,7 @@ The complete local quality matrix passed after the release hardening changes:
 - representative camera files and an event-sized workload;
 - reverse-proxy, secure-cookie, readiness, and direct-media checks;
 - manual responsive, accessibility, and performance review;
-- Lino workflow observation;
+- beta photographer workflow observation;
 - OSS license decision before a meaningful stable release.
 
 ## Product decision

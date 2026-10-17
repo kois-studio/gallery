@@ -23,7 +23,7 @@ This slice is valuable because it replaces a generic file-transfer link with a p
 
 ## First beta gate
 
-The first private beta is not ready until the vertical slice has passed a representative synthetic workload and Lino has confirmed the visitor job to be validated. The default beta gate is:
+The first private beta is not ready until the vertical slice has passed a representative synthetic workload and the beta photographer has confirmed the visitor job to be validated. The default beta gate is:
 
 - upload and process an event-sized batch without silent loss;
 - publish and revoke a private share link;

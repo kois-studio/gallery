@@ -23,7 +23,7 @@ gallery/
 
 `apps/web` and `apps/api` are two logical applications inside one product repository. A first self-hosted distribution may package them as one operator-facing installation with one documented deployment path, while keeping their transport and responsibility boundaries explicit. `landing/` is not part of the Gallery runtime: it is the public site that explains and markets the tool. Do not add a `product/` wrapper or empty `packages/` directory; the repository root already represents the product, and shared packages should appear only when real shared code justifies them.
 
-The project has two separate deployment concerns: `gallery.kois.app` is the independently deployed public marketing/documentation site, while `gallery.linofajardo.com` is the first real self-hosted Gallery installation. The landing site may use Astro and Vercel; that choice must not constrain the Angular/NestJS product runtime or the deployment model recommended to photographers.
+The project has two separate deployment concerns: `gallery.kois.app` is the independently deployed public marketing/documentation site, while the first real Gallery installation is self-hosted on a domain controlled by the beta photographer. The landing site may use Astro and Vercel; that choice must not constrain the Angular/NestJS product runtime or the deployment model recommended to photographers.
 
 ## Recommended first shape
 
@@ -57,7 +57,7 @@ The first beta path is intentionally limited to:
 7. responsive visitor browsing; and
 8. individual original-file downloads.
 
-Selections, password-protected galleries, public indexing, batch archives, expiration, QR generation, branding controls, S3, resumable uploads, and external APIs are separate increments unless Lino’s observed workflow makes one a beta gate. The beta boundary is also recorded in [ADR 0005](../decisions/0005-first-beta-contract.md).
+Selections, password-protected galleries, public indexing, batch archives, expiration, QR generation, branding controls, S3, resumable uploads, and external APIs are separate increments unless the beta photographer’s observed workflow makes one a beta gate. The beta boundary is also recorded in [ADR 0005](../decisions/0005-first-beta-contract.md).
 
 ## Internal dependency direction
 
@@ -91,7 +91,7 @@ SQLite / local filesystem / selected image library
 - **Delivery:** stream individual originals and derivatives only after the relevant access check; never expose storage paths as public URLs.
 - **Operations:** health/readiness, structured safe logs, graceful shutdown, diagnostics, migrations, and recovery tooling/documentation.
 
-Selection is not part of the first delivery slice because its visitor identity and persistence semantics are unresolved. If it is required for Lino’s beta, it must be implemented as a separate server-backed workflow rather than silently using browser-local state.
+Selection is not part of the first delivery slice because its visitor identity and persistence semantics are unresolved. If it is required for the first beta, it must be implemented as a separate server-backed workflow rather than silently using browser-local state.
 
 ## Future consumers
 

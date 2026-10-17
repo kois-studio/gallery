@@ -1,6 +1,6 @@
 # Core workflows
 
-These workflows are proposed and will be refined through Lino’s real usage.
+These workflows are proposed and will be refined through the beta photographer’s real usage.
 
 ## Photographer: create and publish
 

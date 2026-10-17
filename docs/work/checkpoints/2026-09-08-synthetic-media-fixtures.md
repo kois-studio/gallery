@@ -25,4 +25,4 @@ of batch processing behavior.
 
 If a real camera sample becomes necessary, add only an explicitly approved,
 redistributable sample under a documented license and keep it separate from
-private or Lino-specific content.
+private or photographer-specific content.

@@ -40,7 +40,7 @@ Before beta release, document:
 - In-flight uploads and jobs at the time of a snapshot are not promised to resume exactly. They must be reported as incomplete and safely retried or discarded according to the documented state machine.
 - Deletion and expiration do not erase existing backups. Retention and secure disposal remain operator responsibilities.
 
-RPO, RTO, backup frequency, retention duration, encryption-at-rest, and off-host replication remain evidence- and operator-policy questions. The project must not publish numeric guarantees before Lino’s storage risk and the supported hosting path are known.
+RPO, RTO, backup frequency, retention duration, encryption-at-rest, and off-host replication remain evidence- and operator-policy questions. The project must not publish numeric guarantees before the beta photographer’s storage risk and the supported hosting path are known.
 
 The first beta must include at least one restore exercise using synthetic or approved test assets. On 2026-09-08, a source container was configured, uploaded to, processed, published, and accessed; SQLite and the complete photo-storage root were then copied into a new container. The restored container passed readiness, `storage:verify` reported one checked photo, three referenced objects, and three present objects with no problems, approved repair made no changes, and the restored thumbnail and original were downloaded successfully.
 

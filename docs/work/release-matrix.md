@@ -30,11 +30,11 @@ The latest packaged-container workload signal is 20 synthetic 1600×1200 JPEGs: 
 
 ## Evidence still required before beta
 
-- Exercise representative camera files and a Lino-approved event-sized workload.
+- Exercise representative camera files and a photographer-approved event-sized workload.
 - Record storage-full/permission failure behavior and resource measurements on the supported deployment architectures, including arm64 if it remains supported.
 - Complete the production reverse-proxy, secure-cookie, readiness, and direct-media security checks.
 - Perform manual responsive/accessibility/performance review on representative desktop and mobile browsers.
-- Deliver one real event with Lino (GAL-018) and decide from it whether server-backed selections or batch downloads are required for this beta.
+- Deliver one real event with the beta photographer (GAL-018) and decide from it whether server-backed selections or batch downloads are required for this beta.
 
 ## Known intentional boundaries
 

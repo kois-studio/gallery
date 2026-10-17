@@ -44,7 +44,7 @@ Cancellation now has an explicit administrator transition. Deletion and publicat
 
 The first slice supports individual original downloads through an authorization-aware streaming response. The server must stream from the storage boundary, apply bounded request and response behavior, set a safe content disposition, and avoid buffering an entire original or gallery in application memory. Direct storage paths are never the public contract.
 
-“Download a gallery” is deliberately not defined as a synchronous ZIP operation. If Lino requires batch delivery, the later design must create an asynchronous archive job with a durable status, authorization tied to the gallery access context, limits on file count/total bytes, temporary storage, expiry, cleanup, and a clear failure/retry policy. A reverse proxy or object-storage handoff may be evaluated after the application’s authorization has succeeded, but it cannot bypass that boundary.
+“Download a gallery” is deliberately not defined as a synchronous ZIP operation. If the beta photographer requires batch delivery, the later design must create an asynchronous archive job with a durable status, authorization tied to the gallery access context, limits on file count/total bytes, temporary storage, expiry, cleanup, and a clear failure/retry policy. A reverse proxy or object-storage handoff may be evaluated after the application’s authorization has succeeded, but it cannot bypass that boundary.
 
 ## State and failure rules
 

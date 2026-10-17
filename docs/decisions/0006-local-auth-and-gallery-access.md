@@ -42,6 +42,6 @@ This keeps the self-hosted installation independent of Kois infrastructure and m
 
 ## Unresolved risks
 
-- The bearer-link model may be inadequate for Lino’s privacy expectations.
+- The bearer-link model may be inadequate for the beta photographer’s privacy expectations.
 - The local recovery command must be documented and tested before beta.
 - A later multi-administrator or multi-photographer model will require new ownership and membership decisions.

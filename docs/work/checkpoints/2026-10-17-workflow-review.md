@@ -4,7 +4,7 @@
 - **Repository and branch:** kois-studio/gallery / main
 - **Commit:** this checkpoint's commit on top of `54d4062`; not pushed
 - **Session goal:** Review the paused MVP as a photographer would use it, then fix the blockers it exposed.
-- **Status:** ready to continue; the next step needs David and Lino (GAL-018)
+- **Status:** ready to continue; the next step needs David and the beta photographer (GAL-018)
 
 ## Review findings
 
@@ -49,10 +49,10 @@ The backend design (SQLite, durable in-process jobs, local storage boundary, has
 ## Work queue changes
 
 - GAL-012, GAL-015: next actions updated.
-- GAL-018 created (Ready, P0): deliver one real event with Lino.
+- GAL-018 created (Ready, P0): deliver one real event with the beta photographer.
 - GAL-019 created (Proposed, P2): derivative regeneration command.
 - Toolchain and medium-derivative questions added to `docs/questions.md`.
 
 ## Next safe action
 
-Push after David approves it and confirm CI is green. Then pick a real event with Lino and run GAL-018.
+Push after David approves it and confirm CI is green. Then pick a real event with the beta photographer and run GAL-018.

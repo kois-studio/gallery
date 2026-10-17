@@ -9,7 +9,7 @@
 
 The product promise includes presentation, private delivery, downloads, and visitor selections, but the earlier first-slice document deferred private access and selections while still treating them as beta success criteria. That makes the first implementation boundary incoherent and invites accidental expansion into archives, expiration, branding, and client-management features.
 
-Lino’s first real workflow is a validation source, not a permanent product definition. The first slice must prove the delivery problem with an event-sized but bounded workload and leave unresolved selection semantics visible.
+The beta photographer’s first real workflow is a validation source, not a permanent product definition. The first slice must prove the delivery problem with an event-sized but bounded workload and leave unresolved selection semantics visible.
 
 ## Decision
 
@@ -25,7 +25,7 @@ The first beta contract is:
 - responsive visitor browsing; and
 - individual original-file downloads.
 
-Server-backed visitor selections are explicitly outside the first implementation slice and remain a beta gate. They become required only if Lino’s observed workflow demonstrates that the delivery-only contract cannot complete the real beta job. If required, they are a separate vertical slice with explicit persistence, visitor-session, submission, retrieval, and retention behavior. Browser-local favorites do not count as photographer-visible selections.
+Server-backed visitor selections are explicitly outside the first implementation slice and remain a beta gate. They become required only if the beta photographer’s observed workflow demonstrates that the delivery-only contract cannot complete the real beta job. If required, they are a separate vertical slice with explicit persistence, visitor-session, submission, retrieval, and retention behavior. Browser-local favorites do not count as photographer-visible selections.
 
 Batch archives, password-protected galleries, public indexing, expiration, QR generation, extensive branding, S3, resumable uploads, external APIs, SDKs, MCP, and multi-tenant accounts are outside this contract unless evidence creates a new requirement and a later decision accepts it.
 
@@ -36,12 +36,12 @@ The team can validate the highest-value path with a bounded implementation and t
 ## Alternatives considered
 
 - **Build selections and batch archives first:** rejected for the initial slice because both workflows have unresolved identity, persistence, resource, and recovery semantics.
-- **Make the first slice public galleries only:** rejected because Lino’s event photographs and the product promise require a private-by-default delivery path.
+- **Make the first slice public galleries only:** rejected because the beta photographer’s event photographs and the product promise require a private-by-default delivery path.
 - **Build a broad photographer-management platform:** rejected because it exceeds the photo-delivery boundary and would delay validation of the core workflow.
 
 ## Unresolved risks
 
-- Lino may confirm that selections are essential, making the delivery-only slice insufficient for beta.
+- The beta photographer may confirm that selections are essential, making the delivery-only slice insufficient for beta.
 - A bearer link may not meet the desired privacy or client-access expectation.
 - Real camera-file sizes and event volumes may require a different upload or processing design.
 

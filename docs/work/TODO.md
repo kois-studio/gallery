@@ -4,7 +4,7 @@ This queue contains only unfinished implementation, verification, and release wo
 
 ## Current delivery mode
 
-Gallery is a working vertical slice heading for its first real delivery. The 2026-10-17 review ([checkpoint](checkpoints/2026-10-17-workflow-review.md)) found that the frozen scope could not survive a normal photographer workflow, so the scope freeze is lifted. The fixes listed in that checkpoint are implemented, and the next priority is one real event delivered with Lino (GAL-018), not further synthetic evidence. Record friction from that delivery as new work items.
+Gallery is a working vertical slice heading for its first real delivery. The 2026-10-17 review ([checkpoint](checkpoints/2026-10-17-workflow-review.md)) found that the frozen scope could not survive a normal photographer workflow, so the scope freeze is lifted. The fixes listed in that checkpoint are implemented, and the next priority is one real event delivered with the beta photographer (GAL-018), not further synthetic evidence. Record friction from that delivery as new work items.
 
 ## Public landing track
 
@@ -134,16 +134,16 @@ The accepted product sequence is GAL-009 → GAL-010 → GAL-011 → GAL-012 →
 
 ## Real-use track
 
-### [GAL-018] [P0] [validation] Deliver one real event with Lino
+### [GAL-018] [P0] [validation] Deliver one real event with the beta photographer
 
 - **Status:** Ready
 - **Goal:** Replace synthetic evidence with one real delivery: real camera files, real clients, real devices.
-- **Scope:** Choose an event Lino can share, run Gallery on infrastructure David controls (a VPS behind the documented Caddy recipe, or a temporary tunnel), upload the full set, send the link, and record upload/processing time, client devices, questions, and failures.
+- **Scope:** Choose an event the beta photographer can share, run Gallery on infrastructure David controls (a VPS behind the documented Caddy recipe, or a temporary tunnel), upload the full set, send the link, and record upload/processing time, client devices, questions, and failures.
 - **Non-goals:** Do not build selections, archives, or branding before this delivery shows they are needed.
-- **Acceptance criteria:** Lino's clients open and download photos from a real link; every friction point is recorded as a work item or a closed question.
+- **Acceptance criteria:** The beta photographer's clients open and download photos from a real link; every friction point is recorded as a work item or a closed question.
 - **Verification:** A short delivery report in `docs/work/checkpoints/` with measurements and observations, and no private photos or client data in the repository.
-- **Dependencies:** Lino's availability and an approved event.
-- **Blocker or question:** Needs David and Lino.
+- **Dependencies:** The beta photographer's availability and an approved event.
+- **Blocker or question:** Needs David and the beta photographer.
 - **Next action:** Pick the event and the hosting path.
 
 ### [GAL-019] [P2] [media] Regenerate derivatives for existing installations

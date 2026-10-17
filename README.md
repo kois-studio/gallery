@@ -13,14 +13,14 @@ Gallery is open source under the [MIT license](LICENSE). The first vertical slic
 3. Gallery processes browser-friendly variants.
 4. The photographer chooses a cover and visibility.
 5. They publish and share a private, revocable URL.
-6. Visitors browse and download individual originals from the same bookmarkable link; the photographer can keep editing the gallery after publishing. Server-backed selections are a separate beta gate based on Lino’s observed workflow.
+6. Visitors browse and download individual originals from the same bookmarkable link; the photographer can keep editing the gallery after publishing. Server-backed selections are a separate beta gate based on the beta photographer’s observed workflow.
 
-The first real beta user is Lino Fajardo. His separate portfolio website will link to Gallery, but Gallery must remain an independent application and must not depend on Astro, Next.js, WordPress, or another photographer website framework.
+The first real beta user is a working event photographer. Their separate portfolio website will link to Gallery, but Gallery must remain an independent application and must not depend on Astro, Next.js, WordPress, or another photographer website framework.
 
 There are two intentionally different deployment targets around the project:
 
 - `gallery.kois.app` is the public Gallery marketing and documentation site, deployed independently and expected to use Astro and Vercel.
-- `gallery.linofajardo.com` is the first real Gallery installation, using the self-hosted product deployment described in `docs/operations/`.
+- The first real Gallery installation is a self-hosted deployment on a domain the photographer controls, using the self-hosted product deployment described in `docs/operations/`.
 
 Photographers who adopt Gallery run the same product on infrastructure they control. A future Kois-managed hosted service would be a separate operating model and is not part of this repository’s first-release contract.
 
@@ -56,7 +56,7 @@ The Angular frontend and NestJS backend are logical application boundaries. They
 
 ## Development status
 
-The runtime foundation, local administrator flow, gallery lifecycle (including editing after publication, retry, and deletion), media processing, private delivery, and the Angular administration and visitor experience are implemented. The next milestone is one real event delivered with Lino. Beta readiness, production integration, and real-device evidence are not yet claimed.
+The runtime foundation, local administrator flow, gallery lifecycle (including editing after publication, retry, and deletion), media processing, private delivery, and the Angular administration and visitor experience are implemented. The next milestone is one real event delivered with the beta photographer. Beta readiness, production integration, and real-device evidence are not yet claimed.
 
 ## Quality checks
 
